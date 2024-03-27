@@ -1,0 +1,29 @@
+{
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "status": {},
+      "authenticationInfo": {},
+      "requestMetadata": {
+        "callerSuppliedUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36,gzip(gfe),gzip(gfe)"
+      },
+      "serviceName": "bigquery.googleapis.com",
+      "methodName": "jobservice.insert",
+      "authorizationInfo": [
+        {
+          "resource": "projects/ahdemo-240325-bq-src-ds/datasets/ahdemo_240325_src_ds/tables/ahdemo_240325_src_table",
+          "permission": "bigquery.tables.getData"
+        }
+      ]
+    },
+    "insertId": "-mqt03tdgc14",
+    "resource": {
+      "type": "bigquery_resource",
+      "labels": {
+        "project_id": "ahdemo-240325-bq-src-ds"
+      }
+    },
+    "timestamp": "2024-03-25T17:06:13.491039Z",
+    "severity": "INFO",
+    "logName": "projects/ahdemo-240325-bq-src-ds/logs/cloudaudit.googleapis.com%2Fdata_access",
+    "receiveTimestamp": "2024-03-25T17:06:13.753269479Z"
+  }

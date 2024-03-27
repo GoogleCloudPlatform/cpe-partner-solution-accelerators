@@ -1,0 +1,49 @@
+{
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "status": {
+        "code": 7,
+        "message": "Permission 'analyticshub.listings.subscribe' denied on resource '//analyticshub.googleapis.com/projects/721405761381/locations/us/dataExchanges/ahdemo_240325_priv_exchg_ahonly/listings/ahdemo_240325_priv_listing_ahonly' (or it may not exist)."
+      },
+      "authenticationInfo": {
+        "principalEmail": "subscriber-240325@ahdemo-240325-subscr.iam.gserviceaccount.com",
+        "principalSubject": "serviceAccount:subscriber-240325@ahdemo-240325-subscr.iam.gserviceaccount.com"
+      },
+      "requestMetadata": {
+        "callerIp": "2a00:79e0:48:700:33a0:2491:fabe:5da8",
+        "callerSuppliedUserAgent": "curl/8.5.0,gzip(gfe)",
+        "requestAttributes": {
+          "time": "2024-03-25T15:17:18.223220093Z",
+          "auth": {}
+        },
+        "destinationAttributes": {}
+      },
+      "serviceName": "analyticshub.googleapis.com",
+      "methodName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.SubscribeListing",
+      "authorizationInfo": [
+        {
+          "resource": "projects/721405761381/locations/us/dataExchanges/ahdemo_240325_priv_exchg_ahonly/listings/ahdemo_240325_priv_listing_ahonly",
+          "permission": "analyticshub.listings.subscribe",
+          "resourceAttributes": {}
+        }
+      ],
+      "resourceName": "projects/721405761381/locations/us/dataExchanges/ahdemo_240325_priv_exchg_ahonly/listings/ahdemo_240325_priv_listing_ahonly",
+      "request": {
+        "name": "projects/721405761381/locations/us/dataExchanges/ahdemo_240325_priv_exchg_ahonly/listings/ahdemo_240325_priv_listing_ahonly",
+        "@type": "type.googleapis.com/google.cloud.bigquery.analyticshub.v1.SubscribeListingRequest"
+      }
+    },
+    "insertId": "1w9a5okd205a",
+    "resource": {
+      "type": "audited_resource",
+      "labels": {
+        "service": "analyticshub.googleapis.com",
+        "project_id": "ahdemo-240325-ah-exchg",
+        "method": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.SubscribeListing"
+      }
+    },
+    "timestamp": "2024-03-25T15:17:18.102778247Z",
+    "severity": "ERROR",
+    "logName": "projects/ahdemo-240325-ah-exchg/logs/cloudaudit.googleapis.com%2Fdata_access",
+    "receiveTimestamp": "2024-03-25T15:17:18.986251234Z"
+  }

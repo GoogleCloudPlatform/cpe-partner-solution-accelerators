@@ -1,0 +1,491 @@
+[
+  {
+    "description": "ahdemo_240325_ah_perimeter",
+    "name": "accessPolicies/562360667831/servicePerimeters/ahdemo_240325_ah_perimeter",
+    "status": {
+      "egressPolicies": [
+        {
+          "egressFrom": {
+            "identities": [
+              "user:ahdemo-subscriber@cloud-partner-eng-ext.joonix.net",
+              "serviceAccount:subscriber-240325@ahdemo-240325-subscr.iam.gserviceaccount.com"
+            ]
+          },
+          "egressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "projects/1593099157",
+              "projects/695555904442"
+            ]
+          }
+        },
+        {
+          "egressFrom": {
+            "identities": [
+              "serviceAccount:terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com",
+              "user:ahdemo-admin@cloud-partner-eng-ext.joonix.net"
+            ]
+          },
+          "egressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "projects/423415243464"
+            ]
+          }
+        }
+      ],
+      "ingressPolicies": [
+        {
+          "ingressFrom": {
+            "identities": [
+              "serviceAccount:terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com",
+              "user:ahdemo-admin@cloud-partner-eng-ext.joonix.net"
+            ],
+            "sources": [
+              {
+                "accessLevel": "accessPolicies/562360667831/accessLevels/ahdemo_240325_allow_corp"
+              }
+            ]
+          },
+          "ingressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "analyticshub.googleapis.com"
+              },
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        },
+        {
+          "ingressFrom": {
+            "identities": [
+              "user:ahdemo-subscriber@cloud-partner-eng-ext.joonix.net",
+              "serviceAccount:subscriber-240325@ahdemo-240325-subscr.iam.gserviceaccount.com"
+            ],
+            "sources": [
+              {
+                "accessLevel": "accessPolicies/562360667831/accessLevels/ahdemo_240325_allow_all"
+              }
+            ]
+          },
+          "ingressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "analyticshub.googleapis.com"
+              },
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        }
+      ],
+      "resources": [
+        "projects/721405761381"
+      ],
+      "restrictedServices": [
+        "analyticshub.googleapis.com",
+        "bigquery.googleapis.com"
+      ]
+    },
+    "title": "ahdemo_240325_ah_perimeter"
+  },
+  {
+    "description": "ahdemo_240325_bq_and_ah_perimeter",
+    "name": "accessPolicies/562360667831/servicePerimeters/ahdemo_240325_bq_and_ah_perimeter",
+    "status": {
+      "egressPolicies": [
+        {
+          "egressFrom": {
+            "identities": [
+              "user:ahdemo-subscriber@cloud-partner-eng-ext.joonix.net",
+              "serviceAccount:subscriber-240325@ahdemo-240325-subscr.iam.gserviceaccount.com"
+            ]
+          },
+          "egressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "projects/1593099157",
+              "projects/695555904442"
+            ]
+          }
+        },
+        {
+          "egressFrom": {
+            "identities": [
+              "serviceAccount:terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com",
+              "user:ahdemo-admin@cloud-partner-eng-ext.joonix.net"
+            ]
+          },
+          "egressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "projects/124968394335"
+            ]
+          }
+        }
+      ],
+      "ingressPolicies": [
+        {
+          "ingressFrom": {
+            "identities": [
+              "serviceAccount:terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com",
+              "user:ahdemo-admin@cloud-partner-eng-ext.joonix.net"
+            ],
+            "sources": [
+              {
+                "accessLevel": "accessPolicies/562360667831/accessLevels/ahdemo_240325_allow_corp"
+              }
+            ]
+          },
+          "ingressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "analyticshub.googleapis.com"
+              },
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        },
+        {
+          "ingressFrom": {
+            "identities": [
+              "user:ahdemo-subscriber@cloud-partner-eng-ext.joonix.net",
+              "serviceAccount:subscriber-240325@ahdemo-240325-subscr.iam.gserviceaccount.com"
+            ],
+            "sources": [
+              {
+                "accessLevel": "accessPolicies/562360667831/accessLevels/ahdemo_240325_allow_all"
+              }
+            ]
+          },
+          "ingressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "analyticshub.googleapis.com"
+              },
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        }
+      ],
+      "resources": [
+        "projects/877945767311"
+      ],
+      "restrictedServices": [
+        "analyticshub.googleapis.com",
+        "bigquery.googleapis.com"
+      ]
+    },
+    "title": "ahdemo_240325_bq_and_ah_perimeter"
+  },
+  {
+    "description": "ahdemo_240325_bq_perimeter_shared_ds",
+    "name": "accessPolicies/562360667831/servicePerimeters/ahdemo_240325_bq_perimeter_shared_ds",
+    "status": {
+      "egressPolicies": [
+        {
+          "egressFrom": {
+            "identities": [
+              "serviceAccount:terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com",
+              "user:ahdemo-admin@cloud-partner-eng-ext.joonix.net"
+            ]
+          },
+          "egressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "projects/281970723860",
+              "projects/721405761381"
+            ]
+          }
+        },
+        {
+          "egressFrom": {
+            "identities": [
+              "serviceAccount:terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com",
+              "user:ahdemo-admin@cloud-partner-eng-ext.joonix.net"
+            ]
+          },
+          "egressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "projects/124968394335"
+            ]
+          }
+        }
+      ],
+      "ingressPolicies": [
+        {
+          "ingressFrom": {
+            "identities": [
+              "serviceAccount:terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com",
+              "user:ahdemo-admin@cloud-partner-eng-ext.joonix.net"
+            ],
+            "sources": [
+              {
+                "accessLevel": "accessPolicies/562360667831/accessLevels/ahdemo_240325_allow_corp"
+              }
+            ]
+          },
+          "ingressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        }
+      ],
+      "resources": [
+        "projects/423415243464"
+      ],
+      "restrictedServices": [
+        "analyticshub.googleapis.com",
+        "bigquery.googleapis.com"
+      ]
+    },
+    "title": "ahdemo_240325_bq_perimeter_shared_ds"
+  },
+  {
+    "description": "ahdemo_240325_bq_perimeter_src_ds",
+    "name": "accessPolicies/562360667831/servicePerimeters/ahdemo_240325_bq_perimeter_src_ds",
+    "status": {
+      "egressPolicies": [
+        {
+          "egressFrom": {
+            "identities": [
+              "serviceAccount:terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com",
+              "user:ahdemo-admin@cloud-partner-eng-ext.joonix.net"
+            ]
+          },
+          "egressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "projects/877945767311",
+              "projects/423415243464"
+            ]
+          }
+        },
+        {
+          "egressFrom": {
+            "identities": [
+              "user:ahdemo-subscriber@cloud-partner-eng-ext.joonix.net",
+              "serviceAccount:subscriber-240325@ahdemo-240325-subscr.iam.gserviceaccount.com"
+            ]
+          },
+          "egressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "projects/1593099157",
+              "projects/695555904442"
+            ]
+          }
+        }
+      ],
+      "ingressPolicies": [
+        {
+          "ingressFrom": {
+            "identities": [
+              "serviceAccount:terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com",
+              "user:ahdemo-admin@cloud-partner-eng-ext.joonix.net"
+            ],
+            "sources": [
+              {
+                "accessLevel": "accessPolicies/562360667831/accessLevels/ahdemo_240325_allow_corp"
+              }
+            ]
+          },
+          "ingressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        },
+        {
+          "ingressFrom": {
+            "identities": [
+              "user:ahdemo-subscriber@cloud-partner-eng-ext.joonix.net",
+              "serviceAccount:subscriber-240325@ahdemo-240325-subscr.iam.gserviceaccount.com"
+            ],
+            "sources": [
+              {
+                "accessLevel": "accessPolicies/562360667831/accessLevels/ahdemo_240325_allow_all"
+              }
+            ]
+          },
+          "ingressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        }
+      ],
+      "resources": [
+        "projects/124968394335"
+      ],
+      "restrictedServices": [
+        "analyticshub.googleapis.com",
+        "bigquery.googleapis.com"
+      ]
+    },
+    "title": "ahdemo_240325_bq_perimeter_src_ds"
+  }
+]

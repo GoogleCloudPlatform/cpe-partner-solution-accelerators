@@ -1,0 +1,8 @@
+s0-bootstrap/backend.tf
+s0-bootstrap/terraform.auto.tfvars
+s1-vpc-sc/backend.tf
+s2-bigquery-analyticshub/backend.tf
+s3-subscriber/backend.tf
+s3-subscriber/generated
+setup.sh.out
+setup.env

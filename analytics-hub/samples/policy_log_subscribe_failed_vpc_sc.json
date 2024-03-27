@@ -1,0 +1,83 @@
+{
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "status": {
+        "code": 7,
+        "message": "Request is prohibited by organization's policy. vpcServiceControlsUniqueIdentifier: mxVwELZo9aD9FLDk6EtckWz8-_Pi9RCi9hV8URFeATdszxDctvqQSg",
+        "details": [
+          {
+            "@type": "type.googleapis.com/google.rpc.PreconditionFailure",
+            "violations": [
+              {
+                "type": "VPC_SERVICE_CONTROLS",
+                "description": "mxVwELZo9aD9FLDk6EtckWz8-_Pi9RCi9hV8URFeATdszxDctvqQSg"
+              }
+            ]
+          }
+        ]
+      },
+      "authenticationInfo": {
+        "principalEmail": "terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com",
+        "serviceAccountDelegationInfo": [
+          {
+            "firstPartyPrincipal": {
+              "principalEmail": "predy@google.com"
+            }
+          }
+        ]
+      },
+      "requestMetadata": {
+        "callerIp": "2a00:79e0:48:700:33a0:2491:fabe:5da8",
+        "requestAttributes": {},
+        "destinationAttributes": {}
+      },
+      "serviceName": "bigquery.googleapis.com",
+      "methodName": "bigquery.datasets.create",
+      "resourceName": "projects/721405761381",
+      "metadata": {
+        "resourceNames": [
+          "projects/1593099157",
+          "projects/721405761381/locations/us/dataExchanges/ahdemo_240325_priv_exchg_ahonly/listings/ahdemo_240325_priv_listing_ahonly"
+        ],
+        "accessLevels": [
+          "accessPolicies/562360667831/accessLevels/ahdemo_240325_allow_corp",
+          "accessPolicies/562360667831/accessLevels/ahdemo_240325_allow_all"
+        ],
+        "egressViolations": [
+          {
+            "servicePerimeter": "accessPolicies/562360667831/servicePerimeters/ahdemo_240325_ah_perimeter",
+            "sourceType": "Resource",
+            "targetResource": "projects/1593099157",
+            "targetResourcePermissions": [
+              "bigquery.datasets.create"
+            ],
+            "source": "projects/721405761381"
+          }
+        ],
+        "securityPolicyInfo": {
+          "servicePerimeterName": "accessPolicies/562360667831/servicePerimeters/ahdemo_240325_ah_perimeter",
+          "organizationId": "749200211693"
+        },
+        "violationReason": "RESOURCES_NOT_IN_SAME_SERVICE_PERIMETER",
+        "deviceState": "Unknown",
+        "intermediateServices": [
+          "analyticshub.googleapis.com"
+        ],
+        "vpcServiceControlsUniqueId": "mxVwELZo9aD9FLDk6EtckWz8-_Pi9RCi9hV8URFeATdszxDctvqQSg",
+        "@type": "type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
+      }
+    },
+    "insertId": "4gcpmedwj4q",
+    "resource": {
+      "type": "audited_resource",
+      "labels": {
+        "service": "bigquery.googleapis.com",
+        "project_id": "ahdemo-240325-ah-exchg",
+        "method": "bigquery.datasets.create"
+      }
+    },
+    "timestamp": "2024-03-25T15:35:46.945839850Z",
+    "severity": "ERROR",
+    "logName": "projects/ahdemo-240325-ah-exchg/logs/cloudaudit.googleapis.com%2Fpolicy",
+    "receiveTimestamp": "2024-03-25T15:35:48.037503954Z"
+  }

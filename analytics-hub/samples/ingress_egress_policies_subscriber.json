@@ -1,0 +1,82 @@
+[
+  {
+    "description": "ahdemo_subscr_with_vpcsc_perimeter",
+    "name": "accessPolicies/598645594727/servicePerimeters/ahdemo_subscr_with_vpcsc_perimeter",
+    "status": {
+      "egressPolicies": [
+        {
+          "egressFrom": {
+            "identities": [
+              "user:ahdemo-subscriber@cloud-partner-eng-ext.joonix.net",
+              "serviceAccount:subscriber-240325@ahdemo-240325-subscr.iam.gserviceaccount.com"
+            ]
+          },
+          "egressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "projects/281970723860",
+              "projects/877945767311",
+              "projects/721405761381"
+            ]
+          }
+        }
+      ],
+      "ingressPolicies": [
+        {
+          "ingressFrom": {
+            "identities": [
+              "user:ahdemo-subscriber@cloud-partner-eng-ext.joonix.net",
+              "serviceAccount:subscriber-240325@ahdemo-240325-subscr.iam.gserviceaccount.com",
+              "user:ahdemo-admin@cloud-partner-eng-ext.joonix.net"
+            ],
+            "sources": [
+              {
+                "accessLevel": "accessPolicies/598645594727/accessLevels/ahdemo_subscr_allow_corp"
+              }
+            ]
+          },
+          "ingressTo": {
+            "operations": [
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "analyticshub.googleapis.com"
+              },
+              {
+                "methodSelectors": [
+                  {
+                    "method": "*"
+                  }
+                ],
+                "serviceName": "bigquery.googleapis.com"
+              }
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        }
+      ],
+      "resources": [
+        "projects/695555904442"
+      ],
+      "restrictedServices": [
+        "analyticshub.googleapis.com",
+        "bigquery.googleapis.com"
+      ]
+    },
+    "title": "ahdemo_subscr_with_vpcsc_perimeter"
+  }
+]
