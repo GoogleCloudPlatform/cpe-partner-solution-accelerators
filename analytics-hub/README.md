@@ -133,7 +133,7 @@ Checking / creating terraform service account (terraform-240325@ahdemo-240325-se
 Checking / creating service account (terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com) ... Status: FAILED
 Creating service account ... Checking / creating subscriber service account (subscriber-240325@ahdemo-240325-subscr.iam.gserviceaccount.com) ... 
 Checking / creating service account (subscriber-240325@ahdemo-240325-subscr.iam.gserviceaccount.com) ... Status: FAILED
-Creating service account ... Granting impersonation on terraform service account terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com to predy@google.com
+Creating service account ... Granting impersonation on terraform service account terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com to gcloud-user@domain.com
 Granting broad org admin privileges
 Granting broad org admin privileges in 356954763088 to user:ahdemo-admin@cloud-partner-eng-ext.joonix.net and serviceAccount:terraform-240325@ahdemo-240325-seed.iam.gserviceaccount.com
 Grant: user:ahdemo-admin@cloud-partner-eng-ext.joonix.net -> roles/owner ... OK
