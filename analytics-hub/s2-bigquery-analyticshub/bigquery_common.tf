@@ -13,13 +13,13 @@
 # limitations under the License.
 
 resource "google_storage_bucket_object" "shared_table_data_jsonl" {
-  name   = "bigquery/data.json"
-  source = "bigquery/data.json"
+  name   = "bigquery/data.jsonl"
+  source = "bigquery/data.jsonl"
   bucket = data.google_storage_bucket.tf_state.name
 }
 
 resource "google_storage_bucket_object" "src_table_data_jsonl" {
-  name   = "bigquery/data_src.json"
-  source = "bigquery/data_src.json"
+  name   = "bigquery/data_src.jsonl"
+  source = "bigquery/data_src.jsonl"
   bucket = data.google_storage_bucket.tf_state.name
 }

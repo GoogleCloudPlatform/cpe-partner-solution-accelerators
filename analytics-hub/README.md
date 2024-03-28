@@ -2,6 +2,29 @@
 
 This repository hosts automation that creates an end-to-end deployment of Analytics Hub / BigQuery data publishers and subscribers with enterprise grade security.
 
+## Architectures
+
+The following projects are used across the different architectures. The VPC SC perimeters have corresponding names.
+
+* Projects
+
+  | PROJECT_ID | ORG | VPC-SC | DESCRIPTION |
+  |---|---|---|---|
+  | ahdemo-240325-subscr | Subscriber | NO | Subscriber project without VPC-SC - hosts the linked dataset |
+  | ahdemo-240325-subscr-vpcsc | Subscriber | YES | Subscriber project with VPC-SC - hosts the linked dataset |
+  | ahdemo-240325-seed | Publisher | NO | Seed project hosting terraform state bucket and service account |
+  | ahdemo-240325-ah-exchg | Publisher | YES | Publisher project in its own VPC-SC perimeter - hosts Analytics Hub Exchanges and Listings |
+  | ahdemo-240325-nonvpcsc-ah-exch | Publisher | NO | Publisher project outside VPC-SC perimeter - hosts Analytics Hub Exchanges and Listings |
+  | ahdemo-240325-bq-ah-sameproj | Publisher | YES | Publisher project in its own VPC-SC perimeter - hosts both Analytics Hub Exchanges and Listings and the BigQuery shared dataset |
+  | ahdemo-240325-bq-shared-ds | Publisher | YES | Publisher project in its own VPC-SC perimeter - hosts the shared dataset |
+  | ahdemo-240325-bq-src-ds | Publisher | YES | Publisher project in its own VPC-SC perimeter - hosts the source dataset. The source dataset is not shared directly, only shared through views / authorized views |
+
+* VPC-SC perimeters
+  * 1
+  * 2
+
+### Architecture #1:
+
 ## Bootstrap / prerequisites
 
 For the sake of simplicity we are using the same user and service accounts as Administrators in this demo. In a real world scenario the two Cloud Organizations are fully disctinct.
