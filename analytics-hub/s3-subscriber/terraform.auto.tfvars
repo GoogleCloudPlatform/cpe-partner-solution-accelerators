@@ -1,1 +1,1 @@
-/home/predy/git/misc/ahdemo/s0-bootstrap/terraform.auto.tfvars
+../s0-bootstrap/terraform.auto.tfvars

@@ -1,1 +1,1 @@
-/home/predy/git/misc/ahdemo/s0-bootstrap/variables.tf
+../s0-bootstrap/variables.tf
