@@ -23,7 +23,7 @@ The following projects are used across the different architectures. The VPC SC p
   * 1
   * 2
 
-### Architecture #1:
+### Architecture #1: 
 
 ## Bootstrap / prerequisites
 
