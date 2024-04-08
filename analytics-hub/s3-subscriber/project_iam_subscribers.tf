@@ -15,6 +15,7 @@
 locals {
   ah_subscribers_iam_members = toset(concat(
     var.ah_subscribers_iam_members,
+    var.ah_subscription_viewers_iam_members,
     ["serviceAccount:${data.google_service_account.subscriber_sa.email}"]
   ))
 }

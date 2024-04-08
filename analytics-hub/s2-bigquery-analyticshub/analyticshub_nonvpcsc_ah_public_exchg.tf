@@ -30,6 +30,8 @@ resource "google_bigquery_analytics_hub_listing" "nonvpcsc_public_listing" {
   display_name     = "ahdemo-${var.name_suffix} - public - non-VPCSC dedicated AH project"
   description      = "ahdemo-${var.name_suffix} - public - non-VPCSC dedicated AH project"
 
+  request_access   = var.ah_listing_request_access_email_or_url
+
   bigquery_dataset {
     dataset = google_bigquery_dataset.shared_dataset.id
   }

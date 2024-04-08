@@ -60,14 +60,19 @@ vpc_sc_subscriber_access_level_corp_ip_subnetworks = [
     ]
 vpc_sc_subscriber_access_level_corp_allowed_identities = [ "user:{{ADMIN_USER}}" ]
 
-ah_subscribers_iam_members = [ 
-    "user:{{SUBSCRIBER_USER}}", 
-    "serviceAccount:{{SUBSCRIBER_SA_EMAIL}}" 
+ah_subscribers_iam_members = [
+    "user:{{SUBSCRIBER_USER}}",
+    "serviceAccount:{{SUBSCRIBER_SA_EMAIL}}"
     ]
+ah_subscription_viewers_iam_members = [
+    "user:{{SUBSCRIPTION_VIEWER_USER}}",
+    ]
+ah_listing_request_access_email_or_url = "{{REQUEST_ACCESS_EMAIL_OR_URL}}"
+
 subscriber_projects_readers_iam_members = [ "user:{{BQREADER_USER}}" ]
 subscriber_sa_email = "{{SUBSCRIBER_SA_EMAIL}}"
 subscriber_sa_users = [
-    "user:{{TERRAFORM_SA_USER}}", 
-    "user:{{ADMIN_USER}}", 
-    "user:{{SUBSCRIBER_USER}}", 
+    "user:{{TERRAFORM_SA_USER}}",
+    "user:{{ADMIN_USER}}",
+    "user:{{SUBSCRIBER_USER}}",
     ]

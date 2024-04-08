@@ -198,6 +198,16 @@ variable "ah_subscribers_iam_members" {
   type        = list
   default     = []
 }
+variable "ah_subscription_viewers_iam_members" {
+  description = "AH allowed subscription viewers (can request access, can't subscribe)"
+  type        = list
+  default     = []
+}
+variable "ah_listing_request_access_email_or_url" {
+  description = "Contact for requesting access to the listing (e-mail address or URL). The request access button will redirect here."
+  type        = string
+}
+
 variable "subscriber_projects_readers_iam_members" {
   description = "Subscriber project BQ readers who are NOT subscribers and have nothing on the publisher side"
   type        = list

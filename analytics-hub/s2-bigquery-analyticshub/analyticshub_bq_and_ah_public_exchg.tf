@@ -30,6 +30,8 @@ resource "google_bigquery_analytics_hub_listing" "bqah_public_listing" {
   display_name     = "ahdemo-${var.name_suffix} - public - shared BQ AH project"
   description      = "ahdemo-${var.name_suffix} - public - shared BQ AH project"
 
+  request_access   = var.ah_listing_request_access_email_or_url
+
   bigquery_dataset {
     dataset = google_bigquery_dataset.bqah_shared_dataset.id
   }

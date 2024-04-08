@@ -48,6 +48,10 @@ resource "google_bigquery_job" "src_table_load" {
   }
 }
 
+#####################################################
+# If you want to test access to the source dataset  #
+# through non-authorized views, uncomomment.        #
+#####################################################
 #data "google_iam_policy" "src_ds_reader" {
 #  binding {
 #    role = "roles/bigquery.dataViewer"

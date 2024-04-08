@@ -17,6 +17,10 @@ data "google_iam_policy" "subscribers" {
     role = "roles/analyticshub.subscriber"
     members = var.ah_subscribers_iam_members
   }
+  binding {
+    role = "roles/analyticshub.viewer"
+    members = var.ah_subscription_viewers_iam_members
+  }
 }
 
 data "google_iam_policy" "public_subscribers" {
