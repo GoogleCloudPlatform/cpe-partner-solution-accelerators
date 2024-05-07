@@ -21,7 +21,7 @@
         "serviceAccountDelegationInfo": [
           {
             "firstPartyPrincipal": {
-              "principalEmail": "predy@google.com"
+              "principalEmail": "user@domain.com"
             }
           }
         ]
