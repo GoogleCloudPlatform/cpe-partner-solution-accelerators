@@ -18,7 +18,7 @@ data "google_project" "subscr_seed_project" {
 
 module "subscr-project-services-seed" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 14.5.0"
+  version = "~> 15.0.0"
 
   project_id                  = data.google_project.subscr_seed_project.project_id
   activate_apis               = var.projects_activate_apis_seed
@@ -32,7 +32,7 @@ module "subscr-project-factory" {
     "${var.subscr_project_id_subscr_without_vpcsc}",
     ] )
   source  = "terraform-google-modules/project-factory/google"
-  version = "~> 14.5.0"
+  version = "~> 15.0.0"
 
   name                 = each.value
   random_project_id    = false
