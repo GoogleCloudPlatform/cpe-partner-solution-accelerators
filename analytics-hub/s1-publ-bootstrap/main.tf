@@ -14,7 +14,7 @@
 
 module "project-services-publ-seed" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 14.5.0"
+  version = "~> 15.0.0"
 
   project_id                  = data.google_project.publ_seed_project.project_id
   activate_apis               = concat(var.projects_activate_apis_seed, ["compute.googleapis.com"])
@@ -23,7 +23,7 @@ module "project-services-publ-seed" {
 
 module "project-services-publ-bq-src-ds" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 14.5.0"
+  version = "~> 15.0.0"
 
   project_id                  = data.google_project.publ_bq_src_ds.project_id
   activate_apis               = var.projects_activate_apis
@@ -32,7 +32,7 @@ module "project-services-publ-bq-src-ds" {
 
 module "project-services-publ-bq-shared-ds" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 14.5.0"
+  version = "~> 15.0.0"
 
   project_id                  = data.google_project.publ_bq_shared_ds.project_id
   activate_apis               = var.projects_activate_apis
@@ -41,7 +41,7 @@ module "project-services-publ-bq-shared-ds" {
 
 module "project-services-publ-vpcsc-ah-exchg" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 14.5.0"
+  version = "~> 15.0.0"
 
   project_id                  = data.google_project.publ_ah_exchg.project_id
   activate_apis               = var.projects_activate_apis
@@ -50,7 +50,7 @@ module "project-services-publ-vpcsc-ah-exchg" {
 
 module "project-services-publ-nonvpcsc-ah-exchg" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 14.5.0"
+  version = "~> 15.0.0"
 
   project_id                  = data.google_project.publ_nonvpcsc_ah_exchg.project_id
   activate_apis               = var.projects_activate_apis
@@ -59,7 +59,7 @@ module "project-services-publ-nonvpcsc-ah-exchg" {
 
 module "project-services-publ-bq-and-ah" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 14.5.0"
+  version = "~> 15.0.0"
 
   project_id                  = data.google_project.publ_bq_and_ah.project_id
   activate_apis               = var.projects_activate_apis
