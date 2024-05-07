@@ -499,12 +499,12 @@ Initial Version March 2024
 
 ## Code of Conduct
 
-[View](./docs/code-of-conduct.md)
+[View](../docs/code-of-conduct.md)
 
 ## Contributing
 
-[View](./docs/contributing.md)
+[View](../docs/contributing.md)
 
 ## License
 
-[View](./LICENSE)
+[View](../LICENSE)
