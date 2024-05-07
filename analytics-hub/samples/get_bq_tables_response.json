@@ -1,0 +1,46 @@
+{
+    "kind": "bigquery#tableList",
+    "etag": "poE4yCeOYQID749sQl7lRg==",
+    "tables": [
+      {
+        "kind": "bigquery#table",
+        "id": "ahd-subscr-0422c0-nonvpcsc:899549305727_ahdemo_0422c0_priv_listing_bqah.ahdemo_0422c0_bqah_shared_authz_view_from_src_ds",
+        "tableReference": {
+          "projectId": "ahd-subscr-0422c0-nonvpcsc",
+          "datasetId": "899549305727_ahdemo_0422c0_priv_listing_bqah",
+          "tableId": "ahdemo_0422c0_bqah_shared_authz_view_from_src_ds"
+        },
+        "type": "VIEW",
+        "view": {
+          "privacyPolicy": {}
+        },
+        "creationTime": "1713785926466"
+      },
+      {
+        "kind": "bigquery#table",
+        "id": "ahd-subscr-0422c0-nonvpcsc:899549305727_ahdemo_0422c0_priv_listing_bqah.ahdemo_0422c0_bqah_shared_table",
+        "tableReference": {
+          "projectId": "ahd-subscr-0422c0-nonvpcsc",
+          "datasetId": "899549305727_ahdemo_0422c0_priv_listing_bqah",
+          "tableId": "ahdemo_0422c0_bqah_shared_table"
+        },
+        "type": "TABLE",
+        "creationTime": "1713785684965"
+      },
+      {
+        "kind": "bigquery#table",
+        "id": "ahd-subscr-0422c0-nonvpcsc:899549305727_ahdemo_0422c0_priv_listing_bqah.ahdemo_0422c0_bqah_shared_view_from_src_ds",
+        "tableReference": {
+          "projectId": "ahd-subscr-0422c0-nonvpcsc",
+          "datasetId": "899549305727_ahdemo_0422c0_priv_listing_bqah",
+          "tableId": "ahdemo_0422c0_bqah_shared_view_from_src_ds"
+        },
+        "type": "VIEW",
+        "view": {
+          "privacyPolicy": {}
+        },
+        "creationTime": "1713785686303"
+      }
+    ],
+    "totalItems": 3
+}

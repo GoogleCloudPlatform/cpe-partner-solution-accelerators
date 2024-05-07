@@ -1,0 +1,34 @@
+{
+  "subscriptions": [
+    {
+      "name": "projects/ahd-subscr-0422c0-nonvpcsc/locations/us/subscriptions/sub_ahdemo_0422c0_priv_listing_ahonly_1713809537768",
+      "creationTime": "2024-04-22T18:12:18.735560865Z",
+      "lastModifyTime": "2024-04-22T18:12:18.735560865Z",
+      "organizationId": "356954763088",
+      "listing": "projects/851163724545/locations/us/dataExchanges/ahdemo_0422c0_priv_exchg_ahonly/listings/ahdemo_0422c0_priv_listing_ahonly",
+      "state": "STATE_ACTIVE",
+      "linkedDatasetMap": {
+        "projects/851163724545/locations/us/dataExchanges/ahdemo_0422c0_priv_exchg_ahonly/listings/ahdemo_0422c0_priv_listing_ahonly": {
+          "linkedDataset": "projects/320173848038/datasets/851163724545_ahdemo_0422c0_priv_listing_ahonly"
+        }
+      },
+      "subscriberContact": "subscriber-0422c0@ahd-subscr-0422c0-seed.iam.gserviceaccount.com",
+      "organizationDisplayName": "ahdemo-subscriber-356954763088"
+    },
+    {
+      "name": "projects/ahd-subscr-0422c0-nonvpcsc/locations/us/subscriptions/sub_ahdemo_0422c0_priv_listing_bqah_1713809583238",
+      "creationTime": "2024-04-22T18:13:04.039085581Z",
+      "lastModifyTime": "2024-04-22T18:13:04.039085581Z",
+      "organizationId": "356954763088",
+      "listing": "projects/899549305727/locations/us/dataExchanges/ahdemo_0422c0_priv_exchg_bqah/listings/ahdemo_0422c0_priv_listing_bqah",
+      "state": "STATE_ACTIVE",
+      "linkedDatasetMap": {
+        "projects/899549305727/locations/us/dataExchanges/ahdemo_0422c0_priv_exchg_bqah/listings/ahdemo_0422c0_priv_listing_bqah": {
+          "linkedDataset": "projects/320173848038/datasets/899549305727_ahdemo_0422c0_priv_listing_bqah"
+        }
+      },
+      "subscriberContact": "subscriber-0422c0@ahd-subscr-0422c0-seed.iam.gserviceaccount.com",
+      "organizationDisplayName": "ahdemo-subscriber-356954763088"
+    }
+  ]
+}

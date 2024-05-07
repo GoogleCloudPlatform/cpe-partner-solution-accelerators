@@ -1,1 +1,0 @@
-../s0-bootstrap/variables.tf
