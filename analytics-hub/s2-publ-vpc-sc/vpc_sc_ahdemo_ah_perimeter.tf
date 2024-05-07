@@ -173,7 +173,7 @@ locals {
 
 module "regular_service_perimeter_ah" {
   source  = "terraform-google-modules/vpc-service-controls/google//modules/regular_service_perimeter"
-  version = "~> 5.2.1"
+  version = "~> 6.0.0"
 
   policy         = module.access_context_manager_policy.policy_id
   perimeter_name = "ahdemo_${var.name_suffix}_publ_only_ah"
