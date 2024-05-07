@@ -20,7 +20,41 @@ Projects
 | ahd-publ-0419c0-bq-shared-ds | Publisher | YES | Publisher project in its own VPC-SC perimeter - hosts the shared dataset |
 | ahd-publ-0419c0-bq-src-ds | Publisher | YES | Publisher project in its own VPC-SC perimeter - hosts the source dataset. The source dataset is not shared directly, only shared through views / authorized views |
 
+![Architecture with shared project / perimeter for Analaytics Hub and BigQuery Shared Datasets](./docs/bq-ah-architecture-shared-ah-bq-perimeter.png)
+
+![Architecture with dedicated project / perimeter for Analaytics Hub and BigQuery Datasets](./docs/bq-ah-architecture-dedicated-ah-bq-perimeter.png)
+
 ## Bootstrap / prerequisites
+
+For the sake of simplicity (and time) and making it easier to see the whole configuration at once, currently terraform is using symbolic links to share certain configuration in this repository. This may change in the future to adhere to best practices .. which is to avoid using symlinks as much as possible.
+
+If symbolic links don't work, copy the required files into each stage:
+
+```
+./s0-publ-create-projects-bootstrap/variables.tf -> ../common/variables.tf
+./s0-publ-create-projects-bootstrap/terraform.auto.tfvars -> ../generated/terraform.auto.tfvars
+./s0-subscr-create-projects-bootstrap/variables.tf -> ../common/variables.tf
+./s0-subscr-create-projects-bootstrap/terraform.auto.tfvars -> ../generated/terraform.auto.tfvars
+./s1-publ-bootstrap/variables.tf -> ../common/variables.tf
+./s1-publ-bootstrap/terraform.auto.tfvars -> ../generated/terraform.auto.tfvars
+./s1-subscr-bootstrap/variables.tf -> ../common/variables.tf
+./s1-subscr-bootstrap/terraform.auto.tfvars -> ../generated/terraform.auto.tfvars
+./s2-publ-vpc-sc/terraform.publ_project_numbers.auto.tfvars -> ../generated/terraform.publ_project_numbers.auto.tfvars
+./s2-publ-vpc-sc/variables_project_numbers.tf -> ../common/variables_project_numbers.tf
+./s2-publ-vpc-sc/terraform.subscr_project_numbers.auto.tfvars -> ../generated/terraform.subscr_project_numbers.auto.tfvars
+./s2-publ-vpc-sc/variables.tf -> ../common/variables.tf
+./s2-publ-vpc-sc/terraform.auto.tfvars -> ../generated/terraform.auto.tfvars
+./s3-publ-bigquery-analyticshub/terraform.publ_project_numbers.auto.tfvars -> ../generated/terraform.publ_project_numbers.auto.tfvars
+./s3-publ-bigquery-analyticshub/variables_project_numbers.tf -> ../common/variables_project_numbers.tf
+./s3-publ-bigquery-analyticshub/terraform.subscr_project_numbers.auto.tfvars -> ../generated/terraform.subscr_project_numbers.auto.tfvars
+./s3-publ-bigquery-analyticshub/variables.tf -> ../common/variables.tf
+./s3-publ-bigquery-analyticshub/terraform.auto.tfvars -> ../generated/terraform.auto.tfvars
+./s4-subscr-subscriber-projects/terraform.publ_project_numbers.auto.tfvars -> ../generated/terraform.publ_project_numbers.auto.tfvars
+./s4-subscr-subscriber-projects/variables_project_numbers.tf -> ../common/variables_project_numbers.tf
+./s4-subscr-subscriber-projects/terraform.subscr_project_numbers.auto.tfvars -> ../generated/terraform.subscr_project_numbers.auto.tfvars
+./s4-subscr-subscriber-projects/variables.tf -> ../common/variables.tf
+./s4-subscr-subscriber-projects/terraform.auto.tfvars -> ../generated/terraform.auto.tfvars
+```
 
 ### Prerequisites
 
