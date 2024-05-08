@@ -2,6 +2,35 @@
 
 This repository hosts automation that creates an end-to-end deployment of Analytics Hub / BigQuery data publishers and subscribers with enterprise grade security.
 
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+
+- [Architectures](#architectures)
+- [Bootstrap / prerequisites](#bootstrap-prerequisites)
+   * [Prerequisites](#prerequisites)
+   * [Step 0 - Create seed (setup-0-google-cloud-seed.sh)](#step-0-create-seed-setup-0-google-cloud-seedsh)
+   * [Step 1 - Initialize seed projects and create publisher / subscriber projects](#step-1-initialize-seed-projects-and-create-publisher-subscriber-projects)
+   * [Step 2 - Test credentials and impersonation](#step-2-test-credentials-and-impersonation)
+   * [Step 3 - bootstrap publisher and subscriber seed projects](#step-3-bootstrap-publisher-and-subscriber-seed-projects)
+   * [Step 4 - Publisher - Create VPC-SC resources: (singleton) Global Access Policy, Access Levels, Perimeters](#step-4-publisher-create-vpc-sc-resources-singleton-global-access-policy-access-levels-perimeters)
+   * [Step 5 - Publisher - Create BigQuery, Analytics Hub resources: datasets, views, exchanges, listings](#step-5-publisher-create-bigquery-analytics-hub-resources-datasets-views-exchanges-listings)
+   * [Step 6 - Publisher - Load sample data](#step-6-publisher-load-sample-data)
+   * [Stage 7 - Subscriber project, subscribe API call scripts](#stage-7-subscriber-project-subscribe-api-call-scripts)
+- [Testing](#testing)
+   * [Helper scripts](#helper-scripts)
+- [Cleanup](#cleanup)
+   * [Delete the resources provisioned by terraform by going through the terrform steps in reverse order](#delete-the-resources-provisioned-by-terraform-by-going-through-the-terrform-steps-in-reverse-order)
+   * [Delete the resources provisioned by the bootstrap `s00-setup-google-cloud-seed.sh` script](#delete-the-resources-provisioned-by-the-bootstrap-s00-setup-google-cloud-seedsh-script)
+- [Troubleshooting](#troubleshooting)
+   * [`Error creating AccessPolicy: googleapi: Error 409: Policy already exists with parent organizations/749200211693`](#error-creating-accesspolicy-googleapi-error-409-policy-already-exists-with-parent-organizations749200211693)
+   * [`googleapi: Error 400: Service account bq-888634078875@bigquery-encryption.iam.gserviceaccount.com does not exist.`](#googleapi-error-400-service-account-bq-888634078875bigquery-encryptioniamgserviceaccountcom-does-not-exist)
+- [Versioning](#versioning)
+- [Code of Conduct](#code-of-conduct)
+- [Contributing](#contributing)
+- [License](#license)
+
+<!-- TOC end -->
+
+<!-- TOC --><a name="architectures"></a>
 ## Architectures
 
 The following projects are used across the different architectures. The VPC SC perimeters have corresponding names.
@@ -24,6 +53,7 @@ Projects
 
 ![Architecture with dedicated project / perimeter for Analaytics Hub and BigQuery Datasets](./docs/bq-ah-architecture-dedicated-ah-bq-perimeter.png)
 
+<!-- TOC --><a name="bootstrap-prerequisites"></a>
 ## Bootstrap / prerequisites
 
 For the sake of simplicity (and time) and making it easier to see the whole configuration at once, currently terraform is using symbolic links to share certain configuration in this repository. This may change in the future to adhere to best practices .. which is to avoid using symlinks as much as possible.
@@ -56,6 +86,7 @@ If symbolic links don't work, copy the required files into each stage:
 ./s4-subscr-subscriber-projects/terraform.auto.tfvars -> ../generated/terraform.auto.tfvars
 ```
 
+<!-- TOC --><a name="prerequisites"></a>
 ### Prerequisites
 
 - (Ideally) two Google Cloud organizations with Cloud Organization Admin rights (which can grant additional roles needed)
@@ -76,6 +107,7 @@ If symbolic links don't work, copy the required files into each stage:
 - IAM roles
   - Organization: Project Creator, Organization Admin
 
+<!-- TOC --><a name="step-0-create-seed-setup-0-google-cloud-seedsh"></a>
 ### Step 0 - Create seed (setup-0-google-cloud-seed.sh)
 
 **This stage will use your APPLICATION_DEFAULT_CREDENTIALS.**
@@ -168,6 +200,7 @@ Generating the terraform configuration based on templates ...
 
 Review `generated/terraform.auto.tfvars`
 
+<!-- TOC --><a name="step-1-initialize-seed-projects-and-create-publisher-subscriber-projects"></a>
 ### Step 1 - Initialize seed projects and create publisher / subscriber projects
 
 This stage will:
@@ -199,6 +232,7 @@ user@workstation:~$ tf apply
 ```
 
 
+<!-- TOC --><a name="step-2-test-credentials-and-impersonation"></a>
 ### Step 2 - Test credentials and impersonation
 
 Test impersonation
@@ -215,6 +249,7 @@ user@workstation:~$ export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=terraform-0419c0@a
 user@workstation:~$ gcloud auth print-access-token --impersonate-service-account $GOOGLE_IMPERSONATE_SERVICE_ACCOUNT >/dev/null 2>&1 && echo "Service Account impersonation working"
 ```
 
+<!-- TOC --><a name="step-3-bootstrap-publisher-and-subscriber-seed-projects"></a>
 ### Step 3 - bootstrap publisher and subscriber seed projects
 
 This stage will:
@@ -250,6 +285,7 @@ user@workstation:~$ tf init
 user@workstation:~$ tf apply
 ```
 
+<!-- TOC --><a name="step-4-publisher-create-vpc-sc-resources-singleton-global-access-policy-access-levels-perimeters"></a>
 ### Step 4 - Publisher - Create VPC-SC resources: (singleton) Global Access Policy, Access Levels, Perimeters
 
 Usage:
@@ -263,6 +299,7 @@ user@workstation:~$ tf apply
 ```
 
 
+<!-- TOC --><a name="step-5-publisher-create-bigquery-analytics-hub-resources-datasets-views-exchanges-listings"></a>
 ### Step 5 - Publisher - Create BigQuery, Analytics Hub resources: datasets, views, exchanges, listings
 
 Prerequisite trigger creation of BQ encryption SA:
@@ -294,6 +331,7 @@ bq_load_command_src_ds_src_dataset = "bq --project_id ahd-publ-0422c0-bq-src-ds 
 bq_load_command_src_ds_src_dataset_authz = "bq --project_id ahd-publ-0422c0-bq-src-ds load --source_format NEWLINE_DELIMITED_JSON ahdemo_0422c0_src_ds_authz.ahdemo_0422c0_src_table_authz gs://tf-state-ahdemo-publ-0422c0/bigquery/data_src.jsonl"
 ```
 
+<!-- TOC --><a name="step-6-publisher-load-sample-data"></a>
 ### Step 6 - Publisher - Load sample data
 
 Usage: set service account impersonation to the publisher's Terraform Service Account and run the bq_load commands from the previous step.
@@ -315,6 +353,7 @@ Waiting on bqjob_r3f763c55181ac535_0000018f0a962f01_1 ... (3s) Current status: D
 user@workstation:~$ gcloud config unset auth/impersonate_service_account
 ```
 
+<!-- TOC --><a name="stage-7-subscriber-project-subscribe-api-call-scripts"></a>
 ### Stage 7 - Subscriber project, subscribe API call scripts
 
 Usage:
@@ -327,6 +366,7 @@ user@workstation:~$ tf init
 user@workstation:~$ tf apply
 ```
 
+<!-- TOC --><a name="testing"></a>
 ## Testing
 
 The following scripts are generated to help with testing subscription:
@@ -340,16 +380,39 @@ The following scripts are generated to help with testing subscription:
 
 There are API calls for subscribing to the listings and also for deleting the linked datasets that are created as a result of a successful subscription.
 
-Some helper scripts:
+<!-- TOC --><a name="helper-scripts"></a>
+### Helper scripts
+
+There are some helper scripts provided to help with testing:
 
 - `subscr_delete_datasets.sh`
+
+   Loops through all datasets within the subscriber projects and deletes them.
+
 - `subscr_list_datasets.sh`
+
+   Loops through all datasets within the subscriber projects and displays them.
+
 - `subscr_list_subscriptions.sh`
+
+   Loops through all subscriptions within the subscriber projects and displays them.
+
 - `subscr_unsubscribe_all_subscriptions.sh`
+
+   Loops through all subscriptions within the subscriber projects and unsubscribes all of them. This also removes the linked datasets.
+
+- `publ_list_exchanges_subscriptions.sh`
+
+   Loops through all exchanges / listings / subscriptions within the publisher projects and displays them.
+
 - `test_queries.sh`
 
+   Executes `SELECT *` queries on all tables/views in all linked datasets in the subscriber projects.
+
+<!-- TOC --><a name="cleanup"></a>
 ## Cleanup
 
+<!-- TOC --><a name="delete-the-resources-provisioned-by-terraform-by-going-through-the-terrform-steps-in-reverse-order"></a>
 ### Delete the resources provisioned by terraform by going through the terrform steps in reverse order
 
 ```
@@ -401,6 +464,7 @@ user@workstation:~$ unset GOOGLE_IMPERSONATE_SERVICE_ACCOUNT
 user@workstation:~$ tf destroy
 ```
 
+<!-- TOC --><a name="delete-the-resources-provisioned-by-the-bootstrap-s00-setup-google-cloud-seedsh-script"></a>
 ### Delete the resources provisioned by the bootstrap `s00-setup-google-cloud-seed.sh` script
 
 ```
@@ -429,8 +493,10 @@ Removing terraform local files ...
 - s4-subscr-subscriber-projects/{.terraform/,.terraform.lock.hcl}
 ```
 
+<!-- TOC --><a name="troubleshooting"></a>
 ## Troubleshooting
 
+<!-- TOC --><a name="error-creating-accesspolicy-googleapi-error-409-policy-already-exists-with-parent-organizations749200211693"></a>
 ### `Error creating AccessPolicy: googleapi: Error 409: Policy already exists with parent organizations/749200211693`
 
 If you are using an already existing organization, you may need to import the global access policy if it already exists. 
@@ -461,6 +527,7 @@ NAME          ORGANIZATION  SCOPES  TITLE          ETAG
 $ tf import module.access_context_manager_policy.google_access_context_manager_access_policy.access_policy 588164632170
 ```
 
+<!-- TOC --><a name="googleapi-error-400-service-account-bq-888634078875bigquery-encryptioniamgserviceaccountcom-does-not-exist"></a>
 ### `googleapi: Error 400: Service account bq-888634078875@bigquery-encryption.iam.gserviceaccount.com does not exist.`
 
 The service account used for accessing the CloudKMS keys by BigQuery may not be provisioned.
@@ -493,18 +560,28 @@ user@workstation:~$ bq show --encryption_service_account --project_id=ahd-publ-0
 user@workstation:~$ bq show --encryption_service_account --project_id=ahd-publ-0422c0-bq-src-ds
 ```
 
+<!-- TOC --><a name="versioning"></a>
 ## Versioning
 
 Initial Version March 2024
 
+<!-- TOC --><a name="code-of-conduct"></a>
 ## Code of Conduct
 
 [View](../docs/code-of-conduct.md)
 
+<!-- TOC --><a name="contributing"></a>
 ## Contributing
 
 [View](../docs/contributing.md)
 
+<!-- TOC --><a name="license"></a>
 ## License
 
 [View](../LICENSE)
+
+## Disclaimer
+
+This project is not an official Google project. It is not supported by
+Google and Google specifically disclaims all warranties as to its quality,
+merchantability, or fitness for a particular purpose.
