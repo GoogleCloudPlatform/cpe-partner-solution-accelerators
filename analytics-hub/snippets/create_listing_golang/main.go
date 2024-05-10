@@ -110,6 +110,7 @@ func listing_add_iam_policy_member(ctx context.Context, client *analyticshub.Cli
 					time.Sleep(5 * time.Second)
 					println("add_iam_policy_member: concurrent modification (Etag mismatch), retrying")
 					exitLoop = false
+					// TODO: handle UserNotFound error (e.g. the user to be added does not exist)
 				} else {
 					println(err.Error())
 				}
@@ -219,6 +220,11 @@ func create_or_get_listing(ctx context.Context, client *analyticshub.Client, pro
 					BigqueryDataset: &analyticshubpb.Listing_BigQueryDatasetSource{
 						Dataset: sourceDataset,
 					},
+				},
+				RestrictedExportConfig: &analyticshubpb.Listing_RestrictedExportConfig{
+					Enabled:                   true,
+					RestrictDirectTableAccess: true,
+					RestrictQueryResult:       true,
 				},
 			},
 		}

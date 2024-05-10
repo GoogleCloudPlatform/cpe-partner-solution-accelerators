@@ -4,3 +4,4 @@ terraform.tfvars
 .terraform
 __pycache__
 .terraform.lock.hcl
+.vscode/launch.json

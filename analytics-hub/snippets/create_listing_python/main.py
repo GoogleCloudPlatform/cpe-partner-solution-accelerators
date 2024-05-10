@@ -95,6 +95,11 @@ def get_or_create_listing(project_id: str, location: str, exchange_id: str, list
             listing.bigquery_dataset = bigquery_analyticshub_v1.Listing.BigQueryDatasetSource()
             listing.bigquery_dataset.dataset = shared_ds
 
+            listing.restricted_export_config = bigquery_analyticshub_v1.Listing.RestrictedExportConfig()
+            listing.restricted_export_config.enabled = True
+            listing.restricted_export_config.restrict_direct_table_access = True
+            listing.restricted_export_config.restrict_query_result = True
+
             request = bigquery_analyticshub_v1.CreateListingRequest(
                 parent=f"projects/{project_id}/locations/{location}/dataExchanges/{exchange_id}",
                 listing_id=listing_id,
@@ -156,10 +161,12 @@ def listing_add_iam_policy_member(listing_id: str, role: str, member: str):
                 # Handle the response
                 newPolicy = response
         except Exception as ex:
+            # CONFLICT == concurrent modification / Etag mismatch
             if ex.code == HTTPStatus.CONFLICT:
                 print("listing_add_iam_policy_member: concurrent modification (Etag mismatch), retrying")
                 time.sleep(60)
                 exitLoop = False
+			# TODO: handle UserNotFound error (e.g. the user to be added does not exist)
             else:
                 print(ex)
     
