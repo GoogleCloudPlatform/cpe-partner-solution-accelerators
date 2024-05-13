@@ -10,5 +10,7 @@ $ ./create_listing_golang \
   -location us -exchange_id ahdemo_golang_exchg \
   -listing_id ahdemo_golang_listing \
   -shared_ds projects/ahd-publ-0429c0-bq-shared-ds/datasets/ahdemo_0429c0_shared_ds \
+  -restrict_egress false \
+  -subscriber_iam_member user:user@domain.com \
   -subscription_viewer_iam_member user:user@domain.com
 ```
