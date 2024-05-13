@@ -200,13 +200,24 @@ func create_or_get_exchange(ctx context.Context, client *analyticshub.Client, pr
 }
 
 // createListing creates an example listing within the specified exchange using the provided source dataset.
-func create_or_get_listing(ctx context.Context, client *analyticshub.Client, projectID, location, exchangeID, listingID, sourceDataset string) (*analyticshubpb.Listing, error) {
+func create_or_get_listing(ctx context.Context, client *analyticshub.Client, projectID, location, exchangeID, listingID string, restrictEgress bool, sourceDataset string) (*analyticshubpb.Listing, error) {
 	getReq := &analyticshubpb.GetListingRequest{
 		Name: fmt.Sprintf("projects/%s/locations/%s/dataExchanges/%s/listings/%s", projectID, location, exchangeID, listingID),
 	}
 	resp, err := client.GetListing(ctx, getReq)
 	if err != nil {
 		println(err.Error())
+
+		restrictedExportConfig := &analyticshubpb.Listing_RestrictedExportConfig{}
+		if restrictEgress {
+			restrictedExportConfig.Enabled = true
+			restrictedExportConfig.RestrictDirectTableAccess = true
+			restrictedExportConfig.RestrictQueryResult = true
+		} else {
+			restrictedExportConfig.Enabled = false
+			restrictedExportConfig.RestrictDirectTableAccess = false
+			restrictedExportConfig.RestrictQueryResult = false
+		}
 		req := &analyticshubpb.CreateListingRequest{
 			Parent:    fmt.Sprintf("projects/%s/locations/%s/dataExchanges/%s", projectID, location, exchangeID),
 			ListingId: listingID,
@@ -221,11 +232,7 @@ func create_or_get_listing(ctx context.Context, client *analyticshub.Client, pro
 						Dataset: sourceDataset,
 					},
 				},
-				RestrictedExportConfig: &analyticshubpb.Listing_RestrictedExportConfig{
-					Enabled:                   true,
-					RestrictDirectTableAccess: true,
-					RestrictQueryResult:       true,
-				},
+				RestrictedExportConfig: restrictedExportConfig,
 			},
 		}
 		resp, err := client.CreateListing(ctx, req)
@@ -239,20 +246,22 @@ func create_or_get_listing(ctx context.Context, client *analyticshub.Client, pro
 	}
 }
 
-func parse_args() (string, string, string, string, string, string) {
+func parse_args() (string, string, string, string, bool, string, string, string) {
 	// Define command-line flags
 	projectID := flag.String("project_id", "", "Google Cloud project ID (required)")
 	location := flag.String("location", "", "Location for the BigQuery dataset (required)")
 	exchangeID := flag.String("exchange_id", "", "Exchange ID (required)")
 	listingID := flag.String("listing_id", "", "Listing ID (required)")
+	restrictEgress := flag.Bool("restrict_egress", false, "Egress controls enabled")
 	sharedDS := flag.String("shared_ds", "", "Shared dataset ID (required)")
-	subscriptionViewerIAMMember := flag.String("subscription_viewer_iam_member", "", "IAM member for subscription viewer (optional) - requires either user: or serviceAccount: prefix")
+	subscriberIAMMember := flag.String("subscriber_iam_member", "", "IAM member who can subscribe - requires either user: or serviceAccount: prefix")
+	subscriptionViewerIAMMember := flag.String("subscription_viewer_iam_member", "", "IAM member who can see subscription and request access - requires either user: or serviceAccount: prefix")
 
 	// Parse the command-line flags
 	flag.Parse()
 
 	// Check if required flags are provided
-	if *projectID == "" || *location == "" || *exchangeID == "" || *listingID == "" || *sharedDS == "" || *subscriptionViewerIAMMember == "" {
+	if *projectID == "" || *location == "" || *exchangeID == "" || *listingID == "" || *sharedDS == "" || *subscriberIAMMember == "" || *subscriptionViewerIAMMember == "" {
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -263,10 +272,12 @@ func parse_args() (string, string, string, string, string, string) {
 	fmt.Println("location:", *location)
 	fmt.Println("exchange_id:", *exchangeID)
 	fmt.Println("listing_id:", *listingID)
+	fmt.Println("restrict_egress:", *restrictEgress)
 	fmt.Println("shared_ds:", *sharedDS)
+	fmt.Println("subscriber_iam_member:", *subscriberIAMMember)
 	fmt.Println("subscription_viewer_iam_member:", *subscriptionViewerIAMMember)
 
-	return *projectID, *location, *exchangeID, *listingID, *sharedDS, *subscriptionViewerIAMMember
+	return *projectID, *location, *exchangeID, *listingID, *restrictEgress, *sharedDS, *subscriberIAMMember, *subscriptionViewerIAMMember
 }
 
 func main() {
@@ -277,11 +288,11 @@ func main() {
 	}
 	defer client.Close()
 
-	project_id, location, exchange_id, listing_id, source_ds, subscription_viewer_iam_member := parse_args()
+	project_id, location, exchange_id, listing_id, restrict_egress, source_ds, subscriber_iam_member, subscription_viewer_iam_member := parse_args()
 	list_exchanges(ctx, client, project_id, location)
 	exchg, err := create_or_get_exchange(ctx, client, project_id, location, exchange_id)
 	if err == nil {
-		listing, err := create_or_get_listing(ctx, client, project_id, location, exchange_id, listing_id, source_ds)
+		listing, err := create_or_get_listing(ctx, client, project_id, location, exchange_id, listing_id, restrict_egress, source_ds)
 		if err == nil {
 			println(fmt.Sprintf("Exchange: [%s] %s", exchg.Name, exchg.DisplayName))
 			println(fmt.Sprintf("Listing: [%s] %s", listing.Name, listing.DisplayName))
@@ -289,6 +300,7 @@ func main() {
 			policy, err := listing_get_iam_policy(ctx, client, listing.Name)
 			if err == nil {
 				print_iam_policy(policy)
+				listing_add_iam_policy_member(ctx, client, listing.Name, "roles/analyticshub.subscriber", subscriber_iam_member)
 				listing_add_iam_policy_member(ctx, client, listing.Name, "roles/analyticshub.viewer", subscription_viewer_iam_member)
 				println("GetIamPolicy after setIamPolicy")
 				policy, err := listing_get_iam_policy(ctx, client, listing.Name)

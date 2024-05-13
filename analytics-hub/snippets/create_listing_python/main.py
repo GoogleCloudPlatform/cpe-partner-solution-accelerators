@@ -65,7 +65,7 @@ def get_or_create_exchange(project_id: str, location: str, exchange_id: str):
             print(ex)
     return False
 
-def get_or_create_listing(project_id: str, location: str, exchange_id: str, listing_id: str, shared_ds: str):
+def get_or_create_listing(project_id: str, location: str, exchange_id: str, listing_id: str, restrict_egress: bool, shared_ds: str):
     # Create a client
     client = bigquery_analyticshub_v1.AnalyticsHubServiceClient()
 
@@ -96,9 +96,15 @@ def get_or_create_listing(project_id: str, location: str, exchange_id: str, list
             listing.bigquery_dataset.dataset = shared_ds
 
             listing.restricted_export_config = bigquery_analyticshub_v1.Listing.RestrictedExportConfig()
-            listing.restricted_export_config.enabled = True
-            listing.restricted_export_config.restrict_direct_table_access = True
-            listing.restricted_export_config.restrict_query_result = True
+
+            if restrict_egress:
+                listing.restricted_export_config.enabled = True
+                listing.restricted_export_config.restrict_direct_table_access = True
+                listing.restricted_export_config.restrict_query_result = True
+            else:
+                listing.restricted_export_config.enabled = False
+                listing.restricted_export_config.restrict_direct_table_access = False
+                listing.restricted_export_config.restrict_query_result = False
 
             request = bigquery_analyticshub_v1.CreateListingRequest(
                 parent=f"projects/{project_id}/locations/{location}/dataExchanges/{exchange_id}",
@@ -195,12 +201,14 @@ def parse_commandline_args():
     parser = argparse.ArgumentParser(description="Command-line parameter parser")
 
     # Required arguments
-    parser.add_argument("project_id", help="Google Cloud project ID")
-    parser.add_argument("location", help="Location for the BigQuery dataset")
-    parser.add_argument("exchange_id", help="Exchange ID")
-    parser.add_argument("listing_id", help="Listing ID")
-    parser.add_argument("shared_ds", help="Shared dataset ID")
-    parser.add_argument("subscription_view_iam_member", help="IAM member for subscription view")
+    parser.add_argument("--project_id", help="Google Cloud project ID")
+    parser.add_argument("--location", help="Location for the BigQuery dataset")
+    parser.add_argument("--exchange_id", help="Exchange ID")
+    parser.add_argument("--listing_id", help="Listing ID")
+    parser.add_argument("--restrict_egress", help="Restrict egress", action='store_true')
+    parser.add_argument("--shared_ds", help="Shared dataset ID")
+    parser.add_argument("--subscriber_iam_member", help="IAM member who can subscribe - requires either user: or serviceAccount: prefix")
+    parser.add_argument("--subscription_viewer_iam_member", help="IAM member who can see subscription and request access - requires either user: or serviceAccount: prefix")
 
     args = parser.parse_args()
 
@@ -215,13 +223,16 @@ if __name__ == "__main__":
     exchg = get_or_create_exchange(arguments["project_id"], arguments["location"], arguments["exchange_id"])
     if exchg:
         print(exchg)
-        listing = get_or_create_listing(arguments["project_id"], arguments["location"], arguments["exchange_id"], arguments["listing_id"], arguments["shared_ds"])
+        listing = get_or_create_listing(arguments["project_id"], arguments["location"], arguments["exchange_id"], arguments["listing_id"], arguments["restrict_egress"], arguments["shared_ds"])
         if listing:
             print(listing)
             policy = listing_get_iam_policy(listing.name)
             print("IAMPolicy.before")
             print(policy)
-            policy = listing_add_iam_policy_member(listing.name, "roles/analyticshub.subscriber", arguments["subscription_view_iam_member"])
+            policy = listing_add_iam_policy_member(listing.name, "roles/analyticshub.subscriber", arguments["subscriber_iam_member"])
+            print("IAMPolicy.returned")
+            print(policy)
+            policy = listing_add_iam_policy_member(listing.name, "roles/analyticshub.viewer", arguments["subscription_viewer_iam_member"])
             print("IAMPolicy.returned")
             print(policy)
             print("IAMPolicy.after")
