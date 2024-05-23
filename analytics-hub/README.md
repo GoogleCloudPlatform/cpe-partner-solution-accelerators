@@ -1,4 +1,4 @@
-# Analytics Hub / BigQuery / VPC-Service Controls end-to-end solution accelerator
+# Analytics Hub / Data Clean Room / BigQuery / VPC-Service Controls end-to-end solution accelerator
 
 This repository hosts automation that creates an end-to-end deployment of Analytics Hub / BigQuery data publishers and subscribers with enterprise grade security.
 
@@ -15,6 +15,7 @@ This repository hosts automation that creates an end-to-end deployment of Analyt
    * [Step 5 - Publisher - Create BigQuery, Analytics Hub resources: datasets, views, exchanges, listings](#step-5-publisher-create-bigquery-analytics-hub-resources-datasets-views-exchanges-listings)
    * [Step 6 - Publisher - Load sample data](#step-6-publisher-load-sample-data)
    * [Stage 7 - Subscriber project, subscribe API call scripts](#stage-7-subscriber-project-subscribe-api-call-scripts)
+- [Data Clean Rooms](#data-clean-rooms)
 - [Testing](#testing)
    * [Helper scripts](#helper-scripts)
 - [Cleanup](#cleanup)
@@ -27,6 +28,7 @@ This repository hosts automation that creates an end-to-end deployment of Analyt
 - [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
 - [License](#license)
+- [Disclaimer](#disclaimer)
 
 <!-- TOC end -->
 
@@ -366,6 +368,29 @@ user@workstation:~$ tf init
 user@workstation:~$ tf apply
 ```
 
+<!-- TOC --><a name="data-clean-rooms"></a>
+## Data Clean Rooms
+
+Automating Data Clean Room creation is not yet possible with Terraform and it's not immediately obvious from hte public documentation how it is possible to automate.
+
+There are two snippets in the repsository demonstating the following:
+
+1. Creating regular Data Exchange / Listing for an existing dataset
+   1. Create Analytics Hub Exchange if it does not exist
+   2. Create Analytics Hub Listing if it does not exist
+   3. Modify Analytics Hub Listing permissions
+
+2. Creating Data Clean Room / Data for an existing table
+   1. Create Analytics Hub Data Clean Room (Exchange with `sharingEnvironmentConfig.Environment` set to `SharingEnvironmentConfig_DcrExchangeConfig_`)
+   2. Create a view with analysis policies using BigQuery DDL query job
+   3. Authorize the created view to query from the shared dataset
+   4. Create Analytics Hub Data into the Clean Room (Listing with `restrictedExportConfig` and `Source.BigqueryDataset.SelectedResources[0].Resource.Table`)
+
+Snippets:
+
+* [create_listing_golang](./snippets/create_listing_golang/README.md)
+* [create_listing_python](./snippets/create_listing_python/README.md)
+
 <!-- TOC --><a name="testing"></a>
 ## Testing
 
@@ -580,6 +605,7 @@ Initial Version March 2024
 
 [View](../LICENSE)
 
+<!-- TOC --><a name="disclaimer"></a>
 ## Disclaimer
 
 This project is not an official Google project. It is not supported by

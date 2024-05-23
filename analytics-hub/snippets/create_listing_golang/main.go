@@ -15,13 +15,16 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"flag"
 	"fmt"
 	"os"
+	"text/template"
 	"time"
 
+	"cloud.google.com/go/bigquery"
 	analyticshub "cloud.google.com/go/bigquery/analyticshub/apiv1"
 	"cloud.google.com/go/bigquery/analyticshub/apiv1/analyticshubpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -170,21 +173,34 @@ func list_exchanges(ctx context.Context, client *analyticshub.Client, project_id
 
 // createOrGetDataExchange creates an example data exchange, or returns information about the exchange already bearing
 // the example identifier.
-func create_or_get_exchange(ctx context.Context, client *analyticshub.Client, projectID, location, exchangeID string) (*analyticshubpb.DataExchange, error) {
+func create_or_get_exchange(ctx context.Context, client *analyticshub.Client, projectID, location, exchangeID string, isDCR bool) (*analyticshubpb.DataExchange, error) {
 	req := &analyticshubpb.GetDataExchangeRequest{
 		Name: fmt.Sprintf("projects/%s/locations/%s/dataExchanges/%s", projectID, location, exchangeID),
 	}
 	resp, err := client.GetDataExchange(ctx, req)
 	if err != nil {
 		println(err.Error())
+		// Default: create regular Data Exchange / DefaultExchangeConfig
+		sharingEnvironmentConfig := &analyticshubpb.SharingEnvironmentConfig{
+			Environment: &analyticshubpb.SharingEnvironmentConfig_DefaultExchangeConfig_{},
+		}
+		exTitleTag := "Data Exchange"
+		// if DataCleanRoom: create a Data Clean Room Data Exchange / DcrExchangeConfig
+		if isDCR {
+			sharingEnvironmentConfig = &analyticshubpb.SharingEnvironmentConfig{
+				Environment: &analyticshubpb.SharingEnvironmentConfig_DcrExchangeConfig_{},
+			}
+			exTitleTag = "Data Clean Room"
+		}
 		req := &analyticshubpb.CreateDataExchangeRequest{
 			Parent:         fmt.Sprintf("projects/%s/locations/%s", projectID, location),
 			DataExchangeId: exchangeID,
 			DataExchange: &analyticshubpb.DataExchange{
-				DisplayName:    "Example Data Exchange - created using golang API",
-				Description:    "Example Data Exchange - created using golang API",
-				PrimaryContact: "",
-				Documentation:  "https://link.to.optional.documentation/",
+				DisplayName:              fmt.Sprintf("Example %s - created using golang API", exTitleTag),
+				Description:              fmt.Sprintf("Example %s - created using golang API", exTitleTag),
+				PrimaryContact:           "",
+				Documentation:            "https://link.to.optional.documentation/",
+				SharingEnvironmentConfig: sharingEnvironmentConfig,
 			},
 		}
 		resp, err := client.CreateDataExchange(ctx, req)
@@ -199,15 +215,61 @@ func create_or_get_exchange(ctx context.Context, client *analyticshub.Client, pr
 	}
 }
 
-// createListing creates an example listing within the specified exchange using the provided source dataset.
-func create_or_get_listing(ctx context.Context, client *analyticshub.Client, projectID, location, exchangeID, listingID string, restrictEgress bool, sourceDataset string) (*analyticshubpb.Listing, error) {
+// create_or_get_dcr_listing creates an example listing within the specified exchange using the authorized view with analysis rules to represent DCR
+func create_or_get_dcr_listing(ctx context.Context, client *analyticshub.Client, projectID, location, exchangeID, listingID string, sharedDataset string, sourceView string) (*analyticshubpb.Listing, error) {
 	getReq := &analyticshubpb.GetListingRequest{
 		Name: fmt.Sprintf("projects/%s/locations/%s/dataExchanges/%s/listings/%s", projectID, location, exchangeID, listingID),
 	}
 	resp, err := client.GetListing(ctx, getReq)
 	if err != nil {
 		println(err.Error())
+		restrictedExportConfig := &analyticshubpb.Listing_RestrictedExportConfig{}
+		restrictedExportConfig.Enabled = true
+		restrictedExportConfig.RestrictDirectTableAccess = true
+		restrictedExportConfig.RestrictQueryResult = false
+		req := &analyticshubpb.CreateListingRequest{
+			Parent:    fmt.Sprintf("projects/%s/locations/%s/dataExchanges/%s", projectID, location, exchangeID),
+			ListingId: listingID,
+			Listing: &analyticshubpb.Listing{
+				DisplayName: sourceView,
+				Categories: []analyticshubpb.Listing_Category{
+					analyticshubpb.Listing_CATEGORY_OTHERS,
+				},
+				PrimaryContact: "primary@contact.co",
+				Source: &analyticshubpb.Listing_BigqueryDataset{
+					BigqueryDataset: &analyticshubpb.Listing_BigQueryDatasetSource{
+						Dataset: fmt.Sprintf("projects/%s/datasets/%s", projectID, sharedDataset),
+						SelectedResources: []*analyticshubpb.Listing_BigQueryDatasetSource_SelectedResource{
+							{
+								Resource: &analyticshubpb.Listing_BigQueryDatasetSource_SelectedResource_Table{
+									Table: fmt.Sprintf("projects/%s/datasets/%s/tables/%s", projectID, sharedDataset, sourceView),
+								},
+							},
+						},
+					},
+				},
+				RestrictedExportConfig: restrictedExportConfig,
+			},
+		}
+		resp, err := client.CreateListing(ctx, req)
+		if err != nil {
+			println(err.Error())
+			return nil, err
+		}
+		return resp, nil
+	} else {
+		return resp, nil
+	}
+}
 
+// create_or_get_listing creates an example listing within the specified exchange using the provided source dataset.
+func create_or_get_listing(ctx context.Context, client *analyticshub.Client, projectID, location, exchangeID, listingID string, restrictEgress bool, sharedDataset string) (*analyticshubpb.Listing, error) {
+	getReq := &analyticshubpb.GetListingRequest{
+		Name: fmt.Sprintf("projects/%s/locations/%s/dataExchanges/%s/listings/%s", projectID, location, exchangeID, listingID),
+	}
+	resp, err := client.GetListing(ctx, getReq)
+	if err != nil {
+		println(err.Error())
 		restrictedExportConfig := &analyticshubpb.Listing_RestrictedExportConfig{}
 		if restrictEgress {
 			restrictedExportConfig.Enabled = true
@@ -229,7 +291,7 @@ func create_or_get_listing(ctx context.Context, client *analyticshub.Client, pro
 				},
 				Source: &analyticshubpb.Listing_BigqueryDataset{
 					BigqueryDataset: &analyticshubpb.Listing_BigQueryDatasetSource{
-						Dataset: sourceDataset,
+						Dataset: fmt.Sprintf("projects/%s/datasets/%s", projectID, sharedDataset),
 					},
 				},
 				RestrictedExportConfig: restrictedExportConfig,
@@ -246,67 +308,203 @@ func create_or_get_listing(ctx context.Context, client *analyticshub.Client, pro
 	}
 }
 
-func parse_args() (string, string, string, string, bool, string, string, string) {
+type Flags struct {
+	project_id                     string
+	location                       string
+	exchange_id                    string
+	listing_id                     string
+	restrict_egress                bool
+	shared_ds                      string
+	subscriber_iam_member          string
+	subscription_viewer_iam_member string
+	dcr_shared_table               string
+	dcr_privacy_column             string
+	dcr_exchange_id                string
+	dcr_listing_id                 string
+	dcr_view                       string
+}
+
+func parse_args() Flags {
 	// Define command-line flags
-	projectID := flag.String("project_id", "", "Google Cloud project ID (required)")
+	flags := Flags{}
+
+	project_id := flag.String("project_id", "", "Google Cloud project ID (required)")
 	location := flag.String("location", "", "Location for the BigQuery dataset (required)")
-	exchangeID := flag.String("exchange_id", "", "Exchange ID (required)")
-	listingID := flag.String("listing_id", "", "Listing ID (required)")
-	restrictEgress := flag.Bool("restrict_egress", false, "Egress controls enabled")
-	sharedDS := flag.String("shared_ds", "", "Shared dataset ID (required)")
-	subscriberIAMMember := flag.String("subscriber_iam_member", "", "IAM member who can subscribe - requires either user: or serviceAccount: prefix")
-	subscriptionViewerIAMMember := flag.String("subscription_viewer_iam_member", "", "IAM member who can see subscription and request access - requires either user: or serviceAccount: prefix")
+	exchange_id := flag.String("exchange_id", "", "Exchange ID (required)")
+	listing_id := flag.String("listing_id", "", "Listing ID (required)")
+	restrict_egress := flag.Bool("restrict_egress", false, "Egress controls enabled")
+	shared_ds := flag.String("shared_ds", "", "Shared dataset ID (required)")
+	dcr_shared_table := flag.String("dcr_shared_table", "", "Table to share in Data Clean Room")
+	dcr_view := flag.String("dcr_view", "", "View with analysis rules to create for Data Clean Room")
+	dcr_privacy_column := flag.String("dcr_privacy_column", "", "Privacy column for Data Clean Room")
+	subscriber_iam_member := flag.String("subscriber_iam_member", "", "IAM member who can subscribe - requires either user: or serviceAccount: prefix")
+	subscription_viewer_iam_member := flag.String("subscription_viewer_iam_member", "", "IAM member who can see subscription and request access - requires either user: or serviceAccount: prefix")
 
 	// Parse the command-line flags
 	flag.Parse()
 
 	// Check if required flags are provided
-	if *projectID == "" || *location == "" || *exchangeID == "" || *listingID == "" || *sharedDS == "" || *subscriberIAMMember == "" || *subscriptionViewerIAMMember == "" {
+	if *project_id == "" || *location == "" || *exchange_id == "" || *listing_id == "" || *shared_ds == "" || *dcr_shared_table == "" || *dcr_privacy_column == "" || *subscriber_iam_member == "" || *subscription_viewer_iam_member == "" {
 		flag.Usage()
 		os.Exit(1)
 	}
 
 	// Use the parsed values
-	fmt.Println("Parsed arguments:")
-	fmt.Println("project_id:", *projectID)
-	fmt.Println("location:", *location)
-	fmt.Println("exchange_id:", *exchangeID)
-	fmt.Println("listing_id:", *listingID)
-	fmt.Println("restrict_egress:", *restrictEgress)
-	fmt.Println("shared_ds:", *sharedDS)
-	fmt.Println("subscriber_iam_member:", *subscriberIAMMember)
-	fmt.Println("subscription_viewer_iam_member:", *subscriptionViewerIAMMember)
+	flags.project_id = *project_id
+	flags.location = *location
+	flags.exchange_id = *exchange_id
+	flags.listing_id = *listing_id
+	flags.restrict_egress = *restrict_egress
+	flags.shared_ds = *shared_ds
+	flags.subscriber_iam_member = *subscriber_iam_member
+	flags.subscription_viewer_iam_member = *subscription_viewer_iam_member
+	flags.dcr_exchange_id = fmt.Sprintf("%s_dcr", *exchange_id)
+	flags.dcr_listing_id = fmt.Sprintf("%s_dcr", *listing_id)
+	flags.dcr_shared_table = *dcr_shared_table
+	flags.dcr_privacy_column = *dcr_privacy_column
+	flags.dcr_view = *dcr_view
+	fmt.Print(flags)
 
-	return *projectID, *location, *exchangeID, *listingID, *restrictEgress, *sharedDS, *subscriberIAMMember, *subscriptionViewerIAMMember
+	return flags
+}
+
+func bq_view_prep_ddl(projectID string, datasetID string, sourceTableID string, dstTableID string, privacyUnitColumn string) string {
+	createViewDDLTemplate := `CREATE OR REPLACE VIEW {{.projectID}}.{{.datasetID}}.{{.dstTableID}}
+	OPTIONS(
+	  privacy_policy= '{"aggregation_threshold_policy": {"threshold": 3, "privacy_unit_column": "{{.privacyUnitColumn}}"}}'
+	)
+	AS ( SELECT * FROM {{.projectID}}.{{.datasetID}}.{{.sourceTableID}} );`
+	t := template.Must(template.New("createViewDDL").Parse(createViewDDLTemplate))
+	buf := &bytes.Buffer{}
+	data := map[string]interface{}{
+		"projectID":         projectID,
+		"datasetID":         datasetID,
+		"sourceTableID":     sourceTableID,
+		"dstTableID":        dstTableID,
+		"privacyUnitColumn": privacyUnitColumn,
+	}
+	if err := t.Execute(buf, data); err != nil {
+		panic(err)
+	}
+	s := buf.String()
+	return s
+}
+
+func create_bq_view_with_analysis_rules(ctx context.Context, client *bigquery.Client, projectID string, datasetID string, sourceTableID string, dstTableID string, privacyUnitColumn string) error {
+	q := client.Query(bq_view_prep_ddl(projectID, datasetID, sourceTableID, dstTableID, privacyUnitColumn))
+	it, err := q.Read(ctx)
+	_ = it
+	if err != nil {
+		println(err)
+		// TODO: Handle error.
+		return err
+	}
+	return nil
+}
+
+func bq_dataset_add_authorization(ctx context.Context, client *bigquery.Client, projectID string, datasetID string, tableID string) error {
+	ds := client.DatasetInProject(projectID, datasetID)
+	dsMetadata, err := ds.Metadata(ctx)
+	if err == nil {
+		dsMetadataToUpdate := &bigquery.DatasetMetadataToUpdate{}
+		dsMetadataToUpdate.Access = append(dsMetadataToUpdate.Access, dsMetadata.Access...)
+		needsUpdate := true
+		for _, bqAccess := range dsMetadataToUpdate.Access {
+			if bqAccess.EntityType == bigquery.ViewEntity &&
+				bqAccess.View.ProjectID == projectID &&
+				bqAccess.View.DatasetID == datasetID &&
+				bqAccess.View.TableID == tableID {
+				needsUpdate = false
+			}
+		}
+		if needsUpdate {
+			dsMetadataToUpdate.Access = append(dsMetadataToUpdate.Access,
+				&bigquery.AccessEntry{
+					EntityType: bigquery.ViewEntity,
+					View: &bigquery.Table{
+						ProjectID: projectID,
+						DatasetID: datasetID,
+						TableID:   tableID,
+					},
+				})
+			_, err := ds.Update(ctx, *dsMetadataToUpdate, dsMetadata.ETag)
+			if err != nil {
+				println(err)
+				return err
+			}
+		}
+		return nil
+	} else {
+		return err
+	}
+}
+
+func get_bq_table_metadata(ctx context.Context, client *bigquery.Client, datasetID string, tableID string) (*bigquery.TableMetadata, error) {
+	table := client.Dataset(datasetID).Table(tableID)
+	tableMetadata, err := table.Metadata(ctx, bigquery.WithMetadataView(bigquery.FullMetadataView))
+	return tableMetadata, err
 }
 
 func main() {
+	flags := parse_args()
+
 	ctx := context.Background()
 	client, err := analyticshub.NewClient(ctx)
 	if err != nil {
 		println(err)
 	}
 	defer client.Close()
+	bqClient, err := bigquery.NewClient(ctx, flags.project_id)
+	if err != nil {
+		println(fmt.Errorf("bigquery.NewClient: %v", err))
+	}
+	defer bqClient.Close()
 
-	project_id, location, exchange_id, listing_id, restrict_egress, source_ds, subscriber_iam_member, subscription_viewer_iam_member := parse_args()
-	list_exchanges(ctx, client, project_id, location)
-	exchg, err := create_or_get_exchange(ctx, client, project_id, location, exchange_id)
+	println("Creating Data Exchange")
+	list_exchanges(ctx, client, flags.project_id, flags.location)
+	exchg, err := create_or_get_exchange(ctx, client, flags.project_id, flags.location, flags.exchange_id, false)
 	if err == nil {
-		listing, err := create_or_get_listing(ctx, client, project_id, location, exchange_id, listing_id, restrict_egress, source_ds)
+		println(fmt.Sprintf("Exchange: [%s] %s", exchg.Name, exchg.DisplayName))
+		listing, err := create_or_get_listing(ctx, client, flags.project_id, flags.location, flags.exchange_id, flags.listing_id, flags.restrict_egress, flags.shared_ds)
 		if err == nil {
-			println(fmt.Sprintf("Exchange: [%s] %s", exchg.Name, exchg.DisplayName))
 			println(fmt.Sprintf("Listing: [%s] %s", listing.Name, listing.DisplayName))
 			println("GetIamPolicy before setIamPolicy")
 			policy, err := listing_get_iam_policy(ctx, client, listing.Name)
 			if err == nil {
 				print_iam_policy(policy)
-				listing_add_iam_policy_member(ctx, client, listing.Name, "roles/analyticshub.subscriber", subscriber_iam_member)
-				listing_add_iam_policy_member(ctx, client, listing.Name, "roles/analyticshub.viewer", subscription_viewer_iam_member)
+				listing_add_iam_policy_member(ctx, client, listing.Name, "roles/analyticshub.subscriber", flags.subscriber_iam_member)
+				listing_add_iam_policy_member(ctx, client, listing.Name, "roles/analyticshub.viewer", flags.subscription_viewer_iam_member)
 				println("GetIamPolicy after setIamPolicy")
 				policy, err := listing_get_iam_policy(ctx, client, listing.Name)
 				if err == nil {
 					print_iam_policy(policy)
 				}
+			}
+		}
+	}
+
+	println("\nCreating Data Clean Room")
+	exchgDCR, err := create_or_get_exchange(ctx, client, flags.project_id, flags.location, flags.dcr_exchange_id, true)
+	if err == nil {
+		println(fmt.Sprintf("Exchange(DCR): [%s] %s", exchgDCR.Name, exchgDCR.DisplayName))
+		println("Creating BigQuery view with analysis rules")
+		create_bq_view_with_analysis_rules(ctx, bqClient, flags.project_id, flags.shared_ds, flags.dcr_shared_table, flags.dcr_view, flags.dcr_privacy_column)
+		tableMetadata, err := get_bq_table_metadata(ctx, bqClient, flags.shared_ds, flags.dcr_view)
+		if err == nil {
+			print(tableMetadata)
+			bq_dataset_add_authorization(ctx, bqClient, flags.project_id, flags.shared_ds, flags.dcr_view)
+			listingDCR, err := create_or_get_dcr_listing(
+				ctx,
+				client,
+				flags.project_id,
+				flags.location,
+				flags.dcr_exchange_id,
+				flags.dcr_listing_id,
+				flags.shared_ds,
+				flags.dcr_view,
+			)
+			if err == nil {
+				println(fmt.Sprintf("Listing(DCR): [%s] %s", listingDCR.Name, listingDCR.DisplayName))
 			}
 		}
 	}
