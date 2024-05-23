@@ -371,7 +371,13 @@ user@workstation:~$ tf apply
 <!-- TOC --><a name="data-clean-rooms"></a>
 ## Data Clean Rooms
 
-Automating Data Clean Room creation is not yet possible with Terraform and it's not immediately obvious from hte public documentation how it is possible to automate.
+Automating Data Clean Room creation is not yet possible with Terraform and it's not immediately obvious from the public documentation how it is possible to automate.
+
+Data Clean Rooms are essentially
+* Analytics Hub Data Exchanges with special settings
+* The shared data is an Analytics Hub listing
+* The listing is sharing an **authorized view** with **analysis rules** configured (instead of sharing the whole dataset).
+* The listing has egress restrictions
 
 There are two snippets in the repsository demonstating the following:
 
@@ -388,8 +394,32 @@ There are two snippets in the repsository demonstating the following:
 
 Snippets:
 
-* [create_listing_golang](./snippets/create_listing_golang/README.md)
-* [create_listing_python](./snippets/create_listing_python/README.md)
+* Go
+  * [create_listing_golang](./snippets/create_listing_golang/README.md)
+* Python 3
+  * [create_listing_python](./snippets/create_listing_python/README.md)
+
+References:
+
+* [BigQuery - Restrict data access using analysis rules](https://cloud.google.com/bigquery/docs/analysis-rules)
+* [Method: projects.locations.dataExchanges.create](https://cloud.google.com/bigquery/docs/reference/analytics-hub/rest/v1/projects.locations.dataExchanges/create)
+* [DataExchange.SharingEnvironmentConfig](https://cloud.google.com/bigquery/docs/reference/analytics-hub/rest/v1/projects.locations.dataExchanges#sharingenvironmentconfig)
+* [Method: projects.locations.dataExchanges.listings.create](https://cloud.google.com/bigquery/docs/reference/analytics-hub/rest/v1/projects.locations.dataExchanges.listings/create)
+* [BigQueryDatasetSource](https://cloud.google.com/bigquery/docs/reference/analytics-hub/rest/v1/projects.locations.dataExchanges.listings#BigQueryDatasetSource)
+   ```
+   "listings": [
+    {
+      "name": "projects/[project_id]/locations/us/dataExchanges/ahdemo_golang_exchg_dcr/listings/ahdemo_golang_listing_dcr",
+      "displayName": "view_test_go_dcr",
+      "primaryContact": "primary@contact.co",
+      "bigqueryDataset": {
+        "dataset": "projects/[project_id]/datasets/test",
+        "selectedResources": [
+          {
+            "table": "projects/[project_id]/datasets/test/tables/view_test_go_dcr"
+          }
+        ],
+   ```
 
 <!-- TOC --><a name="testing"></a>
 ## Testing
