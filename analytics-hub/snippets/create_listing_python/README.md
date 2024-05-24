@@ -1,4 +1,4 @@
-# GolaPythonng sample: create_listing_python
+# Python sample: create_listing_python
 
 ## Regular Data Exchange
 

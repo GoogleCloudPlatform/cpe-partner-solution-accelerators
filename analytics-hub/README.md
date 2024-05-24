@@ -394,6 +394,8 @@ There are two snippets in the repsository demonstating the following:
 
 Snippets:
 
+* REST API
+  * [create_listing_api](./snippets/create_listing_api/README.md)
 * Go
   * [create_listing_golang](./snippets/create_listing_golang/README.md)
 * Python 3
