@@ -379,7 +379,7 @@ Data Clean Rooms are essentially
 * The listing is sharing an **authorized view** with **analysis rules** configured (instead of sharing the whole dataset).
 * The listing has egress restrictions
 
-There are two snippets in the repsository demonstating the following:
+The snippets `create_listing_golang` and `create_listing_python` in the repsository demonstating the following:
 
 1. Creating regular Data Exchange / Listing for an existing dataset
    1. Create Analytics Hub Exchange if it does not exist
@@ -391,6 +391,11 @@ There are two snippets in the repsository demonstating the following:
    2. Create a view with analysis policies using BigQuery DDL query job
    3. Authorize the created view to query from the shared dataset
    4. Create Analytics Hub Data into the Clean Room (Listing with `restrictedExportConfig` and `Source.BigqueryDataset.SelectedResources[0].Resource.Table`)
+
+The snippet `create_listing_api` in the repsository demonstating the following:
+
+1. Create Analytics Hub Data Clean Room (Exchange with `sharingEnvironmentConfig.dcrExchangeConfig`)
+2. Create Analytics Hub Data into the Clean Room (Listing with `restrictedExportConfig` and `bigqueryDataset.selectedResources`)
 
 Snippets:
 
