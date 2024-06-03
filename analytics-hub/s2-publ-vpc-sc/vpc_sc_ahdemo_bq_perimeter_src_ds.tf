@@ -39,7 +39,7 @@ locals {
     },
 #    # OPTIONAL - Allow off-perimeter subscribers (Cloud Console users) in var.publ_vpc_sc_ah_subscriber_identities from anywhere
 #    # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
-#    # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (b/325278068)
+#    # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
 #    {
 #      "from" = {
 #        "sources" = {
