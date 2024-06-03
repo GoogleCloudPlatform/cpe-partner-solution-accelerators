@@ -75,26 +75,27 @@ locals {
   ]
 
   egress_policies_subscriber_perimeter = [
-    # TEMPORARY - Allow egress to bq_src_ds (Google Service -> Google Service)
-    # TEMPORARY - required for querying src_ds via views in shared_ds
-    {
-      "from" = {
-        "identities" = var.subscr_vpc_sc_access_level_corp_allowed_identities
-        "sources" = null
-      }
-      "to" = {
-        "resources" = [
-          "projects/${var.publ_project_number_bq_src_ds}",
-        ]
-        "operations" = {
-          "bigquery.googleapis.com" = {
-            "methods" = [
-              "*",
-            ]
-          }
-        }
-      }
-    },
+#    # OPTIONAL - Allow egress to bq_src_ds (Google Service -> Google Service)
+#    # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
+#    # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
+#    {
+#      "from" = {
+#        "identities" = var.subscr_vpc_sc_access_level_corp_allowed_identities
+#        "sources" = null
+#      }
+#      "to" = {
+#        "resources" = [
+#          "projects/${var.publ_project_number_bq_src_ds}",
+#        ]
+#        "operations" = {
+#          "bigquery.googleapis.com" = {
+#            "methods" = [
+#              "*",
+#            ]
+#          }
+#        }
+#      }
+#    },
     # Allow egress to ah_exchg,bq_and_ah (Google Service -> Google Service)
     # required for subscribing to the listing
     {

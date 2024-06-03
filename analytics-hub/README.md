@@ -1,6 +1,6 @@
-# Analytics Hub / BigQuery / VPC-Service Controls end-to-end solution accelerator
+# Google Cloud Analytics Hub / Data Clean Room / BigQuery / VPC-Service Controls end-to-end solution accelerator
 
-This repository hosts automation that creates an end-to-end deployment of Analytics Hub / BigQuery data publishers and subscribers with enterprise grade security.
+This repository hosts automation (Terraform, scripts, python, golang) that creates an end-to-end deployment of Analytics Hub / BigQuery data publishers and subscribers with enterprise grade security.
 
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
@@ -15,6 +15,7 @@ This repository hosts automation that creates an end-to-end deployment of Analyt
    * [Step 5 - Publisher - Create BigQuery, Analytics Hub resources: datasets, views, exchanges, listings](#step-5-publisher-create-bigquery-analytics-hub-resources-datasets-views-exchanges-listings)
    * [Step 6 - Publisher - Load sample data](#step-6-publisher-load-sample-data)
    * [Stage 7 - Subscriber project, subscribe API call scripts](#stage-7-subscriber-project-subscribe-api-call-scripts)
+- [Data Clean Rooms](#data-clean-rooms)
 - [Testing](#testing)
    * [Helper scripts](#helper-scripts)
 - [Cleanup](#cleanup)
@@ -27,6 +28,7 @@ This repository hosts automation that creates an end-to-end deployment of Analyt
 - [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
 - [License](#license)
+- [Disclaimer](#disclaimer)
 
 <!-- TOC end -->
 
@@ -366,6 +368,66 @@ user@workstation:~$ tf init
 user@workstation:~$ tf apply
 ```
 
+<!-- TOC --><a name="data-clean-rooms"></a>
+## Data Clean Rooms
+
+Automating Data Clean Room creation is not yet possible with Terraform and it's not immediately obvious from the public documentation how it is possible to automate.
+
+Data Clean Rooms are essentially
+* Analytics Hub Data Exchanges with special settings
+* The shared data is an Analytics Hub listing
+* The listing is sharing an **authorized view** with **analysis rules** configured (instead of sharing the whole dataset).
+* The listing has egress restrictions
+
+The snippets `create_listing_golang` and `create_listing_python` in the repsository demonstating the following:
+
+1. Creating regular Data Exchange / Listing for an existing dataset
+   1. Create Analytics Hub Exchange if it does not exist
+   2. Create Analytics Hub Listing if it does not exist
+   3. Modify Analytics Hub Listing permissions
+
+2. Creating Data Clean Room / Data for an existing table
+   1. Create Analytics Hub Data Clean Room (Exchange with `sharingEnvironmentConfig.Environment` set to `SharingEnvironmentConfig_DcrExchangeConfig_`)
+   2. Create a view with analysis policies using BigQuery DDL query job
+   3. Authorize the created view to query from the shared dataset
+   4. Create Analytics Hub Data into the Clean Room (Listing with `restrictedExportConfig` and `Source.BigqueryDataset.SelectedResources[0].Resource.Table`)
+
+The snippet `create_listing_api` in the repsository demonstating the following:
+
+1. Create Analytics Hub Data Clean Room (Exchange with `sharingEnvironmentConfig.dcrExchangeConfig`)
+2. Create Analytics Hub Data into the Clean Room (Listing with `restrictedExportConfig` and `bigqueryDataset.selectedResources`)
+
+Snippets:
+
+* REST API
+  * [create_listing_api](./snippets/create_listing_api/README.md)
+* Go
+  * [create_listing_golang](./snippets/create_listing_golang/README.md)
+* Python 3
+  * [create_listing_python](./snippets/create_listing_python/README.md)
+
+References:
+
+* [BigQuery - Restrict data access using analysis rules](https://cloud.google.com/bigquery/docs/analysis-rules)
+* [Method: projects.locations.dataExchanges.create](https://cloud.google.com/bigquery/docs/reference/analytics-hub/rest/v1/projects.locations.dataExchanges/create)
+* [DataExchange.SharingEnvironmentConfig](https://cloud.google.com/bigquery/docs/reference/analytics-hub/rest/v1/projects.locations.dataExchanges#sharingenvironmentconfig)
+* [Method: projects.locations.dataExchanges.listings.create](https://cloud.google.com/bigquery/docs/reference/analytics-hub/rest/v1/projects.locations.dataExchanges.listings/create)
+* [BigQueryDatasetSource](https://cloud.google.com/bigquery/docs/reference/analytics-hub/rest/v1/projects.locations.dataExchanges.listings#BigQueryDatasetSource)
+   ```
+   "listings": [
+    {
+      "name": "projects/[project_id]/locations/us/dataExchanges/ahdemo_golang_exchg_dcr/listings/ahdemo_golang_listing_dcr",
+      "displayName": "view_test_go_dcr",
+      "primaryContact": "primary@contact.co",
+      "bigqueryDataset": {
+        "dataset": "projects/[project_id]/datasets/test",
+        "selectedResources": [
+          {
+            "table": "projects/[project_id]/datasets/test/tables/view_test_go_dcr"
+          }
+        ],
+   ```
+
 <!-- TOC --><a name="testing"></a>
 ## Testing
 
@@ -580,6 +642,7 @@ Initial Version March 2024
 
 [View](../LICENSE)
 
+<!-- TOC --><a name="disclaimer"></a>
 ## Disclaimer
 
 This project is not an official Google project. It is not supported by
