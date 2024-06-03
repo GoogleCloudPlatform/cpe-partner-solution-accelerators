@@ -1,6 +1,6 @@
-# Analytics Hub / Data Clean Room / BigQuery / VPC-Service Controls end-to-end solution accelerator
+# Google Cloud Analytics Hub / Data Clean Room / BigQuery / VPC-Service Controls end-to-end solution accelerator
 
-This repository hosts automation that creates an end-to-end deployment of Analytics Hub / BigQuery data publishers and subscribers with enterprise grade security.
+This repository hosts automation (Terraform, scripts, python, golang) that creates an end-to-end deployment of Analytics Hub / BigQuery data publishers and subscribers with enterprise grade security.
 
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
