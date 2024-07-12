@@ -29,7 +29,15 @@ resource "google_project_iam_member" "bq_src_ds_kms_service_account_access" {
   member  = "serviceAccount:bq-${data.google_project.publ_bq_src_ds.number}@bigquery-encryption.iam.gserviceaccount.com"
 }
 
+resource "null_resource" "bq_encryption_service_account_bq_src_ds" {
+  provisioner "local-exec" {
+    command = "bq show --encryption_service_account --project_id=${data.google_project.publ_bq_src_ds.project_id}"
+  }
+}
+
 resource "google_bigquery_dataset" "src_dataset" {
+  depends_on = [ null_resource.bq_encryption_service_account_bq_src_ds ]
+
   dataset_id    = "ahdemo_${var.name_suffix}_src_ds"
   friendly_name = "ahdemo_${var.name_suffix}_src_ds"
   description   = "ahdemo_${var.name_suffix}_src_ds"

@@ -12,7 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+resource "null_resource" "bq_encryption_service_account_bqah" {
+  provisioner "local-exec" {
+    command = "bq show --encryption_service_account --project_id=${data.google_project.publ_bq_and_ah.project_id}"
+  }
+}
+
 resource "google_bigquery_dataset" "bqah_shared_dataset" {
+  depends_on = [ null_resource.bq_encryption_service_account_bqah ]
+
   dataset_id    = "ahdemo_${var.name_suffix}_bqah_shared_ds"
   friendly_name = "ahdemo_${var.name_suffix}_bqah_shared_ds"
   description   = "ahdemo_${var.name_suffix}_bqah_shared_ds"

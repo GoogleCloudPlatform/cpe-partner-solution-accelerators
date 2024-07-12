@@ -38,6 +38,7 @@ publ_terraform_sa_name = "{{PUBL_TERRAFORM_SA_NAME}}"
 publ_terraform_sa_email = "{{PUBL_TERRAFORM_SA_EMAIL}}"
 publ_terraform_sa_users_iam_members = [ "user:{{PUBL_TERRAFORM_SA_USER}}" ]
 publ_admin_user = "{{PUBL_ADMIN_USER}}"
+publ_project_owners = [ "user:{{PUBL_ADMIN_USER}}" ]
 
 publ_vpc_sc_policy_parent_org_id = {{PUBLISHER_ORG_ID}} # {{PUBLISHER_ORG_NAME}}
 publ_vpc_sc_global_access_policy_name = "ahdemo-publisher-policy"
@@ -78,6 +79,7 @@ subscr_terraform_sa_name = "{{SUBSCR_TERRAFORM_SA_NAME}}"
 subscr_terraform_sa_email = "{{SUBSCR_TERRAFORM_SA_EMAIL}}"
 subscr_terraform_sa_users_iam_members = [ "user:{{SUBSCR_TERRAFORM_SA_USER}}" ]
 subscr_admin_user = "{{SUBSCR_ADMIN_USER}}"
+subscr_project_owners = [ "user:{{SUBSCR_ADMIN_USER}}" ]
 
 subscr_vpc_sc_policy_parent_org_id = {{SUBSCRIBER_ORG_ID}} # {{SUBSCRIBER_ORG_NAME}}
 subscr_vpc_sc_global_access_policy_name = "ahdemo-subscriber-policy"
