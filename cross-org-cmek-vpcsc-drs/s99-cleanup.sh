@@ -56,7 +56,11 @@ fi
 
 echo "Deleting the generated terraform configuration ... "
 echo "- ./generated/terraform.auto.tfvars"
+echo "- ./generated/terraform.cust_project_numbers.auto.tfvars"
+echo "- ./generated/terraform.prov_project_numbers.auto.tfvars"
 rm "./generated/terraform.auto.tfvars"
+rm "./generated/terraform.cust_project_numbers.auto.tfvars"
+rm "./generated/terraform.prov_project_numbers.auto.tfvars"
 for TF_CFG_TPL in "${TF_GEN_CONFIGS[@]}"
 do
   SRC="$TF_CFG_TPL"

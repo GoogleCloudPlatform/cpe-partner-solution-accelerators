@@ -79,7 +79,7 @@ echo "Checking seed projects ${PROV_ORG_ID}/${PROV_PROJECT_ID_SEED} ${CUST_ORG_I
 gcloud_check_and_create_project $PROV_ORG_ID $BILLING_ACCOUNT_ID $PROV_PROJECT_ID_SEED true
 gcloud_check_and_create_project $CUST_ORG_ID $BILLING_ACCOUNT_ID $CUST_PROJECT_ID_SEED true
 
-for GOOGLE_API_SERVICE in "cloudresourcemanager.googleapis.com" "accesscontextmanager.googleapis.com" "iam.googleapis.com" "cloudbilling.googleapis.com" "serviceusage.googleapis.com"
+for GOOGLE_API_SERVICE in "cloudresourcemanager.googleapis.com" "accesscontextmanager.googleapis.com" "iam.googleapis.com" "cloudbilling.googleapis.com" "serviceusage.googleapis.com" "orgpolicy.googleapis.com" "compute.googleapis.com"
 do
   for PROJECT_ID_SEED in "$PROV_PROJECT_ID_SEED" "$CUST_PROJECT_ID_SEED"
   do
