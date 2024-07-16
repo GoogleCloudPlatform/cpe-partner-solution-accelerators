@@ -1,8 +1,4 @@
-s0-customer-org-cmek-project/backend.tf
-s1-provider-org-customer-tenant-project/backend.tf
-s2-customer-org-cmek/backend.tf
-s3-customer-org-vpcsc/backend.tf
-s4-provider-org-vmwithcmek/backend.tf
+**/backend.tf
 generated/
 setup.sh.out
 setup.env
