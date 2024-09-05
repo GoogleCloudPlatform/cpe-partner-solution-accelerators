@@ -136,6 +136,10 @@ variable "billing_account_id" {
 }
 
 # PUBLISHER
+variable "publ_project_id_prefix" {
+  description = "Google Cloud Project ID prefix"
+  type        = string
+}
 variable "publ_project_id_seed" {
   description = "Google Cloud Project ID"
   type        = string
@@ -238,6 +242,10 @@ variable "publ_ah_subscription_viewers_iam_members" {
 }
 
 # SUBSCRIBER
+variable "subscr_project_id_prefix" {
+  description = "Google Cloud Project ID prefix"
+  type        = string
+}
 variable "subscr_project_id_seed" {
   description = "Google Cloud Project ID"
   type        = string

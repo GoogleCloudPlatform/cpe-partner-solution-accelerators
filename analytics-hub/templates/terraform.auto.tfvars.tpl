@@ -25,6 +25,7 @@ billing_account_id = "{{BILLING_ACCOUNT_ID}}"
 
 # PUBLISHER
 # Projects need to be created using a different process due to internal policies
+publ_project_id_prefix = "{{PUBL_PROJECT_ID_PREFIX}}"
 publ_project_id_seed = "{{PUBL_PROJECT_ID_SEED}}"
 publ_project_id_bq_src_ds = "{{PUBL_PROJECT_ID_BQ_SRC_DS}}"
 publ_project_id_bq_shared_ds = "{{PUBL_PROJECT_ID_BQ_SHARED_DS}}"
@@ -70,6 +71,7 @@ publ_ah_subscription_viewers_iam_members = [
 
 # SUBSCRIBER
 # Projects need to be created using a different process due to internal policies
+subscr_project_id_prefix = "{{SUBSCR_PROJECT_ID_PREFIX}}"
 subscr_project_id_seed = "{{SUBSCR_PROJECT_ID_SEED}}"
 subscr_project_id_subscr_with_vpcsc = "{{SUBSCR_PROJECT_ID_WITH_VPCSC}}"
 subscr_project_id_subscr_without_vpcsc = "{{SUBSCR_PROJECT_ID_WITHOUT_VPCSC}}"

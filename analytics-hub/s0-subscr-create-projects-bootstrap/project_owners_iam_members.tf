@@ -16,7 +16,7 @@ locals {
    project_role_combination_list = distinct(flatten([
     for project in toset( ["${var.subscr_project_id_subscr_with_vpcsc}","${var.subscr_project_id_subscr_without_vpcsc}"] ) : [
       for role in toset( ["roles/editor", "roles/resourcemanager.projectIamAdmin"] ) : [
-        for member in toset( var.publ_project_owners ) : {
+        for member in toset( var.subscr_project_owners ) : {
           project = project
           role    = role
           member  = member

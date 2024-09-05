@@ -36,7 +36,7 @@ module "subscr-project-factory" {
 
   name                 = each.value
   random_project_id    = false
-  org_id               = var.subscr_vpc_sc_policy_parent_org_id
+  folder_id            = google_folder.subscr-root.id
   billing_account      = var.billing_account_id
   activate_apis        = var.projects_activate_apis_seed
   default_service_account     = "deprivilege"
