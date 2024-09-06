@@ -21,9 +21,18 @@ fi
 
 . ./setup.env
 
+function join_by {
+  local d=${1-} f=${2-}
+  if shift 2; then
+    printf %s "$f" "${@/#/$d}"
+  fi
+}
+
 generate_config () {
   P_SRC=$1
   P_DST=$2
+  ALLOWLISTED_IPV4_S=$(echo -n '"'; echo -n ${ALLOWLISTED_IPV4_A[@]} | sed s/' '/'","'/g; echo -n '"';)
+  ALLOWLISTED_IPV6_S=$(echo -n '"'; echo -n ${ALLOWLISTED_IPV6_A[@]} | sed s/' '/'","'/g; echo -n '"';)
 
   echo "$P_SRC > $P_DST"
 
@@ -64,6 +73,8 @@ generate_config () {
   s/{{REQUEST_ACCESS_EMAIL_OR_URL}}/$REQUEST_ACCESS_EMAIL_OR_URL/;
   s/{{GCLOUD_USER}}/$GCLOUD_USER/;
   s/{{BILLING_ACCOUNT_ID}}/$BILLING_ACCOUNT_ID/;
+  s!{{ALLOWLISTED_IPV4_S}}!$ALLOWLISTED_IPV4_S!;
+  s!{{ALLOWLISTED_IPV6_S}}!$ALLOWLISTED_IPV6_S!;
   " > "$P_DST"
 }
 

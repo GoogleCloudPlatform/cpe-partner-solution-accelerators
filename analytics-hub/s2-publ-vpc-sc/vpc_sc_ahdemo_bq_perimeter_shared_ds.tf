@@ -44,6 +44,7 @@ locals {
     # required for creating the listings from the dedicated AH projects
     {
       "from" = {
+        "sources" = {}
         "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
       }
       "to" = {
@@ -64,6 +65,7 @@ locals {
     # required for creating the view from shared_ds to src_ds
     {
       "from" = {
+        "sources" = {}
         "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
       }
       "to" = {

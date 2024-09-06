@@ -112,7 +112,11 @@ variable "zone" {
   description = "Google Cloud Zone"
   type        = string
 }
-variable "allowlisted_external_ip_ranges" {
+variable "allowlisted_external_ip4_ranges" {
+  description = "Allowlisted external range for GKE, SSH, etc"
+  type        = list(string)
+}
+variable "allowlisted_external_ip6_ranges" {
   description = "Allowlisted external range for GKE, SSH, etc"
   type        = list(string)
 }

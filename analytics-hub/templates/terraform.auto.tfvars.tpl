@@ -17,7 +17,8 @@ name_suffix = "{{SUFFIX}}"
 location = "us"
 region = "us-central1"
 zone = "us-central1-a"
-allowlisted_external_ip_ranges = ["104.132.0.0/16", "81.6.39.0/24", "178.197.217.0/24", "212.51.0.0/16" ]
+allowlisted_external_ip4_ranges = [ {{ALLOWLISTED_IPV4_S}} ]
+allowlisted_external_ip6_ranges = [ {{ALLOWLISTED_IPV6_S}} ]
 vpc_sc_dry_run = false
 vpc_sc_restricted_services = [ "analyticshub.googleapis.com","bigquery.googleapis.com" ]
 gcloud_user = "{{GCLOUD_USER}}"
@@ -43,13 +44,7 @@ publ_project_owners = [ "user:{{PUBL_ADMIN_USER}}" ]
 
 publ_vpc_sc_policy_parent_org_id = {{PUBLISHER_ORG_ID}} # {{PUBLISHER_ORG_NAME}}
 publ_vpc_sc_global_access_policy_name = "ahdemo-publisher-policy"
-publ_vpc_sc_access_level_corp_ip_subnetworks = [
-    "2a02:168:5231:0::/64", # home
-    "212.51.151.0/24", # home
-    "104.132.228.0/24", # office
-    "2a00:79e0:48:700::/64", # office
-    "2a00:79e0:9d:200::/64", # office
-    ]
+publ_vpc_sc_access_level_corp_ip_subnetworks = [ {{ALLOWLISTED_IPV4_S}},{{ALLOWLISTED_IPV6_S}} ]
 publ_vpc_sc_ah_subscriber_project_resources_with_numbers = []
 publ_vpc_sc_access_level_corp_allowed_identities = [ 
     "user:{{GCLOUD_USER}}",
@@ -85,13 +80,7 @@ subscr_project_owners = [ "user:{{SUBSCR_ADMIN_USER}}" ]
 
 subscr_vpc_sc_policy_parent_org_id = {{SUBSCRIBER_ORG_ID}} # {{SUBSCRIBER_ORG_NAME}}
 subscr_vpc_sc_global_access_policy_name = "ahdemo-subscriber-policy"
-subscr_vpc_sc_access_level_corp_ip_subnetworks = [
-    "2a02:168:5231:0::/64", # home
-    "212.51.151.0/24", # home
-    "104.132.228.0/24", # office
-    "2a00:79e0:48:700::/64", # office
-    "2a00:79e0:9d:200::/64", # office
-    ]
+subscr_vpc_sc_access_level_corp_ip_subnetworks = [ {{ALLOWLISTED_IPV4_S}},{{ALLOWLISTED_IPV6_S}} ]
 subscr_vpc_sc_access_level_corp_allowed_identities = [
     "user:{{GCLOUD_USER}}",
     "user:{{SUBSCR_ADMIN_USER}}",

@@ -81,7 +81,7 @@ locals {
 #    {
 #      "from" = {
 #        "identities" = var.subscr_vpc_sc_access_level_corp_allowed_identities
-#        "sources" = null
+#        "sources" = {}
 #      }
 #      "to" = {
 #        "resources" = [
@@ -101,7 +101,7 @@ locals {
     {
       "from" = {
         "identities" = var.subscr_vpc_sc_access_level_corp_allowed_identities
-        "sources" = null
+        "sources" = {}
       }
       "to" = {
         "resources" = [
