@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+variable "subscr_root_folder_id" {
+  description = "Google Cloud Folder ID"
+  type        = string
+}
 variable "subscr_project_number_seed" {
   description = "Google Cloud Project ID"
   type        = string
@@ -22,6 +26,10 @@ variable "subscr_project_number_subscr_with_vpcsc" {
 }
 variable "subscr_project_number_subscr_without_vpcsc" {
   description = "Google Cloud Project ID"
+  type        = string
+}
+variable "publ_root_folder_id" {
+  description = "Google Cloud Folder ID"
   type        = string
 }
 variable "publ_project_number_seed" {

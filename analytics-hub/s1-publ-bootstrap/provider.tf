@@ -16,11 +16,11 @@ terraform {
   required_providers {
     google-beta = {
       source = "hashicorp/google-beta"
-      version = "6.1.0"
+      version = "~> 5.43.0"
     }
     google = {
       source = "hashicorp/google"
-      version = "6.1.0"
+      version = "~> 5.43.0"
     }
   }
 }
@@ -40,33 +40,3 @@ provider "google" {
   user_project_override = true
   billing_project = var.publ_project_id_seed
 }
-
-# Example: impesonation configuration
-# Preferred: setting through environment variables
-#   GOOGLE_BACKEND_IMPERSONATE_SERVICE_ACCOUNT
-#   GOOGLE_IMPERSONATE_SERVICE_ACCOUNT
-#
-#provider "google" {
-#  alias   = "tokengen"
-#}
-#
-#data "google_client_config" "default" {
-#  provider = google.tokengen
-#}
-#
-#data "google_service_account_access_token" "impersonated_sa" {
-#  provider               = google.tokengen
-#  target_service_account = var.service_account
-#  scopes                 = ["userinfo-email", "cloud-platform"]
-#  lifetime               = "3600s"
-#}
-#
-#provider "google" {
-#  access_token = data.google_service_account_access_token.impersonated_sa.access_token
-#
-#  project     = var.project_id_seed
-#  region      = var.region
-#  zone        = var.zone
-#  user_project_override = true
-#  billing_project = var.project_id_seed
-#}

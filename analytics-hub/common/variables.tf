@@ -112,7 +112,11 @@ variable "zone" {
   description = "Google Cloud Zone"
   type        = string
 }
-variable "allowlisted_external_ip_ranges" {
+variable "allowlisted_external_ip4_ranges" {
+  description = "Allowlisted external range for GKE, SSH, etc"
+  type        = list(string)
+}
+variable "allowlisted_external_ip6_ranges" {
   description = "Allowlisted external range for GKE, SSH, etc"
   type        = list(string)
 }
@@ -136,6 +140,10 @@ variable "billing_account_id" {
 }
 
 # PUBLISHER
+variable "publ_project_id_prefix" {
+  description = "Google Cloud Project ID prefix"
+  type        = string
+}
 variable "publ_project_id_seed" {
   description = "Google Cloud Project ID"
   type        = string
@@ -188,6 +196,10 @@ variable "publ_admin_user" {
   description = "Publisher admin user - will get wide org-wide privileges"
   type        = string
 }
+variable "publ_project_owners" {
+  description = "Additional IAM members to add to the publisher projects"
+  type        = list
+}
 
 variable "publ_vpc_sc_policy_parent_org_id" {
   description = "VPC SC policy parent organization id"
@@ -234,6 +246,10 @@ variable "publ_ah_subscription_viewers_iam_members" {
 }
 
 # SUBSCRIBER
+variable "subscr_project_id_prefix" {
+  description = "Google Cloud Project ID prefix"
+  type        = string
+}
 variable "subscr_project_id_seed" {
   description = "Google Cloud Project ID"
   type        = string
@@ -269,6 +285,10 @@ variable "subscr_terraform_sa_users_iam_members" {
 variable "subscr_admin_user" {
   description = "Subscriber admin user - will get wide org-wide privileges"
   type        = string
+}
+variable "subscr_project_owners" {
+  description = "Additional IAM members to add to the subscriber projects"
+  type        = list
 }
 
 variable "subscr_vpc_sc_policy_parent_org_id" {

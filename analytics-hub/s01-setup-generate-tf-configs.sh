@@ -21,15 +21,25 @@ fi
 
 . ./setup.env
 
+function join_by {
+  local d=${1-} f=${2-}
+  if shift 2; then
+    printf %s "$f" "${@/#/$d}"
+  fi
+}
+
 generate_config () {
   P_SRC=$1
   P_DST=$2
+  ALLOWLISTED_IPV4_S=$(echo -n '"'; echo -n ${ALLOWLISTED_IPV4_A[@]} | sed s/' '/'","'/g; echo -n '"';)
+  ALLOWLISTED_IPV6_S=$(echo -n '"'; echo -n ${ALLOWLISTED_IPV6_A[@]} | sed s/' '/'","'/g; echo -n '"';)
 
   echo "$P_SRC > $P_DST"
 
   cat $P_SRC | sed "s/{{SUFFIX}}/$SUFFIX/;
   s/{{TERRAFORM_SA_USER}}/$TERRAFORM_SA_USER/;
   s/{{SUBSCRIBER_SA_USER}}/$SUBSCRIBER_SA_USER/;
+  s/{{PUBL_PROJECT_ID_PREFIX}}/$PUBL_PROJECT_ID_PREFIX/;
   s/{{PUBL_PROJECT_ID_SEED}}/$PUBL_PROJECT_ID_SEED/;
   s/{{PUBL_PROJECT_ID_BQ_SRC_DS}}/$PUBL_PROJECT_ID_BQ_SRC_DS/;
   s/{{PUBL_PROJECT_ID_BQ_SHARED_DS}}/$PUBL_PROJECT_ID_BQ_SHARED_DS/;
@@ -43,6 +53,7 @@ generate_config () {
   s/{{PUBL_STATE_BUCKET}}/$PUBL_STATE_BUCKET/;
   s/{{PUBLISHER_ORG_ID}}/$PUBLISHER_ORG_ID/;
   s/{{PUBLISHER_ORG_NAME}}/$PUBLISHER_ORG_NAME/;
+  s/{{SUBSCR_PROJECT_ID_PREFIX}}/$SUBSCR_PROJECT_ID_PREFIX/;
   s/{{SUBSCR_PROJECT_ID_SEED}}/$SUBSCR_PROJECT_ID_SEED/;
   s/{{SUBSCR_PROJECT_ID_WITH_VPCSC}}/$SUBSCR_PROJECT_ID_WITH_VPCSC/;
   s/{{SUBSCR_PROJECT_ID_WITHOUT_VPCSC}}/$SUBSCR_PROJECT_ID_WITHOUT_VPCSC/;
@@ -62,6 +73,8 @@ generate_config () {
   s/{{REQUEST_ACCESS_EMAIL_OR_URL}}/$REQUEST_ACCESS_EMAIL_OR_URL/;
   s/{{GCLOUD_USER}}/$GCLOUD_USER/;
   s/{{BILLING_ACCOUNT_ID}}/$BILLING_ACCOUNT_ID/;
+  s!{{ALLOWLISTED_IPV4_S}}!$ALLOWLISTED_IPV4_S!;
+  s!{{ALLOWLISTED_IPV6_S}}!$ALLOWLISTED_IPV6_S!;
   " > "$P_DST"
 }
 

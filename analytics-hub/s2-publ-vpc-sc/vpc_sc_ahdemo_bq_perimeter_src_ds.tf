@@ -70,6 +70,7 @@ locals {
     # required for creating the view from shared_ds/bq_and_ah to src_ds
     {
       "from" = {
+        "sources" = {}
         "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
       }
       "to" = {
@@ -91,6 +92,7 @@ locals {
 #    # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
 #    {
 #      "from" = {
+#        "sources" = {},
 #        "identities" = var.publ_vpc_sc_ah_subscriber_identities
 #      }
 #      "to" = {

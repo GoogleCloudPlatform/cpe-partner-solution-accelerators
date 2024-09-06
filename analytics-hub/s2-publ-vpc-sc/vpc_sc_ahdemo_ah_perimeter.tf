@@ -131,6 +131,7 @@ locals {
     # Private: Private: required for subscribing to the private listing (subscriber identity known => gathered from the subscriber) (To specific projects, gathered from the subscriber)
     {
       "from" = {
+        "sources" = {}
         "identities" = var.publ_vpc_sc_allow_all_for_public_listing ? [] : var.publ_vpc_sc_ah_subscriber_identities
         "identity_type" = var.publ_vpc_sc_allow_all_for_public_listing ? "ANY_IDENTITY" : null
       }
@@ -150,6 +151,7 @@ locals {
     # required for creating the listing
     {
       "from" = {
+        "sources" = {}
         "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
         "identity_type" = null
       }

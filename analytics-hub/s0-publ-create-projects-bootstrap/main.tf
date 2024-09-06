@@ -39,11 +39,10 @@ module "publ-project-factory" {
 
   name                 = each.value
   random_project_id    = false
-  org_id               = var.publ_vpc_sc_policy_parent_org_id
+  folder_id            = google_folder.publ-root.id
   billing_account      = var.billing_account_id
   activate_apis        = var.projects_activate_apis_seed
   default_service_account     = "deprivilege"
   disable_dependent_services  = false
   disable_services_on_destroy = false
 }
-
