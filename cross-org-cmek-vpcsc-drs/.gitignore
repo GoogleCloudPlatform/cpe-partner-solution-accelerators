@@ -1,0 +1,5 @@
+**/backend.tf
+generated/
+setup.sh.out
+setup.env
+INTERNAL_NOTES.txt
