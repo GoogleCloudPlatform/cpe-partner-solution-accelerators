@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resource "google_organization_iam_member" "org_admin_sa" {
-  for_each         = toset(var.org_admins_wide_iam_roles)
+resource "google_folder_iam_member" "folder_admin_user" {
+  for_each         = toset(var.folder_admins_wide_iam_roles)
 
-  org_id           = var.publ_vpc_sc_policy_parent_org_id
+  folder           = google_folder.publ-root.id
   role             = each.value
-  member           = "serviceAccount:${google_service_account.terraform_sa.email}"
+  member           = "user:${var.publ_admin_user}"
 }

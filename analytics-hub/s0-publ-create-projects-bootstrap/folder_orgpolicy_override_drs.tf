@@ -12,10 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resource "google_organization_iam_member" "org_admin_sa" {
-  for_each         = toset(var.org_admins_wide_iam_roles)
+# Override DRS - allow from provider project
+resource "google_org_policy_policy" "override_drs" {
+  parent = "${google_folder.publ-root.name}"
+  name   = "${google_folder.publ-root.name}/policies/iam.allowedPolicyMemberDomains"
 
-  org_id           = var.publ_vpc_sc_policy_parent_org_id
-  role             = each.value
-  member           = "serviceAccount:${google_service_account.terraform_sa.email}"
+  spec {
+    inherit_from_parent = true
+
+    rules {
+      values {
+        allowed_values = concat( ["is:principalSet://iam.googleapis.com/organizations/${var.subscr_vpc_sc_policy_parent_org_id}", "is:principalSet://iam.googleapis.com/organizations/${var.publ_vpc_sc_policy_parent_org_id}"], var.publ_drs_allowlisted_org_ids)
+      }
+    }
+  }
 }

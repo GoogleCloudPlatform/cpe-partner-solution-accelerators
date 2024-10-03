@@ -19,11 +19,3 @@ resource "google_organization_iam_member" "org_admin_sa" {
   role             = each.value
   member           = "serviceAccount:${google_service_account.terraform_sa.email}"
 }
-
-resource "google_organization_iam_member" "org_admin_user" {
-  for_each         = toset(var.org_admins_wide_iam_roles)
-
-  org_id           = var.subscr_vpc_sc_policy_parent_org_id
-  role             = each.value
-  member           = "user:${var.subscr_admin_user}"
-}
