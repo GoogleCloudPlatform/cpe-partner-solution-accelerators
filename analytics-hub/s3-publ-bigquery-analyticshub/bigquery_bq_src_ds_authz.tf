@@ -57,5 +57,5 @@ resource "google_bigquery_table" "src_table_authz" {
   table_id            = "ahdemo_${var.name_suffix}_src_table_authz"
   deletion_protection = false
   project             = data.google_project.publ_bq_src_ds.project_id
-  schema              = file("./bigquery/schema_src.json")
+  schema              = templatefile("./bigquery/schema_src.json.tpl", {policy_tag_name = google_data_catalog_policy_tag.child_policy_errorcode_src_ds.name})
 }

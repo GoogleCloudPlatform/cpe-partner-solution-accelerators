@@ -12,22 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Disable DRS everywhere - makes testing easier
-resource "google_org_policy_policy" "ah_projects_disable_drs" {
-  for_each = toset([
-    data.google_project.subscr_seed_project.name,
-    data.google_project.subscr_subscr_with_vpcsc.name,
-    data.google_project.subscr_subscr_without_vpcsc.name
-    ])
+resource "google_folder_iam_member" "folder_admin_user" {
+  for_each         = toset(var.folder_admins_wide_iam_roles)
 
-  name   = "projects/${each.value}/policies/constraints/iam.allowedPolicyMemberDomains"
-  parent = "projects/${each.value}"
-
-  spec {
-    inherit_from_parent = false
-
-    rules {
-      allow_all = "TRUE"
-    }
-  }
+  folder           = google_folder.subscr-root.id
+  role             = each.value
+  member           = "user:${var.subscr_admin_user}"
 }
