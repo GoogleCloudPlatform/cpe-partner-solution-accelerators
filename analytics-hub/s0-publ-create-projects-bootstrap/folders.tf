@@ -16,4 +16,5 @@
 resource "google_folder" "publ-root" {
   display_name = "${var.publ_project_id_prefix}-root"
   parent       = "organizations/${var.publ_vpc_sc_policy_parent_org_id}"
+  deletion_protection = false
 }
