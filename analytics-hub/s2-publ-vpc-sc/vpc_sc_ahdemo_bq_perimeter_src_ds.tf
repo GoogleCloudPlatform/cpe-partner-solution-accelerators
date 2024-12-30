@@ -129,6 +129,25 @@ locals {
         }
       }
     },
+    # Allow egress to bq_fed_ds (Google Service -> Google Service)
+    # required for creating the view from src_ds to fed_ds
+    {
+      "from" = {
+        "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
+      }
+      "to" = {
+        "resources" = [
+          "projects/${data.google_project.publ_bq_fed_ds.number}",
+        ]
+        "operations" = {
+          "bigquery.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          }
+        }
+      }
+    },
     # Allow egress to #subscriber_project_number (Google Service -> Google Service)
     # required for querying columns with privacy tags in src_ds from the subscriber projects
     {

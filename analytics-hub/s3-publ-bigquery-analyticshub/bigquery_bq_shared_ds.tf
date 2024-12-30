@@ -113,7 +113,7 @@ resource "google_bigquery_table" "shared_table" {
   table_id            = "ahdemo_${var.name_suffix}_shared_table"
   deletion_protection = false
   project             = data.google_project.publ_bq_shared_ds.project_id
-  schema              = templatefile("./bigquery/schema.json.tpl", {policy_tag_name = google_data_catalog_policy_tag.child_policy_errorcode_shared_ds.name})
+  schema              = var.publ_enable_policy_tags ? templatefile("./bigquery/schema.json.tpl", {policy_tag_name = google_data_catalog_policy_tag.child_policy_errorcode_shared_ds.name}) : file("./bigquery/schema.json")
 
   encryption_configuration {
     kms_key_name = google_kms_crypto_key.shared_ds_crypto_key.id
@@ -144,6 +144,20 @@ resource "google_bigquery_table" "shared_authz_view" {
   schema              = file("./bigquery/schema_src.json")
   view {
     query = "select * from `${google_bigquery_dataset.src_dataset.project}`.${google_bigquery_dataset.src_dataset_authz.dataset_id}.${google_bigquery_table.src_table_authz.table_id};"
+    use_legacy_sql = false
+  } 
+}
+
+resource "google_bigquery_table" "shared_authz_view_shared_src_fed" {
+  depends_on = [ google_bigquery_table.src_table_authz ]
+
+  dataset_id          = google_bigquery_dataset.shared_dataset.dataset_id
+  table_id            = "ahdemo_${var.name_suffix}_authz_view_from_shared_src_fed_ds"
+  deletion_protection = false
+  project             = data.google_project.publ_bq_shared_ds.project_id
+  schema              = file("./bigquery/schema_src.json")
+  view {
+    query = "select * from `${google_bigquery_dataset.src_dataset.project}`.${google_bigquery_dataset.src_dataset_authz.dataset_id}.${google_bigquery_table.src_fed_view_authz.table_id};"
     use_legacy_sql = false
   } 
 }

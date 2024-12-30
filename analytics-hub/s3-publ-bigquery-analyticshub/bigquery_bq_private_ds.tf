@@ -58,7 +58,7 @@ resource "google_bigquery_table" "private_src_table" {
   table_id            = "ahdemo_${var.name_suffix}_src_table"
   deletion_protection = false
   project             = data.google_project.publ_bq_shared_ds.project_id
-  schema              = templatefile("./bigquery/schema_src.json.tpl", {policy_tag_name = google_data_catalog_policy_tag.child_policy_errorcode_shared_ds.name})
+  schema              = var.publ_enable_policy_tags ? templatefile("./bigquery/schema_src.json.tpl", {policy_tag_name = google_data_catalog_policy_tag.child_policy_errorcode_shared_ds.name}) : file("./bigquery/schema_src.json")
 
   encryption_configuration {
     kms_key_name = google_kms_crypto_key.shared_ds_crypto_key.id

@@ -18,7 +18,7 @@ data "google_project" "publ_seed_project" {
 
 module "publ-project-services-seed" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 16.0.0"
+  version = "~> 17.0.0"
 
   project_id                  = data.google_project.publ_seed_project.project_id
   activate_apis               = var.projects_activate_apis_seed
@@ -28,6 +28,7 @@ module "publ-project-services-seed" {
 
 module "publ-project-factory" {
   for_each = toset( [
+    "${var.publ_project_id_bq_fed_ds}",
     "${var.publ_project_id_bq_src_ds}",
     "${var.publ_project_id_bq_shared_ds}",
     "${var.publ_project_id_ah_exchg}",
@@ -35,7 +36,7 @@ module "publ-project-factory" {
     "${var.publ_project_id_bq_and_ah}",
     ] )
   source  = "terraform-google-modules/project-factory/google"
-  version = "~> 16.0.0"
+  version = "~> 17.0.0"
 
   name                 = each.value
   random_project_id    = false
@@ -45,4 +46,5 @@ module "publ-project-factory" {
   default_service_account     = "deprivilege"
   disable_dependent_services  = false
   disable_services_on_destroy = false
+  deletion_policy = "DELETE"
 }
