@@ -28,6 +28,7 @@ billing_account_id = "{{BILLING_ACCOUNT_ID}}"
 # Projects need to be created using a different process due to internal policies
 publ_project_id_prefix = "{{PUBL_PROJECT_ID_PREFIX}}"
 publ_project_id_seed = "{{PUBL_PROJECT_ID_SEED}}"
+publ_project_id_bq_fed_ds = "{{PUBL_PROJECT_ID_BQ_FED_DS}}"
 publ_project_id_bq_src_ds = "{{PUBL_PROJECT_ID_BQ_SRC_DS}}"
 publ_project_id_bq_shared_ds = "{{PUBL_PROJECT_ID_BQ_SHARED_DS}}"
 publ_project_id_ah_exchg = "{{PUBL_PROJECT_ID_AH_EXCHG}}"
@@ -42,6 +43,8 @@ publ_terraform_sa_users_iam_members = [ "user:{{PUBL_TERRAFORM_SA_USER}}" ]
 publ_admin_user = "{{PUBL_ADMIN_USER}}"
 publ_project_owners = [ "user:{{PUBL_ADMIN_USER}}" ]
 publ_drs_allowlisted_org_ids = [ {{PUBL_DRS_ALLOWLISTED_ORG_IDS_S}} ]
+
+publ_enable_policy_tags = {{PUBL_ENABLE_POLICY_TAGS}}
 
 publ_vpc_sc_policy_parent_org_id = {{PUBLISHER_ORG_ID}} # {{PUBLISHER_ORG_NAME}}
 publ_vpc_sc_global_access_policy_name = "ahdemo-publisher-policy"

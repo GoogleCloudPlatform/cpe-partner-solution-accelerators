@@ -30,6 +30,15 @@ module "project-services-publ-bq-src-ds" {
   disable_services_on_destroy = false
 }
 
+module "project-services-publ-bq-fed-ds" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 17.0.0"
+
+  project_id                  = data.google_project.publ_bq_fed_ds.project_id
+  activate_apis               = var.projects_activate_apis
+  disable_services_on_destroy = false
+}
+
 module "project-services-publ-bq-shared-ds" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 17.0.0"
@@ -68,6 +77,10 @@ module "project-services-publ-bq-and-ah" {
 
 data "google_project" "publ_seed_project" {
   project_id = var.publ_project_id_seed
+}
+
+data "google_project" "publ_bq_fed_ds" {
+  project_id = var.publ_project_id_bq_fed_ds
 }
 
 data "google_project" "publ_bq_src_ds" {

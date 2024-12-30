@@ -167,6 +167,10 @@ variable "publ_project_id_seed" {
   description = "Google Cloud Project ID"
   type        = string
 }
+variable "publ_project_id_bq_fed_ds" {
+  description = "Google Cloud Project ID"
+  type        = string
+}
 variable "publ_project_id_bq_src_ds" {
   description = "Google Cloud Project ID"
   type        = string
@@ -218,6 +222,11 @@ variable "publ_admin_user" {
 variable "publ_project_owners" {
   description = "Additional IAM members to add to the publisher projects"
   type        = list
+}
+variable "publ_enable_policy_tags" {
+  description = "Enable policy tags on the errorcode column in the src tables"
+  type        = bool
+  default     = false
 }
 
 variable "publ_vpc_sc_policy_parent_org_id" {

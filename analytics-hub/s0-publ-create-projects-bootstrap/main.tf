@@ -28,6 +28,7 @@ module "publ-project-services-seed" {
 
 module "publ-project-factory" {
   for_each = toset( [
+    "${var.publ_project_id_bq_fed_ds}",
     "${var.publ_project_id_bq_src_ds}",
     "${var.publ_project_id_bq_shared_ds}",
     "${var.publ_project_id_ah_exchg}",
