@@ -19,7 +19,7 @@ locals {
     {
       "from" = {
         "sources" = {
-          access_levels = [ module.access_level_allow_corp.name ] # Allow access from corporate network IP ranges
+          access_levels = [ google_access_context_manager_access_level.access_level_allow_corp.title ] # Allow access from corporate network IP ranges
         },
         "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
         "identity_type" = null
@@ -41,7 +41,17 @@ locals {
             ]
             "permissions" = [
             ]
-          }
+          },
+          "bigquerydatapolicy.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
+          "datacatalog.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
         }
       }
     },
@@ -92,7 +102,7 @@ locals {
     {
       "from" = {
         "sources" = {
-          access_levels = [ module.access_level_allow_all.name ] # Allow access from everywhere ( "*" works as well)
+          access_levels = [ google_access_context_manager_access_level.access_level_allow_all.title ] # Allow access from everywhere ( "*" works as well)
           resources = []
         },
         "identities" = var.publ_vpc_sc_allow_all_for_public_listing ? [] : var.publ_vpc_sc_ah_subscriber_identities
@@ -131,7 +141,6 @@ locals {
     # Private: Private: required for subscribing to the private listing (subscriber identity known => gathered from the subscriber) (To specific projects, gathered from the subscriber)
     {
       "from" = {
-        "sources" = {}
         "identities" = var.publ_vpc_sc_allow_all_for_public_listing ? [] : var.publ_vpc_sc_ah_subscriber_identities
         "identity_type" = var.publ_vpc_sc_allow_all_for_public_listing ? "ANY_IDENTITY" : null
       }
@@ -151,7 +160,6 @@ locals {
     # required for creating the listing
     {
       "from" = {
-        "sources" = {}
         "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
         "identity_type" = null
       }
@@ -175,9 +183,9 @@ locals {
 
 module "regular_service_perimeter_ah" {
   source  = "terraform-google-modules/vpc-service-controls/google//modules/regular_service_perimeter"
-  version = "~> 6.0.0"
+  version = "5.2.1"
 
-  policy         = module.access_context_manager_policy.policy_id
+  policy         = google_access_context_manager_access_policy.access_policy.id
   perimeter_name = "ahdemo_${var.name_suffix}_publ_only_ah"
   description    = "ahdemo_${var.name_suffix}_publ_only_ah"
 

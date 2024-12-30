@@ -12,9 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Folder for all related projects
-resource "google_folder" "publ-root" {
-  display_name = "${var.publ_project_id_prefix}-root"
-  parent       = "organizations/${var.publ_vpc_sc_policy_parent_org_id}"
-  deletion_protection = false
+# Override DRS - allow from provider project
+resource "google_org_policy_policy" "override_drs" {
+  parent = "${google_folder.subscr-root.name}"
+  name   = "${google_folder.subscr-root.name}/policies/iam.allowedPolicyMemberDomains"
+
+  spec {
+    inherit_from_parent = true
+
+    rules {
+      values {
+        allowed_values = concat(["is:principalSet://iam.googleapis.com/organizations/${var.subscr_vpc_sc_policy_parent_org_id}"], var.subscr_drs_allowlisted_org_ids)
+      }
+    }
+  }
 }

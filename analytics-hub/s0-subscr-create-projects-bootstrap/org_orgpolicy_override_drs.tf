@@ -12,22 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Disable DRS in the AH projects - required for adding allAuthenticatedUsers
+# Override DRS in the AH seed project
 resource "google_org_policy_policy" "ah_projects_disable_drs" {
   for_each = toset([
-    data.google_project.publ_ah_exchg.name,
-    data.google_project.publ_nonvpcsc_ah_exchg.name,
-    data.google_project.publ_bq_and_ah.name,
+    data.google_project.subscr_seed_project.name,
     ])
 
   name   = "projects/${each.value}/policies/iam.allowedPolicyMemberDomains"
   parent = "projects/${each.value}"
 
   spec {
-    inherit_from_parent = false
+    inherit_from_parent = true
 
     rules {
-      allow_all = "TRUE"
+      values {
+        allowed_values = concat([
+          "is:principalSet://iam.googleapis.com/organizations/${var.publ_vpc_sc_policy_parent_org_id}", # needed for cross-org logging
+          "is:principalSet://iam.googleapis.com/organizations/${var.subscr_vpc_sc_policy_parent_org_id}"],
+          var.subscr_drs_allowlisted_org_ids)
+      }
     }
   }
 }

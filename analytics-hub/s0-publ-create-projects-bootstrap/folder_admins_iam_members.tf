@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Folder for all related projects
-resource "google_folder" "publ-root" {
-  display_name = "${var.publ_project_id_prefix}-root"
-  parent       = "organizations/${var.publ_vpc_sc_policy_parent_org_id}"
-  deletion_protection = false
+resource "google_folder_iam_member" "folder_admin_user" {
+  for_each         = toset(var.folder_admins_wide_iam_roles)
+
+  folder           = google_folder.publ-root.id
+  role             = each.value
+  member           = "user:${var.publ_admin_user}"
 }

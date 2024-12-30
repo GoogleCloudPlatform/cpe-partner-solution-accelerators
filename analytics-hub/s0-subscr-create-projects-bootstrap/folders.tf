@@ -16,4 +16,5 @@
 resource "google_folder" "subscr-root" {
   display_name = "${var.subscr_project_id_prefix}-root"
   parent       = "organizations/${var.subscr_vpc_sc_policy_parent_org_id}"
+  deletion_protection = false
 }

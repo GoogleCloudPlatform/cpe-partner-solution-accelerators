@@ -39,7 +39,17 @@ locals {
             "methods" = [
               "*",
             ]
-          }
+          },
+          "bigquerydatapolicy.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
+          "datacatalog.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
         }
       }
     },
@@ -101,7 +111,6 @@ locals {
     {
       "from" = {
         "identities" = var.subscr_vpc_sc_access_level_corp_allowed_identities
-        "sources" = {}
       }
       "to" = {
         "resources" = [
@@ -114,7 +123,35 @@ locals {
             "methods" = [
               "*",
             ]
-          }
+          },
+        }
+      }
+    },
+    # Allow egress to bq_shared_ds,bq_src_ds (Google Service -> Google Service)
+    # required for querying columns with policy tags
+    {
+      "from" = {
+        "identities" = var.subscr_vpc_sc_access_level_corp_allowed_identities
+      }
+      "to" = {
+        "resources" = [
+          "projects/${var.publ_project_number_bq_shared_ds}",
+          "projects/${var.publ_project_number_bq_src_ds}",
+          "projects/${var.publ_project_number_bq_and_ah}",
+        ]
+        "operations" = {
+          "bigquerydatapolicy.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
+          "bigquery.googleapis.com" = {
+            "methods" = [
+            ]
+            "permissions" = [
+              "datacatalog.categories.fineGrainedGet"
+            ]
+          },
         }
       }
     },
@@ -123,7 +160,7 @@ locals {
 
 module "regular_service_perimeter_subscr_with_vpcsc" {
   source  = "terraform-google-modules/vpc-service-controls/google//modules/regular_service_perimeter"
-  version = "~> 6.0.0"
+  version = "5.2.1"
 
   policy         = module.access_context_manager_policy.policy_id
   perimeter_name = "ahdemo_${var.name_suffix}_subscr_with_vpcsc_perimeter"

@@ -14,13 +14,13 @@
 
 # BOTH
 name_suffix = "{{SUFFIX}}"
-location = "us"
+location = "us-central1"
 region = "us-central1"
 zone = "us-central1-a"
 allowlisted_external_ip4_ranges = [ {{ALLOWLISTED_IPV4_S}} ]
 allowlisted_external_ip6_ranges = [ {{ALLOWLISTED_IPV6_S}} ]
 vpc_sc_dry_run = false
-vpc_sc_restricted_services = [ "analyticshub.googleapis.com","bigquery.googleapis.com" ]
+vpc_sc_restricted_services = [ "analyticshub.googleapis.com","bigquery.googleapis.com","bigquery.googleapis.com","bigquerydatapolicy.googleapis.com","datacatalog.googleapis.com" ]
 gcloud_user = "{{GCLOUD_USER}}"
 billing_account_id = "{{BILLING_ACCOUNT_ID}}"
 
@@ -28,6 +28,7 @@ billing_account_id = "{{BILLING_ACCOUNT_ID}}"
 # Projects need to be created using a different process due to internal policies
 publ_project_id_prefix = "{{PUBL_PROJECT_ID_PREFIX}}"
 publ_project_id_seed = "{{PUBL_PROJECT_ID_SEED}}"
+publ_project_id_bq_fed_ds = "{{PUBL_PROJECT_ID_BQ_FED_DS}}"
 publ_project_id_bq_src_ds = "{{PUBL_PROJECT_ID_BQ_SRC_DS}}"
 publ_project_id_bq_shared_ds = "{{PUBL_PROJECT_ID_BQ_SHARED_DS}}"
 publ_project_id_ah_exchg = "{{PUBL_PROJECT_ID_AH_EXCHG}}"
@@ -41,6 +42,9 @@ publ_terraform_sa_email = "{{PUBL_TERRAFORM_SA_EMAIL}}"
 publ_terraform_sa_users_iam_members = [ "user:{{PUBL_TERRAFORM_SA_USER}}" ]
 publ_admin_user = "{{PUBL_ADMIN_USER}}"
 publ_project_owners = [ "user:{{PUBL_ADMIN_USER}}" ]
+publ_drs_allowlisted_org_ids = [ {{PUBL_DRS_ALLOWLISTED_ORG_IDS_S}} ]
+
+publ_enable_policy_tags = {{PUBL_ENABLE_POLICY_TAGS}}
 
 publ_vpc_sc_policy_parent_org_id = {{PUBLISHER_ORG_ID}} # {{PUBLISHER_ORG_NAME}}
 publ_vpc_sc_global_access_policy_name = "ahdemo-publisher-policy"
@@ -54,6 +58,7 @@ publ_vpc_sc_access_level_corp_allowed_identities = [
 publ_vpc_sc_allow_all_for_public_listing = false
 publ_vpc_sc_ah_subscriber_identities = [ 
     "user:{{SUBSCRIBER_USER}}",
+    "user:{{SUBSCR_ADMIN_USER}}",
     "serviceAccount:{{SUBSCR_SUBSCRIBER_SA_EMAIL}}"
     ]
 publ_ah_subscribers_iam_members = [
@@ -77,6 +82,7 @@ subscr_terraform_sa_email = "{{SUBSCR_TERRAFORM_SA_EMAIL}}"
 subscr_terraform_sa_users_iam_members = [ "user:{{SUBSCR_TERRAFORM_SA_USER}}" ]
 subscr_admin_user = "{{SUBSCR_ADMIN_USER}}"
 subscr_project_owners = [ "user:{{SUBSCR_ADMIN_USER}}" ]
+subscr_drs_allowlisted_org_ids = [ {{SUBSCR_DRS_ALLOWLISTED_ORG_IDS_S}} ]
 
 subscr_vpc_sc_policy_parent_org_id = {{SUBSCRIBER_ORG_ID}} # {{SUBSCRIBER_ORG_NAME}}
 subscr_vpc_sc_global_access_policy_name = "ahdemo-subscriber-policy"
