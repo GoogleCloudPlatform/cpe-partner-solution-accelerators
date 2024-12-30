@@ -79,7 +79,7 @@ echo "Checking seed projects ${PUBL_PROJECT_ID_SEED} ${SUBSCR_PROJECT_ID_SEED} .
 gcloud_check_and_create_project $PUBLISHER_ORG_ID $BILLING_ACCOUNT_ID $PUBL_PROJECT_ID_SEED true
 gcloud_check_and_create_project $SUBSCRIBER_ORG_ID $BILLING_ACCOUNT_ID $SUBSCR_PROJECT_ID_SEED true
 
-for GOOGLE_API_SERVICE in "cloudresourcemanager.googleapis.com" "accesscontextmanager.googleapis.com" "iam.googleapis.com" "cloudbilling.googleapis.com"
+for GOOGLE_API_SERVICE in "cloudresourcemanager.googleapis.com" "accesscontextmanager.googleapis.com" "iam.googleapis.com" "cloudbilling.googleapis.com" "orgpolicy.googleapis.com"
 do
   for PROJECT_ID_SEED in "$PUBL_PROJECT_ID_SEED" "$SUBSCR_PROJECT_ID_SEED"
   do

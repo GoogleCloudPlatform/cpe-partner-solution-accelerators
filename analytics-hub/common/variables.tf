@@ -45,6 +45,7 @@ variable "pga_domains" {
   default     =  {
     "googleapis"  = "googleapis.com."
     "gcr" = "gcr.io."
+    "pkg" = "pkg.dev."
   }
 }
 variable "projects_activate_apis" {
@@ -62,6 +63,8 @@ variable "projects_activate_apis" {
     "accesscontextmanager.googleapis.com",
     "orgpolicy.googleapis.com",
     "cloudkms.googleapis.com",
+    "logging.googleapis.com",
+    "datacatalog.googleapis.com",
   ]
 }
 variable "projects_activate_apis_seed" {
@@ -76,6 +79,8 @@ variable "projects_activate_apis_seed" {
     "dns.googleapis.com",
     "servicenetworking.googleapis.com",
     "cloudkms.googleapis.com",
+    "logging.googleapis.com",
+    "datacatalog.googleapis.com",
   ]
 }
 variable "org_admins_wide_iam_roles" {
@@ -90,6 +95,20 @@ variable "org_admins_wide_iam_roles" {
     "roles/resourcemanager.organizationAdmin",
     "roles/resourcemanager.tagAdmin",
     "roles/orgpolicy.policyAdmin",
+    "roles/bigquery.admin",
+    "roles/logging.privateLogViewer",
+  ]
+}
+variable "folder_admins_wide_iam_roles" {
+  description = "IAM roles to grant on the Cloud Organization for admins"
+  type        = list
+  default     = [
+    "roles/owner",
+    "roles/resourcemanager.projectIamAdmin",
+    "roles/browser",
+    "roles/accesscontextmanager.policyAdmin",
+    "roles/resourcemanager.folderAdmin",
+    "roles/resourcemanager.tagAdmin",
     "roles/bigquery.admin",
     "roles/logging.privateLogViewer",
   ]
@@ -148,6 +167,10 @@ variable "publ_project_id_seed" {
   description = "Google Cloud Project ID"
   type        = string
 }
+variable "publ_project_id_bq_fed_ds" {
+  description = "Google Cloud Project ID"
+  type        = string
+}
 variable "publ_project_id_bq_src_ds" {
   description = "Google Cloud Project ID"
   type        = string
@@ -200,6 +223,11 @@ variable "publ_project_owners" {
   description = "Additional IAM members to add to the publisher projects"
   type        = list
 }
+variable "publ_enable_policy_tags" {
+  description = "Enable policy tags on the errorcode column in the src tables"
+  type        = bool
+  default     = false
+}
 
 variable "publ_vpc_sc_policy_parent_org_id" {
   description = "VPC SC policy parent organization id"
@@ -241,6 +269,11 @@ variable "publ_ah_subscribers_iam_members" {
 }
 variable "publ_ah_subscription_viewers_iam_members" {
   description = "AH allowed subscription viewers (can request access, can't subscribe)"
+  type        = list
+  default     = []
+}
+variable "publ_drs_allowlisted_org_ids" {
+  description = "Allowlisted domains for DRS OrgPolicy"
   type        = list
   default     = []
 }
@@ -333,6 +366,11 @@ variable "subscr_subscriber_sa_email" {
 }
 variable "subscr_subscriber_sa_users_iam_members" {
   description = "List of users who can impersonate the subscriber SA"
+  type        = list
+  default     = []
+}
+variable "subscr_drs_allowlisted_org_ids" {
+  description = "Allowlisted domains for DRS OrgPolicy"
   type        = list
   default     = []
 }

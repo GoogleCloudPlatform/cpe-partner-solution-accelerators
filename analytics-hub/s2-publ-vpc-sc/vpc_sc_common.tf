@@ -24,30 +24,49 @@ locals {
     )
 }
 
-module "access_context_manager_policy" {
-  source  = "terraform-google-modules/vpc-service-controls/google"
-  version = "~> 6.0.0"
-
-  parent_id   = var.publ_vpc_sc_policy_parent_org_id
-  policy_name = var.publ_vpc_sc_global_access_policy_name
+resource "google_access_context_manager_access_policy" "access_policy" {
+    parent = "organizations/${var.publ_vpc_sc_policy_parent_org_id}"
+    title  = var.publ_vpc_sc_global_access_policy_name
+    scopes = []
 }
 
-module "access_level_allow_all" {
-  source  = "terraform-google-modules/vpc-service-controls/google//modules/access_level"
-  version = "~> 6.0.0"
+resource "google_access_context_manager_access_level" "access_level_allow_all" {
+    description = "Allow all IPv4 and IPv6 ranges"
+    name        = "accessPolicies/${google_access_context_manager_access_policy.access_policy.id}/accessLevels/ahdemo_${var.name_suffix}_allow_all"
+    parent      = "accessPolicies/${google_access_context_manager_access_policy.access_policy.id}"
+    title       = "ahdemo_${var.name_suffix}_allow_all"
 
-  policy         = module.access_context_manager_policy.policy_id
-  name           = "ahdemo_${var.name_suffix}_allow_all"
-  ip_subnetworks = [ "0.0.0.0/0", "::/0" ]
-  description    = "Allow all IPv4 and IPv6 ranges"
+    basic {
+        combining_function = "AND"
+
+        conditions {
+            ip_subnetworks         = [
+                "0.0.0.0/0",
+                "::/0",
+            ]
+            members                = []
+            negate                 = false
+            regions                = []
+            required_access_levels = []
+        }
+    }
 }
 
-module "access_level_allow_corp" {
-  source  = "terraform-google-modules/vpc-service-controls/google//modules/access_level"
-  version = "~> 6.0.0"
+resource "google_access_context_manager_access_level" "access_level_allow_corp" {
+    description = "Allow specific IPv4 and IPv6 ranges for internal users / admins"
+    name        = "accessPolicies/${google_access_context_manager_access_policy.access_policy.id}/accessLevels/ahdemo_${var.name_suffix}_allow_corp"
+    parent      = "accessPolicies/${google_access_context_manager_access_policy.access_policy.id}"
+    title       = "ahdemo_${var.name_suffix}_allow_corp"
 
-  policy         = module.access_context_manager_policy.policy_id
-  name           = "ahdemo_${var.name_suffix}_allow_corp"
-  ip_subnetworks = var.publ_vpc_sc_access_level_corp_ip_subnetworks
-  description    = "Allow specific IPv4 and IPv6 ranges for internal users / admins"
+    basic {
+        combining_function = "AND"
+
+        conditions {
+            ip_subnetworks         = var.publ_vpc_sc_access_level_corp_ip_subnetworks
+            members                = []
+            negate                 = false
+            regions                = []
+            required_access_levels = []
+        }
+    }
 }
