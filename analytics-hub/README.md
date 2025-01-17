@@ -109,6 +109,9 @@ If symbolic links don't work, copy the required files into each stage:
 - IAM roles
   - Organization: Project Creator, Organization Admin
 
+- Clone the VPC SC module
+  - `git clone https://github.com/terraform-google-modules/terraform-google-vpc-service-controls.git`
+
 <!-- TOC --><a name="step-0-create-seed-setup-0-google-cloud-seedsh"></a>
 ### Step 0 - Create seed (setup-0-google-cloud-seed.sh)
 

@@ -200,8 +200,10 @@ locals {
 }
 
 module "regular_service_perimeter_subscr_with_vpcsc" {
-  source  = "terraform-google-modules/vpc-service-controls/google//modules/regular_service_perimeter"
-  version = "5.2.1"
+  source  = "../terraform-google-vpc-service-controls/modules/regular_service_perimeter"
+# TODO: the current release is buggy with egress.source, upgrade when fixed
+# source  = "terraform-google-modules/vpc-service-controls/google//modules/regular_service_perimeter"
+# version = "6.2.0"
 
   policy         = module.access_context_manager_policy.policy_id
   perimeter_name = "ahdemo_${var.name_suffix}_subscr_with_vpcsc_perimeter"
@@ -212,8 +214,8 @@ module "regular_service_perimeter_subscr_with_vpcsc" {
 
   access_levels = []
 
-  resources = var.vpc_sc_dry_run ? [] : [ google_compute_network.vpc_xpn.self_link ]
-  resources_dry_run = var.vpc_sc_dry_run ? [ google_compute_network.vpc_xpn.self_link ] : []
+  resources = var.vpc_sc_dry_run ? [] : [ replace(google_compute_network.vpc_network_xpn.self_link, "https://www.googleapis.com/compute/v1/", "") ]
+  resources_dry_run = var.vpc_sc_dry_run ? [ replace(google_compute_network.vpc_network_xpn.self_link, "https://www.googleapis.com/compute/v1/", "") ] : []
 #  resources = var.vpc_sc_dry_run ? [] : [ data.google_project.subscr_subscr_with_vpcsc.number, data.google_project.subscr_subscr_xpn.number, data.google_project.subscr_subscr_vm.number ]
 #  resources_dry_run = var.vpc_sc_dry_run ? [ data.google_project.subscr_subscr_with_vpcsc.number, data.google_project.subscr_subscr_xpn.number, data.google_project.subscr_subscr_vm.number ] : []
 

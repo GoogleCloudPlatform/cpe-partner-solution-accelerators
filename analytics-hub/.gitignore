@@ -11,3 +11,4 @@ setup.env
 INTERNAL_NOTES.txt
 s0-subscr-create-projects-bootstrap/folders.tf
 history.log
+terraform-google-vpc-service-controls
