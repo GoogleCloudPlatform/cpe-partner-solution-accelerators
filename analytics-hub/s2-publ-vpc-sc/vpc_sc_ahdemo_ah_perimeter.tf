@@ -55,7 +55,7 @@ locals {
         }
       }
     },
-    # Allow off-perimeter subscribers (Cloud Console users) in var.publ_vpc_sc_ah_subscriber_identities from specific subscriber projects
+    # Allow off-perimeter subscribers (service accounts) in var.publ_vpc_sc_ah_subscriber_identities from specific subscriber projects
     # required for subscribing to the private listing using a jumphost (subscriber identity known => gathered upon contracting)
     # this is an alternative to access_level based allow_all for Cloud Console / external users: project based allow to subscribe via API call from a jumphost
     {
@@ -65,10 +65,13 @@ locals {
           resources = [ 
             "projects/${var.subscr_project_number_seed}",
             "projects/${var.subscr_project_number_subscr_with_vpcsc}",
-            "projects/${var.subscr_project_number_subscr_without_vpcsc}"
+            "projects/${var.subscr_project_number_subscr_without_vpcsc}",
+            "projects/${var.subscr_project_number_subscr_xpn}",
+#            "projects/${var.subscr_project_number_subscr_vm}",
             ]
         },
-        "identities" = var.publ_vpc_sc_ah_subscriber_identities
+        # Filter for service accounts
+        "identities" = toset([for each in var.publ_vpc_sc_ah_subscriber_identities : each if startswith(each, "serviceAccount")])
         "identity_type" = null
       }
       "to" = {
@@ -96,7 +99,7 @@ locals {
         }
       }
     },
-    # Allow off-perimeter subscribers (Cloud Console users) from anywhere
+    # Allow off-perimeter subscribers (Cloud Console users / end user accounts) from anywhere
     # Public: required for subscribing to the public listing (allAuthenticatedUsers or allUsers => subscriber identity not known => ANY_IDENTITY)
     # Private: required for subscribing to the private listing (subscriber identity known => gathered upon contracting => in var.publ_vpc_sc_ah_subscriber_identities)
     {
@@ -105,7 +108,8 @@ locals {
           access_levels = [ google_access_context_manager_access_level.access_level_allow_all.title ] # Allow access from everywhere ( "*" works as well)
           resources = []
         },
-        "identities" = var.publ_vpc_sc_allow_all_for_public_listing ? [] : var.publ_vpc_sc_ah_subscriber_identities
+        # Filter for user accounts
+        "identities" = var.publ_vpc_sc_allow_all_for_public_listing ? [] : toset([for each in var.publ_vpc_sc_ah_subscriber_identities : each if startswith(each, "user")])
         "identity_type" = var.publ_vpc_sc_allow_all_for_public_listing ? "ANY_IDENTITY" : null
       }
       "to" = {

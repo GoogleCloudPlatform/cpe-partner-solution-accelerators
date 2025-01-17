@@ -50,3 +50,11 @@ data "google_project" "subscr_subscr_with_vpcsc" {
 data "google_project" "subscr_subscr_without_vpcsc" {
   project_id = var.subscr_project_id_subscr_without_vpcsc
 }
+
+data "google_project" "subscr_subscr_xpn" {
+  project_id = var.subscr_project_id_subscr_xpn
+}
+
+data "google_project" "subscr_subscr_vm" {
+  project_id = var.subscr_project_id_subscr_vm
+}

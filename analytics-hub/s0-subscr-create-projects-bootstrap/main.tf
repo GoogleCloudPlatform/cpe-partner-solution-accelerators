@@ -30,6 +30,8 @@ module "subscr-project-factory" {
   for_each = toset( [
     "${var.subscr_project_id_subscr_with_vpcsc}",
     "${var.subscr_project_id_subscr_without_vpcsc}",
+    "${var.subscr_project_id_subscr_xpn}",
+    "${var.subscr_project_id_subscr_vm}",
     ] )
   source  = "terraform-google-modules/project-factory/google"
   version = "~> 17.0.0"

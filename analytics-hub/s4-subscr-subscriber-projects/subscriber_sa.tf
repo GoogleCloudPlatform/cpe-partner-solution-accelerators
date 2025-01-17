@@ -18,7 +18,7 @@ data "google_service_account" "subscriber_sa" {
 }
 
 resource "google_service_account_iam_member" "subscriber_sa_user" {
-  for_each = toset(var.subscr_subscriber_sa_users_iam_members)
+  for_each = toset(concat(var.subscr_subscriber_sa_users_iam_members, [ "serviceAccount:${data.google_compute_default_service_account.default_xpn.email}", "serviceAccount:${data.google_compute_default_service_account.default_vm.email}" ]) )
 
   service_account_id = data.google_service_account.subscriber_sa.name
   role               = "roles/iam.serviceAccountUser"
@@ -26,7 +26,7 @@ resource "google_service_account_iam_member" "subscriber_sa_user" {
 }
 
 resource "google_service_account_iam_member" "subscriber_sa_token_creator" {
-  for_each = toset(var.subscr_subscriber_sa_users_iam_members)
+  for_each = toset(concat(var.subscr_subscriber_sa_users_iam_members, [ "serviceAccount:${data.google_compute_default_service_account.default_xpn.email}", "serviceAccount:${data.google_compute_default_service_account.default_vm.email}" ]) )
 
   service_account_id = data.google_service_account.subscriber_sa.name
   role               = "roles/iam.serviceAccountTokenCreator"

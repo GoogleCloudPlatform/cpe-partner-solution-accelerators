@@ -97,6 +97,7 @@ variable "org_admins_wide_iam_roles" {
     "roles/orgpolicy.policyAdmin",
     "roles/bigquery.admin",
     "roles/logging.privateLogViewer",
+    "roles/compute.xpnAdmin"
   ]
 }
 variable "folder_admins_wide_iam_roles" {
@@ -292,6 +293,14 @@ variable "subscr_project_id_subscr_with_vpcsc" {
   type        = string
 }
 variable "subscr_project_id_subscr_without_vpcsc" {
+  description = "Google Cloud Project ID"
+  type        = string
+}
+variable "subscr_project_id_subscr_xpn" {
+  description = "Google Cloud Project ID"
+  type        = string
+}
+variable "subscr_project_id_subscr_vm" {
   description = "Google Cloud Project ID"
   type        = string
 }
