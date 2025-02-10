@@ -1,0 +1,43 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     https://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+project_id = "<PROJECT_ID>"
+dns_zone_name = "custom-domain-zone"
+dns_custom_domain = "entapp.mydomain.tld."
+ad_dns_domain = "addom.entapp.mydomain.tld."
+ad_admin_username = "domjoin"
+# Coming from "Configure Active Directory for VMs to automatically join a domain"
+# Source: https://github.com/GoogleCloudPlatform/gce-automated-ad-join/tree/master/ad-joining
+# Instructions: https://cloud.google.com/architecture/configuring-active-directory-for-vms-to-automatically-join-the-domain
+ad_secret_expires = "2025-01-24T18:30:00Z"
+ad_register_image = "europe-west3-docker.pkg.dev/my-registry-project-id/my-repo/regfunc:v3"
+ad_register_projects_dn = "OU=Projects,DC=entapp,DC=mydomain,DC=tld"
+ad_register_username = "ADDOM\\register-computer"
+
+allowlisted_external_ip_ranges = [
+    "212.51.151.0/24", # home
+    "178.197.222.0/24", # swisscom
+    "2a02:168:5231:0::/64", # home
+]
+
+allowlisted_external_ip_ranges_v6only = [
+    "2a02:168:5231::/64", # home
+]
+
+allowlisted_external_ip_ranges_v4only = [
+    "212.51.151.0/24", # home
+    "178.197.222.0/24", # swisscom
+]
+
+tf_state_bucket = "<TF_STATE_BUCKET>"
