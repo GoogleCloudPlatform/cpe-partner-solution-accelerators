@@ -1,14 +1,16 @@
 s0-publ-create-projects-bootstrap/backend.tf
 s0-subscr-create-projects-bootstrap/backend.tf
+#s0-subscr-create-projects-bootstrap/folders.tf
 s1-publ-bootstrap/backend.tf
 s1-subscr-bootstrap/backend.tf
 s2-publ-vpc-sc/backend.tf
 s3-publ-bigquery-analyticshub/backend.tf
 s4-subscr-subscriber-projects/backend.tf
+s5-subscr-subscribe/backend.tf
+s5-subscr-subscribe/terraform.publ_ahlistings.auto.tfvars
 generated/
 setup.sh.out
 setup.env
 INTERNAL_NOTES.txt
-s0-subscr-create-projects-bootstrap/folders.tf
 history.log
 terraform-google-vpc-service-controls

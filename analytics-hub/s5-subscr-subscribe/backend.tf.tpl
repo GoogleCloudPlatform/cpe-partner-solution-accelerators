@@ -14,7 +14,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "{{PUBL_STATE_BUCKET}}"
-    prefix = "terraform/publ-bigquery-analyticshub/state"
+    bucket = "{{SUBSCR_STATE_BUCKET}}"
+    prefix = "terraform/subscr-subscribe/state"
   }
 }

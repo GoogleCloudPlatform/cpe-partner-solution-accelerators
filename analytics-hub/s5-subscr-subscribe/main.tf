@@ -12,9 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  backend "gcs" {
-    bucket = "{{PUBL_STATE_BUCKET}}"
-    prefix = "terraform/publ-bigquery-analyticshub/state"
-  }
+data "google_project" "subscr_seed_project" {
+  project_id = var.subscr_project_id_seed
+}
+
+data "google_project" "subscr_subscr_with_vpcsc" {
+  project_id = var.subscr_project_id_subscr_with_vpcsc
+}
+
+data "google_project" "subscr_subscr_without_vpcsc" {
+  project_id = var.subscr_project_id_subscr_without_vpcsc
+}
+
+data "google_project" "subscr_subscr_xpn" {
+  project_id = var.subscr_project_id_subscr_xpn
+}
+
+data "google_project" "subscr_subscr_vm" {
+  project_id = var.subscr_project_id_subscr_vm
 }

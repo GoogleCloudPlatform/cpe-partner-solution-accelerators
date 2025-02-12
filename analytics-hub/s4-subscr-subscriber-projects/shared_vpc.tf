@@ -110,6 +110,8 @@ resource "google_compute_instance" "jumphost_in_xpn" {
 }
 
 resource "google_compute_instance" "jumphost_in_vm" {
+  depends_on   = [ google_compute_shared_vpc_service_project.service1 ]
+
   project      = data.google_project.subscr_subscr_vm.name
   zone         = var.zone
   name         = "jumphost-vm"

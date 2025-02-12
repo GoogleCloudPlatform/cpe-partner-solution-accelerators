@@ -199,10 +199,8 @@ locals {
 }
 
 module "regular_service_perimeter_bq_src_ds" {
-  source  = "../terraform-google-vpc-service-controls/modules/regular_service_perimeter"
-# TODO: the current release is buggy with egress.source, upgrade when fixed
-# source  = "terraform-google-modules/vpc-service-controls/google//modules/regular_service_perimeter"
-# version = "6.2.0"
+  source  = "terraform-google-modules/vpc-service-controls/google//modules/regular_service_perimeter"
+  version = "6.2.1"
 
   policy         = google_access_context_manager_access_policy.access_policy.id
   perimeter_name = "ahdemo_${var.name_suffix}_publ_bq_src_ds"

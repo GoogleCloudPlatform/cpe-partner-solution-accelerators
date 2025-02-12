@@ -26,7 +26,7 @@ terraform {
 }
 
 provider "google-beta" {
-  project     = var.subscr_project_id_seed
+  project     = var.subscr_project_id_subscr_with_vpcsc
   region      = var.region
   zone        = var.zone
   user_project_override = true
@@ -34,7 +34,7 @@ provider "google-beta" {
 }
 
 provider "google" {
-  project     = var.subscr_project_id_seed
+  project     = var.subscr_project_id_subscr_with_vpcsc
   region      = var.region
   zone        = var.zone
   user_project_override = true

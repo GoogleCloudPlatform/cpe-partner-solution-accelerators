@@ -59,11 +59,13 @@ publ_vpc_sc_allow_all_for_public_listing = false
 publ_vpc_sc_ah_subscriber_identities = [ 
     "user:{{SUBSCRIBER_USER}}",
     "user:{{SUBSCR_ADMIN_USER}}",
-    "serviceAccount:{{SUBSCR_SUBSCRIBER_SA_EMAIL}}"
+    "serviceAccount:{{SUBSCR_SUBSCRIBER_SA_EMAIL}}",
+    "serviceAccount:{{SUBSCR_TERRAFORM_SA_EMAIL}}"
     ]
 publ_ah_subscribers_iam_members = [
     "user:{{SUBSCRIBER_USER}}",
-    "serviceAccount:{{SUBSCR_SUBSCRIBER_SA_EMAIL}}"
+    "serviceAccount:{{SUBSCR_SUBSCRIBER_SA_EMAIL}}",
+    "serviceAccount:{{SUBSCR_TERRAFORM_SA_EMAIL}}"
     ]
 publ_ah_subscription_viewers_iam_members = [
     "user:{{SUBSCRIPTION_VIEWER_USER}}",

@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  backend "gcs" {
-    bucket = "{{PUBL_STATE_BUCKET}}"
-    prefix = "terraform/publ-bigquery-analyticshub/state"
-  }
+data "google_service_account" "subscriber_sa" {
+  project      = data.google_project.subscr_seed_project.project_id
+  account_id   = var.subscr_subscriber_sa_email
 }
