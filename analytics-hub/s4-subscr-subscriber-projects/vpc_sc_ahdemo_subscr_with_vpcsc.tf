@@ -39,7 +39,17 @@ locals {
             "methods" = [
               "*",
             ]
-          }
+          },
+          "bigquerydatapolicy.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
+          "datacatalog.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
         }
       }
     },
@@ -101,7 +111,6 @@ locals {
     {
       "from" = {
         "identities" = var.subscr_vpc_sc_access_level_corp_allowed_identities
-        "sources" = {}
       }
       "to" = {
         "resources" = [
@@ -114,7 +123,76 @@ locals {
             "methods" = [
               "*",
             ]
-          }
+          },
+        }
+      }
+    },
+    # Allow egress to subscr_with_vpcsc,subscr_without_vpcsc (Google Service -> Google Service)
+    # When only the shared VPC network is part of the VPC-SC perimeter (and not the service and host projects themselves): required for subscribing to the listing from a jumphost attached to the shared VPC
+    {
+      "from" = {
+        "identities" = var.subscr_vpc_sc_access_level_corp_allowed_identities
+      }
+      "to" = {
+        "resources" = [
+          "projects/${var.subscr_project_number_subscr_with_vpcsc}",
+          "projects/${var.subscr_project_number_subscr_without_vpcsc}",
+        ]
+        "operations" = {
+          "bigquery.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
+        }
+      }
+    },
+    # Allow egress to ah_exchg,bq_and_ah,nonvpcsc_ah_exchg (Google Service -> Google Service)
+    # When the host and service projects are part of the VPC-SC perimeter (and not the network itself): required for subscribing to the listing from a jumphost within the perimeter (projects -xpn -vm)
+    {
+      "from" = {
+        "identities" = var.subscr_vpc_sc_access_level_corp_allowed_identities
+      }
+      "to" = {
+        "resources" = [
+          "projects/${var.publ_project_number_ah_exchg}",
+          "projects/${var.publ_project_number_bq_and_ah}",
+          "projects/${var.publ_project_number_nonvpcsc_ah_exchg}",
+        ]
+        "operations" = {
+          "analyticshub.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
+        }
+      }
+    },
+    # Allow egress to bq_shared_ds,bq_src_ds (Google Service -> Google Service)
+    # required for querying columns with policy tags
+    {
+      "from" = {
+        "identities" = var.subscr_vpc_sc_access_level_corp_allowed_identities
+      }
+      "to" = {
+        "resources" = [
+          "projects/${var.publ_project_number_bq_shared_ds}",
+          "projects/${var.publ_project_number_bq_src_ds}",
+          "projects/${var.publ_project_number_bq_and_ah}",
+        ]
+        "operations" = {
+          "bigquerydatapolicy.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
+          "bigquery.googleapis.com" = {
+            "methods" = [
+            ]
+            "permissions" = [
+              "datacatalog.categories.fineGrainedGet"
+            ]
+          },
         }
       }
     },
@@ -123,7 +201,7 @@ locals {
 
 module "regular_service_perimeter_subscr_with_vpcsc" {
   source  = "terraform-google-modules/vpc-service-controls/google//modules/regular_service_perimeter"
-  version = "~> 6.0.0"
+  version = "6.2.1"
 
   policy         = module.access_context_manager_policy.policy_id
   perimeter_name = "ahdemo_${var.name_suffix}_subscr_with_vpcsc_perimeter"
@@ -134,8 +212,11 @@ module "regular_service_perimeter_subscr_with_vpcsc" {
 
   access_levels = []
 
-  resources = var.vpc_sc_dry_run ? [] : [ data.google_project.subscr_subscr_with_vpcsc.number ]
-  resources_dry_run = var.vpc_sc_dry_run ? [ data.google_project.subscr_subscr_with_vpcsc.number ] : []
+  resources = var.vpc_sc_dry_run ? [] : [ data.google_project.subscr_subscr_with_vpcsc.number, data.google_project.subscr_subscr_xpn.number, data.google_project.subscr_subscr_vm.number ]
+  resources_dry_run = var.vpc_sc_dry_run ? [ data.google_project.subscr_subscr_with_vpcsc.number, data.google_project.subscr_subscr_xpn.number, data.google_project.subscr_subscr_vm.number ] : []
+#  For testing from Shared VPC host and service projects
+#  resources = var.vpc_sc_dry_run ? [] : [ replace(google_compute_network.vpc_network_xpn.self_link, "https://www.googleapis.com/compute/v1/", "") ]
+#  resources_dry_run = var.vpc_sc_dry_run ? [ replace(google_compute_network.vpc_network_xpn.self_link, "https://www.googleapis.com/compute/v1/", "") ] : []
 
   ingress_policies = var.vpc_sc_dry_run ? [] : local.ingress_policies_subscriber_perimeter
   ingress_policies_dry_run = var.vpc_sc_dry_run ? local.ingress_policies_subscriber_perimeter : []

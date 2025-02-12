@@ -14,7 +14,10 @@ This repository hosts automation (Terraform, scripts, python, golang) that creat
    * [Step 4 - Publisher - Create VPC-SC resources: (singleton) Global Access Policy, Access Levels, Perimeters](#step-4-publisher-create-vpc-sc-resources-singleton-global-access-policy-access-levels-perimeters)
    * [Step 5 - Publisher - Create BigQuery, Analytics Hub resources: datasets, views, exchanges, listings](#step-5-publisher-create-bigquery-analytics-hub-resources-datasets-views-exchanges-listings)
    * [Step 6 - Publisher - Load sample data](#step-6-publisher-load-sample-data)
-   * [Stage 7 - Subscriber project, subscribe API call scripts](#stage-7-subscriber-project-subscribe-api-call-scripts)
+   * [Stage 7 - Subscriber project, bootstrap](#stage-7-subscriber-project-bootstrap)
+   * Stage 8 - Subscriber project, subscribe
+     * [Subscribe using API call scripts](#stage-8-subscriber-project-subscribe-api)
+     * [Subscribe from Terraform](#stage-8-subscriber-project-subscribe-terraform)
 - [Data Clean Rooms](#data-clean-rooms)
 - [Testing](#testing)
    * [Helper scripts](#helper-scripts)
@@ -108,6 +111,9 @@ If symbolic links don't work, copy the required files into each stage:
 
 - IAM roles
   - Organization: Project Creator, Organization Admin
+
+- Clone the VPC SC module
+  - `git clone https://github.com/terraform-google-modules/terraform-google-vpc-service-controls.git`
 
 <!-- TOC --><a name="step-0-create-seed-setup-0-google-cloud-seedsh"></a>
 ### Step 0 - Create seed (setup-0-google-cloud-seed.sh)
@@ -355,13 +361,38 @@ Waiting on bqjob_r3f763c55181ac535_0000018f0a962f01_1 ... (3s) Current status: D
 user@workstation:~$ gcloud config unset auth/impersonate_service_account
 ```
 
-<!-- TOC --><a name="stage-7-subscriber-project-subscribe-api-call-scripts"></a>
-### Stage 7 - Subscriber project, subscribe API call scripts
+<!-- TOC --><a name="stage-7-subscriber-project-bootstrap"></a>
+### Stage 7 - Subscriber project, bootstrap
 
 Usage:
 
 ```
 user@workstation:~$ cd s4-subscr-subscriber-projects
+user@workstation:~$ export GOOGLE_BACKEND_IMPERSONATE_SERVICE_ACCOUNT="terraform-0419c0@ahd-subscr-0419c0-seed.iam.gserviceaccount.com"
+user@workstation:~$ export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="terraform-0419c0@ahd-subscr-0419c0-seed.iam.gserviceaccount.com"
+user@workstation:~$ tf init
+user@workstation:~$ tf apply
+```
+
+<!-- TOC --><a name="stage-8-subscriber-project-subscribe-api"></a>
+### Stage 8 - Subscriber project, subscribe using API
+
+The following scripts are generated to help with testing subscription:
+
+- `generated/subscribe_priv_ah_dedicated.sh`
+- `generated/subscribe_priv_bqah.sh`
+- `generated/subscribe_priv_nonvpcsc_ah_dedicated.sh`
+- `generated/subscribe_publ_ah_dedicated.sh`
+- `generated/subscribe_publ_bqah.sh`
+- `generated/subscribe_publ_nonvpcsc_ah_dedicated.sh`
+
+<!-- TOC --><a name="stage-8-subscriber-project-subscribe-terraform"></a>
+### Stage 8 - Subscriber project, subscribe using Terraform
+
+Usage:
+
+```
+user@workstation:~$ cd s5-subscr-subscribe
 user@workstation:~$ export GOOGLE_BACKEND_IMPERSONATE_SERVICE_ACCOUNT="terraform-0419c0@ahd-subscr-0419c0-seed.iam.gserviceaccount.com"
 user@workstation:~$ export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="terraform-0419c0@ahd-subscr-0419c0-seed.iam.gserviceaccount.com"
 user@workstation:~$ tf init

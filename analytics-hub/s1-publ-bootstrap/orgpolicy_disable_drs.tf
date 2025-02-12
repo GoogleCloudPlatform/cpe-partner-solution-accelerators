@@ -12,17 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Disable DRS everywhere - makes testing easier
+# Disable DRS in the AH projects - required for adding allAuthenticatedUsers
 resource "google_org_policy_policy" "ah_projects_disable_drs" {
   for_each = toset([
     data.google_project.publ_ah_exchg.name,
     data.google_project.publ_nonvpcsc_ah_exchg.name,
     data.google_project.publ_bq_and_ah.name,
-    data.google_project.publ_bq_shared_ds.name,
-    data.google_project.publ_bq_src_ds.name,
     ])
 
-  name   = "projects/${each.value}/policies/constraints/iam.allowedPolicyMemberDomains"
+  name   = "projects/${each.value}/policies/iam.allowedPolicyMemberDomains"
   parent = "projects/${each.value}"
 
   spec {

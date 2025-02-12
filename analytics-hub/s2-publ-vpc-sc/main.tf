@@ -16,6 +16,10 @@ data "google_project" "publ_seed_project" {
   project_id = var.publ_project_id_seed
 }
 
+data "google_project" "publ_bq_fed_ds" {
+  project_id = var.publ_project_id_bq_fed_ds
+}
+
 data "google_project" "publ_bq_src_ds" {
   project_id = var.publ_project_id_bq_src_ds
 }
