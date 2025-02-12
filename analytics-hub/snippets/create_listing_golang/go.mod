@@ -2,7 +2,7 @@ module example/create_listing
 
 go 1.22
 
-toolchain go1.23.5
+toolchain go1.24.0
 
 require (
 	cloud.google.com/go/bigquery v1.62.0
