@@ -27,5 +27,7 @@ $ ./create_listing_golang \
   -subscription_viewer_iam_member user:user@domain.com \
   -dcr_shared_table ahdemo_0429c0_shared_table \
   -dcr_privacy_column endpoint \
+  -dcr_exchange_id ahdemo_golang_exchg_dcr
+  -dcr_listing_id ahdemo_golang_listing_dcr
   -dcr_view view_ahdemo_0429c0_shared_table_go_dcr
 ```
