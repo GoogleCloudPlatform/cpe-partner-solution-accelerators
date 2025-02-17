@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	cloud.google.com/go/bigquery v1.66.2
 	cloud.google.com/go/iam v1.3.1
-	google.golang.org/api v0.220.0
+	google.golang.org/api v0.221.0
 	google.golang.org/grpc v1.70.0
 )
 
