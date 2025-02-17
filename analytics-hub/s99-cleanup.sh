@@ -20,6 +20,8 @@ if [ ! -f setup.env ]; then
 fi
 
 . ./setup.env
+. ./generated/terraform.publ_project_numbers.auto.tfvars
+. ./generated/terraform.subscr_project_numbers.auto.tfvars
 
 echo -n "Deleting terraform state bucket $PUBL_STATE_BUCKET_URL ... "
 gcloud storage rm -r $PUBL_STATE_BUCKET_URL >> setup.sh.out 2>&1
@@ -48,6 +50,59 @@ fi
 
 echo -n "Deleting project ${SUBSCR_PROJECT_ID_SEED} ... "
 gcloud projects delete ${SUBSCR_PROJECT_ID_SEED} --quiet >> setup.sh.out 2>&1
+if [ $? -gt 0 ]; then
+  echo "Status: FAILED"
+else
+  echo "Status: OK"
+fi
+
+echo "Deleting publisher projects"
+PUBL_PROJECTS=("$PUBL_PROJECT_ID_BQ_FED_DS" "$PUBL_PROJECT_ID_BQ_SRC_DS" "$PUBL_PROJECT_ID_BQ_SHARED_DS" "$PUBL_PROJECT_ID_AH_EXCHG" "$PUBL_PROJECT_ID_NONVPCSC_AH_EXCHG" "$PUBL_PROJECT_ID_BQ_AND_AH")
+for PROJECT in "${PUBL_PROJECTS[@]}"
+do
+  echo -n "Deleting project ${PROJECT} ... "
+  gcloud projects delete ${PROJECT} --quiet >> setup.sh.out 2>&1
+  if [ $? -gt 0 ]; then
+    echo "Status: FAILED"
+  else
+    echo "Status: OK"
+  fi
+done
+
+echo -n "Deleting publisher root folder ${publ_root_folder_id} ... "
+gcloud resource-manager folders delete ${publ_root_folder_id} --quiet >> setup.sh.out 2>&1
+if [ $? -gt 0 ]; then
+  echo "Status: FAILED"
+else
+  echo "Status: OK"
+fi
+
+echo "Deleting subscriber projects"
+for LIEN in $(gcloud alpha resource-manager liens list --project $SUBSCR_PROJECT_ID_XPN --format 'table[no-heading](name)' --filter "origin=xpn.googleapis.com" )
+do
+  echo -n "Deleting XPN lien on project ${SUBSCR_PROJECT_ID_XPN} - $LIEN ... "
+  gcloud alpha resource-manager liens delete --project $SUBSCR_PROJECT_ID_XPN $LIEN --quiet >> setup.sh.out 2>&1
+  if [ $? -gt 0 ]; then
+    echo "Status: FAILED"
+  else
+    echo "Status: OK"
+  fi
+done
+
+SUBSCR_PROJECTS=("$SUBSCR_PROJECT_ID_WITH_VPCSC" "$SUBSCR_PROJECT_ID_WITHOUT_VPCSC" "$SUBSCR_PROJECT_ID_XPN" "$SUBSCR_PROJECT_ID_VM")
+for PROJECT in "${SUBSCR_PROJECTS[@]}"
+do
+  echo -n "Deleting project ${PROJECT} ... "
+  gcloud projects delete ${PROJECT} --quiet >> setup.sh.out 2>&1
+  if [ $? -gt 0 ]; then
+    echo "Status: FAILED"
+  else
+    echo "Status: OK"
+  fi
+done
+
+echo -n "Deleting subscriber root folder ${subscr_root_folder_id} ... "
+gcloud resource-manager folders delete ${subscr_root_folder_id} --quiet >> setup.sh.out 2>&1
 if [ $? -gt 0 ]; then
   echo "Status: FAILED"
 else

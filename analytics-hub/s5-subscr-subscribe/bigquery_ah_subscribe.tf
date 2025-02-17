@@ -34,15 +34,15 @@ provider "google" {
 resource "google_bigquery_analytics_hub_listing_subscription" "subscription" {
 #  provider = google.subscriber-impersonation
 
-  location = var.ah_location
-  data_exchange_id = var.ah_exchange_name
-  listing_id       = var.ah_listing_name
-  project          = var.ah_project_id
+  location = var.ah_publ_location
+  data_exchange_id = var.ah_publ_exchange_name
+  listing_id       = var.ah_publ_listing_name
+  project          = var.ah_publ_project_id
   destination_dataset {
-    description = "tf_${var.ah_project_number}_${var.ah_listing_name}"
-    location = var.ah_location
+    description = "tf_${var.ah_publ_project_number}_${var.ah_publ_listing_name}"
+    location = var.ah_publ_location
     dataset_reference {
-      dataset_id = "tf_${var.ah_project_number}_${var.ah_listing_name}"
+      dataset_id = "tf_${var.ah_publ_project_number}_${var.ah_publ_listing_name}"
       project_id = var.subscr_project_id_subscr_with_vpcsc
     }
   }
