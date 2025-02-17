@@ -123,13 +123,13 @@ resource "local_file" "generated_bqah" {
 
 resource "local_file" "subscribe_tfvars" {
   content  = <<EOT
-ah_project_id="${data.google_project.publ_bq_and_ah.project_id}"
-ah_project_number="${data.google_project.publ_bq_and_ah.number}"
-ah_exchange_id="${google_bigquery_analytics_hub_data_exchange.bqah_exchange.id}"
-ah_listing_id="${google_bigquery_analytics_hub_listing.bqah_listing.id}"
-ah_exchange_name="${google_bigquery_analytics_hub_data_exchange.bqah_exchange.data_exchange_id}"
-ah_listing_name="${google_bigquery_analytics_hub_listing.bqah_listing.listing_id}"
-ah_location="${lower(google_bigquery_analytics_hub_data_exchange.bqah_exchange.location)}"
+ah_publ_project_id="${data.google_project.publ_bq_and_ah.project_id}"
+ah_publ_project_number="${data.google_project.publ_bq_and_ah.number}"
+ah_publ_exchange_id="${google_bigquery_analytics_hub_data_exchange.bqah_exchange.id}"
+ah_publ_listing_id="${google_bigquery_analytics_hub_listing.bqah_listing.id}"
+ah_publ_exchange_name="${google_bigquery_analytics_hub_data_exchange.bqah_exchange.data_exchange_id}"
+ah_publ_listing_name="${google_bigquery_analytics_hub_listing.bqah_listing.listing_id}"
+ah_publ_location="${lower(google_bigquery_analytics_hub_data_exchange.bqah_exchange.location)}"
 EOT
   filename = "${path.module}/../s5-subscr-subscribe/terraform.publ_ahlistings.auto.tfvars"
   file_permission = 0644
