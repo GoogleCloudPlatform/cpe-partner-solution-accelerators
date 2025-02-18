@@ -308,7 +308,7 @@ user@workstation:~$ tf apply
 
 
 <!-- TOC --><a name="step-5-publisher-create-bigquery-analytics-hub-resources-datasets-views-exchanges-listings"></a>
-### Step 5 - Publisher - Create BigQuery, Analytics Hub resources: datasets, views, exchanges, listings
+### Step 5 - Publisher - Create BigQuery, Analytics Hub resources: datasets, views, exchanges, listings, data clean room (DCR)
 
 Prerequisite trigger creation of BQ encryption SA:
 
@@ -402,15 +402,27 @@ user@workstation:~$ tf apply
 <!-- TOC --><a name="data-clean-rooms"></a>
 ## Data Clean Rooms
 
-Automating Data Clean Room creation is not yet possible with Terraform and it's not immediately obvious from the public documentation how it is possible to automate.
-
 Data Clean Rooms are essentially
 * Analytics Hub Data Exchanges with special settings
 * The shared data is an Analytics Hub listing
 * The listing is sharing an **authorized view** with **analysis rules** configured (instead of sharing the whole dataset).
 * The listing has egress restrictions
 
-The snippets `create_listing_golang` and `create_listing_python` in the repsository demonstating the following:
+When using terraform to create the Data Clean Room, creating a view with an analysis rule is not yet possible using the standard view creation workflow. For this reason executing a custom DDL statement from a null-resource is a workaround.
+
+```terraform
+resource "null_resource" "bqah_shared_view_dcr" {
+  depends_on = [ google_bigquery_table.bqah_shared_table ]
+  triggers = {
+   always_run = "${timestamp()}"
+  }
+  provisioner "local-exec" {
+    command = "bq query --project_id ${google_bigquery_dataset.bqah_shared_dataset.project} --nouse_legacy_sql 'CREATE OR REPLACE VIEW `${google_bigquery_dataset.bqah_shared_dataset.project}.${google_bigquery_dataset.bqah_shared_dataset.dataset_id}.ahdemo_${var.name_suffix}_bqah_shared_view_dcr` OPTIONS (privacy_policy= \"{\\\"aggregation_threshold_policy\\\": {\\\"threshold\\\" : 1, \\\"privacy_unit_columns\\\": \\\"endpoint\\\"}}\") AS ( select * from `${google_bigquery_dataset.bqah_shared_dataset.project}`.${google_bigquery_dataset.bqah_shared_dataset.dataset_id}.${google_bigquery_table.bqah_shared_table.table_id} )';"
+  }
+}
+```
+
+The snippets `create_listing_golang` and `create_listing_python` in the repository demonstate the following:
 
 1. Creating regular Data Exchange / Listing for an existing dataset
    1. Create Analytics Hub Exchange if it does not exist
@@ -423,7 +435,7 @@ The snippets `create_listing_golang` and `create_listing_python` in the repsosit
    3. Authorize the created view to query from the shared dataset
    4. Create Analytics Hub Data into the Clean Room (Listing with `restrictedExportConfig` and `Source.BigqueryDataset.SelectedResources[0].Resource.Table`)
 
-The snippet `create_listing_api` in the repsository demonstating the following:
+The snippet `create_listing_api` in the repository demonstate the following:
 
 1. Create Analytics Hub Data Clean Room (Exchange with `sharingEnvironmentConfig.dcrExchangeConfig`)
 2. Create Analytics Hub Data into the Clean Room (Listing with `restrictedExportConfig` and `bigqueryDataset.selectedResources`)
