@@ -1,0 +1,7 @@
+.terraform/
+.terraform.lock.hcl
+backend.tf
+terraform.auto.tfvars
+scripts/generate-letsencrypt-key-cert.env
+work/
+secrets/

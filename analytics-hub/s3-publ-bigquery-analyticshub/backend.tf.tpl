@@ -15,6 +15,6 @@
 terraform {
   backend "gcs" {
     bucket = "{{PUBL_STATE_BUCKET}}"
-    prefix = "terraform/bigquery/state"
+    prefix = "terraform/publ-bigquery-analyticshub/state"
   }
 }

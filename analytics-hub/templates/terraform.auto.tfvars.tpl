@@ -59,11 +59,13 @@ publ_vpc_sc_allow_all_for_public_listing = false
 publ_vpc_sc_ah_subscriber_identities = [ 
     "user:{{SUBSCRIBER_USER}}",
     "user:{{SUBSCR_ADMIN_USER}}",
-    "serviceAccount:{{SUBSCR_SUBSCRIBER_SA_EMAIL}}"
+    "serviceAccount:{{SUBSCR_SUBSCRIBER_SA_EMAIL}}",
+    "serviceAccount:{{SUBSCR_TERRAFORM_SA_EMAIL}}"
     ]
 publ_ah_subscribers_iam_members = [
     "user:{{SUBSCRIBER_USER}}",
-    "serviceAccount:{{SUBSCR_SUBSCRIBER_SA_EMAIL}}"
+    "serviceAccount:{{SUBSCR_SUBSCRIBER_SA_EMAIL}}",
+    "serviceAccount:{{SUBSCR_TERRAFORM_SA_EMAIL}}"
     ]
 publ_ah_subscription_viewers_iam_members = [
     "user:{{SUBSCRIPTION_VIEWER_USER}}",
@@ -75,6 +77,8 @@ subscr_project_id_prefix = "{{SUBSCR_PROJECT_ID_PREFIX}}"
 subscr_project_id_seed = "{{SUBSCR_PROJECT_ID_SEED}}"
 subscr_project_id_subscr_with_vpcsc = "{{SUBSCR_PROJECT_ID_WITH_VPCSC}}"
 subscr_project_id_subscr_without_vpcsc = "{{SUBSCR_PROJECT_ID_WITHOUT_VPCSC}}"
+subscr_project_id_subscr_xpn = "{{SUBSCR_PROJECT_ID_PREFIX}}-xpn"
+subscr_project_id_subscr_vm = "{{SUBSCR_PROJECT_ID_PREFIX}}-vm"
 subscr_impersonate_sa_email = "{{SUBSCR_TERRAFORM_SA_EMAIL}}"
 subscr_tf_state_bucket = "{{SUBSCR_STATE_BUCKET}}"
 subscr_terraform_sa_name = "{{SUBSCR_TERRAFORM_SA_NAME}}"

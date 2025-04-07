@@ -92,8 +92,33 @@ resource "google_bigquery_table" "bqah_shared_table" {
   table_id            = "ahdemo_${var.name_suffix}_bqah_shared_table"
   deletion_protection = false
   project             = data.google_project.publ_bq_and_ah.project_id
-  schema              = templatefile("./bigquery/schema.json.tpl", {policy_tag_name = google_data_catalog_policy_tag.child_policy_errorcode_bq_ah.name})
+  schema              = var.publ_enable_policy_tags ? templatefile("./bigquery/schema.json.tpl", {policy_tag_name = google_data_catalog_policy_tag.child_policy_errorcode_bq_ah.name}) : file("./bigquery/schema.json")
 }
+
+resource "null_resource" "bqah_shared_view_dcr" {
+  depends_on = [ google_bigquery_table.bqah_shared_table ]
+  triggers = {
+   always_run = "${timestamp()}"
+  }
+  provisioner "local-exec" {
+    command = "bq query --project_id ${google_bigquery_dataset.bqah_shared_dataset.project} --nouse_legacy_sql 'CREATE OR REPLACE VIEW `${google_bigquery_dataset.bqah_shared_dataset.project}.${google_bigquery_dataset.bqah_shared_dataset.dataset_id}.ahdemo_${var.name_suffix}_bqah_shared_view_dcr` OPTIONS (privacy_policy= \"{\\\"aggregation_threshold_policy\\\": {\\\"threshold\\\" : 1, \\\"privacy_unit_columns\\\": \\\"endpoint\\\"}}\") AS ( select * from `${google_bigquery_dataset.bqah_shared_dataset.project}`.${google_bigquery_dataset.bqah_shared_dataset.dataset_id}.${google_bigquery_table.bqah_shared_table.table_id} )';"
+  }
+}
+
+# TODO: currently there is no way to provide the OPTIONS statement for creating the view => FR
+# resource "google_bigquery_table" "bqah_shared_view_dcr" {
+#  depends_on = [ google_bigquery_table.bqah_shared_table ]
+#
+#  dataset_id          = google_bigquery_dataset.bqah_shared_dataset.dataset_id
+#  table_id            = "ahdemo_${var.name_suffix}_bqah_shared_view_dcr"
+#  deletion_protection = false
+#  project             = data.google_project.publ_bq_and_ah.project_id
+#  schema              = file("./bigquery/schema_src.json")
+#  view {
+#    query = "select * from `${google_bigquery_dataset.bqah_shared_dataset.project}`.${google_bigquery_dataset.bqah_shared_dataset.dataset_id}.${google_bigquery_table.bqah_shared_table.table_id};"
+#    use_legacy_sql = false
+#  } 
+#}
 
 resource "google_bigquery_table" "bqah_shared_view" {
   depends_on = [ google_bigquery_table.src_table ]

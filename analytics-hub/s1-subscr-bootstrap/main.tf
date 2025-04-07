@@ -14,7 +14,7 @@
 
 module "project-services-subscr-seed" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 17.0.0"
+  version = "~> 18.0.0"
 
   project_id                  = data.google_project.subscr_seed_project.project_id
   activate_apis               = var.projects_activate_apis
@@ -23,7 +23,7 @@ module "project-services-subscr-seed" {
 
 module "project-services-subscr-with-vpcsc" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 17.0.0"
+  version = "~> 18.0.0"
 
   project_id                  = data.google_project.subscr_subscr_with_vpcsc.project_id
   activate_apis               = var.projects_activate_apis
@@ -32,7 +32,7 @@ module "project-services-subscr-with-vpcsc" {
 
 module "project-services-subscr-without-vpcsc" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 17.0.0"
+  version = "~> 18.0.0"
 
   project_id                  = data.google_project.subscr_subscr_without_vpcsc.project_id
   activate_apis               = var.projects_activate_apis
@@ -49,4 +49,12 @@ data "google_project" "subscr_subscr_with_vpcsc" {
 
 data "google_project" "subscr_subscr_without_vpcsc" {
   project_id = var.subscr_project_id_subscr_without_vpcsc
+}
+
+data "google_project" "subscr_subscr_xpn" {
+  project_id = var.subscr_project_id_subscr_xpn
+}
+
+data "google_project" "subscr_subscr_vm" {
+  project_id = var.subscr_project_id_subscr_vm
 }
