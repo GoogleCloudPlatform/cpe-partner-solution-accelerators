@@ -1,1 +1,1 @@
-/home/predy/git/misc/teamcenter-certification-2024-acn-goog-sdisw/iaas/variables.tf
+../variables.tf
