@@ -15,6 +15,6 @@
 terraform {
   backend "gcs" {
     bucket = "{{PUBL_STATE_BUCKET}}"
-    prefix = "terraform/vpcsc/state"
+    prefix = "terraform/publ-vpc-sc/state"
   }
 }

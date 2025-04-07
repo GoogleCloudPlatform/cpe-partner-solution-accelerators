@@ -317,11 +317,11 @@ type Flags struct {
 	shared_ds                      string
 	subscriber_iam_member          string
 	subscription_viewer_iam_member string
-	dcr_shared_table               string
-	dcr_privacy_column             string
 	dcr_exchange_id                string
 	dcr_listing_id                 string
 	dcr_view                       string
+	dcr_shared_table               string
+	dcr_privacy_column             string
 }
 
 func parse_args() Flags {
@@ -334,20 +334,16 @@ func parse_args() Flags {
 	listing_id := flag.String("listing_id", "", "Listing ID (required)")
 	restrict_egress := flag.Bool("restrict_egress", false, "Egress controls enabled")
 	shared_ds := flag.String("shared_ds", "", "Shared dataset ID (required)")
-	dcr_shared_table := flag.String("dcr_shared_table", "", "Table to share in Data Clean Room")
-	dcr_view := flag.String("dcr_view", "", "View with analysis rules to create for Data Clean Room")
-	dcr_privacy_column := flag.String("dcr_privacy_column", "", "Privacy column for Data Clean Room")
 	subscriber_iam_member := flag.String("subscriber_iam_member", "", "IAM member who can subscribe - requires either user: or serviceAccount: prefix")
 	subscription_viewer_iam_member := flag.String("subscription_viewer_iam_member", "", "IAM member who can see subscription and request access - requires either user: or serviceAccount: prefix")
+	dcr_exchange_id := flag.String("dcr_exchange_id", "", "Privacy column for Data Clean Room")
+	dcr_listing_id := flag.String("dcr_listing_id", "", "Privacy column for Data Clean Room")
+	dcr_view := flag.String("dcr_view", "", "View with analysis rules to create for Data Clean Room")
+	dcr_shared_table := flag.String("dcr_shared_table", "", "Table to share in Data Clean Room")
+	dcr_privacy_column := flag.String("dcr_privacy_column", "", "Privacy column for Data Clean Room")
 
 	// Parse the command-line flags
 	flag.Parse()
-
-	// Check if required flags are provided
-	if *project_id == "" || *location == "" || *exchange_id == "" || *listing_id == "" || *shared_ds == "" || *dcr_shared_table == "" || *dcr_privacy_column == "" || *subscriber_iam_member == "" || *subscription_viewer_iam_member == "" {
-		flag.Usage()
-		os.Exit(1)
-	}
 
 	// Use the parsed values
 	flags.project_id = *project_id
@@ -358,12 +354,18 @@ func parse_args() Flags {
 	flags.shared_ds = *shared_ds
 	flags.subscriber_iam_member = *subscriber_iam_member
 	flags.subscription_viewer_iam_member = *subscription_viewer_iam_member
-	flags.dcr_exchange_id = fmt.Sprintf("%s_dcr", *exchange_id)
-	flags.dcr_listing_id = fmt.Sprintf("%s_dcr", *listing_id)
+	flags.dcr_exchange_id = *dcr_exchange_id
+	flags.dcr_listing_id = *dcr_listing_id
+	flags.dcr_view = *dcr_view
 	flags.dcr_shared_table = *dcr_shared_table
 	flags.dcr_privacy_column = *dcr_privacy_column
-	flags.dcr_view = *dcr_view
 	fmt.Print(flags)
+
+	// Check if required flags are provided
+	if *project_id == "" || *location == "" || *exchange_id == "" || *listing_id == "" || *shared_ds == "" || *subscriber_iam_member == "" || *subscription_viewer_iam_member == "" || *dcr_shared_table == "" || *dcr_privacy_column == "" {
+		flag.Usage()
+		os.Exit(1)
+	}
 
 	return flags
 }

@@ -12,10 +12,69 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+resource "google_data_catalog_taxonomy" "policy_tags_shared_ds" {
+  region = var.location
+  display_name =  "policy_tags_shared_ds"
+  description = "A collection of policy tags"
+  activated_policy_types = ["FINE_GRAINED_ACCESS_CONTROL"]
+  project = data.google_project.publ_bq_shared_ds.project_id
+}
+
+resource "google_data_catalog_policy_tag" "parent_policy_shared_ds" {
+  taxonomy = google_data_catalog_taxonomy.policy_tags_shared_ds.id
+  display_name = "restricted_shared_ds"
+  description = "A policy tag category used for restricted security access"
+}
+
+resource "google_data_catalog_policy_tag" "child_policy_errorcode_shared_ds" {
+  taxonomy = google_data_catalog_taxonomy.policy_tags_shared_ds.id
+  display_name = "errorcode_shared_ds"
+  description = "Error code"
+  parent_policy_tag = google_data_catalog_policy_tag.parent_policy_shared_ds.id
+}
+
+data "google_iam_policy" "child_policy_errorcode_shared_ds_iam_policy_data" {
+  binding {
+    role = "roles/datacatalog.categoryFineGrainedReader"
+    members = var.publ_vpc_sc_ah_subscriber_identities
+  }
+}
+
+resource "google_data_catalog_policy_tag_iam_policy" "child_policy_errorcode_shared_ds_iam_policy" {
+  policy_tag = google_data_catalog_policy_tag.child_policy_errorcode_shared_ds.name
+  policy_data = data.google_iam_policy.child_policy_errorcode_shared_ds_iam_policy_data.policy_data
+}
+
+resource "google_bigquery_datapolicy_data_policy" "data_policy_shared_ds" {
+  project = data.google_project.publ_bq_shared_ds.project_id
+  location         = var.location
+  data_policy_id   = "policy_errorcode_shared_ds"
+  policy_tag       = google_data_catalog_policy_tag.child_policy_errorcode_shared_ds.name
+  data_policy_type = "DATA_MASKING_POLICY"  
+  data_masking_policy {
+    predefined_expression = "ALWAYS_NULL"
+  }
+}
+
+data "google_iam_policy" "data_policy_shared_ds_iam_policy_data" {
+  binding {
+#    role = "roles/datacatalog.categoryFineGrainedReader"
+    role = "roles/bigquerydatapolicy.maskedReader"
+    members = var.publ_vpc_sc_ah_subscriber_identities
+  }
+}
+
+resource "google_bigquery_datapolicy_data_policy_iam_policy" "data_policy_shared_ds_iam_policy" {
+  project = data.google_project.publ_bq_shared_ds.project_id
+  location = var.location
+  data_policy_id = google_bigquery_datapolicy_data_policy.data_policy_shared_ds.data_policy_id
+  policy_data = data.google_iam_policy.data_policy_shared_ds_iam_policy_data.policy_data
+}
+
 resource "google_kms_key_ring" "shared_ds_key_ring" {
   project  = data.google_project.publ_bq_shared_ds.project_id
-  location = "us"
-  name     = "ahdemo_${var.name_suffix}_bq_shared_ds_keyring"
+  location = var.location
+  name     = "ahdemo_${var.name_suffix}_bq_shared_ds_keyring_${var.location}"
 }
 
 resource "google_kms_crypto_key" "shared_ds_crypto_key" {
@@ -54,7 +113,7 @@ resource "google_bigquery_table" "shared_table" {
   table_id            = "ahdemo_${var.name_suffix}_shared_table"
   deletion_protection = false
   project             = data.google_project.publ_bq_shared_ds.project_id
-  schema              = file("./bigquery/schema.json")
+  schema              = var.publ_enable_policy_tags ? templatefile("./bigquery/schema.json.tpl", {policy_tag_name = google_data_catalog_policy_tag.child_policy_errorcode_shared_ds.name}) : file("./bigquery/schema.json")
 
   encryption_configuration {
     kms_key_name = google_kms_crypto_key.shared_ds_crypto_key.id
@@ -85,6 +144,20 @@ resource "google_bigquery_table" "shared_authz_view" {
   schema              = file("./bigquery/schema_src.json")
   view {
     query = "select * from `${google_bigquery_dataset.src_dataset.project}`.${google_bigquery_dataset.src_dataset_authz.dataset_id}.${google_bigquery_table.src_table_authz.table_id};"
+    use_legacy_sql = false
+  } 
+}
+
+resource "google_bigquery_table" "shared_authz_view_shared_src_fed" {
+  depends_on = [ google_bigquery_table.src_table_authz ]
+
+  dataset_id          = google_bigquery_dataset.shared_dataset.dataset_id
+  table_id            = "ahdemo_${var.name_suffix}_authz_view_from_shared_src_fed_ds"
+  deletion_protection = false
+  project             = data.google_project.publ_bq_shared_ds.project_id
+  schema              = file("./bigquery/schema_src.json")
+  view {
+    query = "select * from `${google_bigquery_dataset.src_dataset.project}`.${google_bigquery_dataset.src_dataset_authz.dataset_id}.${google_bigquery_table.src_fed_view_authz.table_id};"
     use_legacy_sql = false
   } 
 }

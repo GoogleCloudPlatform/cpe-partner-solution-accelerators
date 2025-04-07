@@ -19,7 +19,7 @@ locals {
     {
       "from" = {
         "sources" = {
-          access_levels = [ module.access_level_allow_corp.name ] # Allow access from corporate network IP ranges
+          access_levels = [ google_access_context_manager_access_level.access_level_allow_corp.title ] # Allow access from corporate network IP ranges
         },
         "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
         "identity_type" = null
@@ -41,11 +41,21 @@ locals {
             ]
             "permissions" = [
             ]
-          }
+          },
+          "bigquerydatapolicy.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
+          "datacatalog.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
         }
       }
     },
-    # Allow off-perimeter subscribers (Cloud Console users) in var.publ_vpc_sc_ah_subscriber_identities from specific subscriber projects
+    # Allow off-perimeter subscribers (service accounts) in var.publ_vpc_sc_ah_subscriber_identities from specific subscriber projects
     # required for subscribing to the private listing using a jumphost (subscriber identity known => gathered upon contracting)
     # this is an alternative to access_level based allow_all for Cloud Console / external users: project based allow to subscribe via API call from a jumphost
     {
@@ -55,10 +65,13 @@ locals {
           resources = [ 
             "projects/${var.subscr_project_number_seed}",
             "projects/${var.subscr_project_number_subscr_with_vpcsc}",
-            "projects/${var.subscr_project_number_subscr_without_vpcsc}"
+            "projects/${var.subscr_project_number_subscr_without_vpcsc}",
+            "projects/${var.subscr_project_number_subscr_xpn}",
+#            "projects/${var.subscr_project_number_subscr_vm}",
             ]
         },
-        "identities" = var.publ_vpc_sc_ah_subscriber_identities
+        # Filter for service accounts
+        "identities" = toset([for each in var.publ_vpc_sc_ah_subscriber_identities : each if startswith(each, "serviceAccount")])
         "identity_type" = null
       }
       "to" = {
@@ -86,16 +99,17 @@ locals {
         }
       }
     },
-    # Allow off-perimeter subscribers (Cloud Console users) from anywhere
+    # Allow off-perimeter subscribers (Cloud Console users / end user accounts) from anywhere
     # Public: required for subscribing to the public listing (allAuthenticatedUsers or allUsers => subscriber identity not known => ANY_IDENTITY)
     # Private: required for subscribing to the private listing (subscriber identity known => gathered upon contracting => in var.publ_vpc_sc_ah_subscriber_identities)
     {
       "from" = {
         "sources" = {
-          access_levels = [ module.access_level_allow_all.name ] # Allow access from everywhere ( "*" works as well)
+          access_levels = [ google_access_context_manager_access_level.access_level_allow_all.title ] # Allow access from everywhere ( "*" works as well)
           resources = []
         },
-        "identities" = var.publ_vpc_sc_allow_all_for_public_listing ? [] : var.publ_vpc_sc_ah_subscriber_identities
+        # Filter for user accounts
+        "identities" = var.publ_vpc_sc_allow_all_for_public_listing ? [] : toset([for each in var.publ_vpc_sc_ah_subscriber_identities : each if startswith(each, "user")])
         "identity_type" = var.publ_vpc_sc_allow_all_for_public_listing ? "ANY_IDENTITY" : null
       }
       "to" = {
@@ -131,7 +145,6 @@ locals {
     # Private: Private: required for subscribing to the private listing (subscriber identity known => gathered from the subscriber) (To specific projects, gathered from the subscriber)
     {
       "from" = {
-        "sources" = {}
         "identities" = var.publ_vpc_sc_allow_all_for_public_listing ? [] : var.publ_vpc_sc_ah_subscriber_identities
         "identity_type" = var.publ_vpc_sc_allow_all_for_public_listing ? "ANY_IDENTITY" : null
       }
@@ -151,7 +164,6 @@ locals {
     # required for creating the listing
     {
       "from" = {
-        "sources" = {}
         "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
         "identity_type" = null
       }
@@ -175,9 +187,9 @@ locals {
 
 module "regular_service_perimeter_ah" {
   source  = "terraform-google-modules/vpc-service-controls/google//modules/regular_service_perimeter"
-  version = "~> 6.0.0"
+  version = "6.2.1"
 
-  policy         = module.access_context_manager_policy.policy_id
+  policy         = google_access_context_manager_access_policy.access_policy.id
   perimeter_name = "ahdemo_${var.name_suffix}_publ_only_ah"
   description    = "ahdemo_${var.name_suffix}_publ_only_ah"
 

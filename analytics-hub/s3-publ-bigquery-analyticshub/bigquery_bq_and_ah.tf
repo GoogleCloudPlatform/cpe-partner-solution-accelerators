@@ -12,6 +12,65 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+resource "google_data_catalog_taxonomy" "policy_tags_bq_ah" {
+  region = var.location
+  display_name =  "policy_tags_bq_ah"
+  description = "A collection of policy tags"
+  activated_policy_types = ["FINE_GRAINED_ACCESS_CONTROL"]
+  project = data.google_project.publ_bq_and_ah.project_id
+}
+
+resource "google_data_catalog_policy_tag" "parent_policy_bq_ah" {
+  taxonomy = google_data_catalog_taxonomy.policy_tags_bq_ah.id
+  display_name = "restricted_bq_ah"
+  description = "A policy tag category used for restricted security access"
+}
+
+resource "google_data_catalog_policy_tag" "child_policy_errorcode_bq_ah" {
+  taxonomy = google_data_catalog_taxonomy.policy_tags_bq_ah.id
+  display_name = "errorcode_bq_ah"
+  description = "Error code"
+  parent_policy_tag = google_data_catalog_policy_tag.parent_policy_bq_ah.id
+}
+
+data "google_iam_policy" "child_policy_errorcode_bq_ah_iam_policy_data" {
+  binding {
+    role = "roles/datacatalog.categoryFineGrainedReader"
+    members = var.publ_vpc_sc_ah_subscriber_identities
+  }
+}
+
+resource "google_data_catalog_policy_tag_iam_policy" "child_policy_errorcode_bq_ah_iam_policy" {
+  policy_tag = google_data_catalog_policy_tag.child_policy_errorcode_bq_ah.name
+  policy_data = data.google_iam_policy.child_policy_errorcode_bq_ah_iam_policy_data.policy_data
+}
+
+resource "google_bigquery_datapolicy_data_policy" "data_policy_bq_ah" {
+  project = data.google_project.publ_bq_and_ah.project_id
+  location         = var.location
+  data_policy_id   = "policy_errorcode_bq_ah"
+  policy_tag       = google_data_catalog_policy_tag.child_policy_errorcode_bq_ah.name
+  data_policy_type = "DATA_MASKING_POLICY"  
+  data_masking_policy {
+    predefined_expression = "ALWAYS_NULL"
+  }
+}
+
+data "google_iam_policy" "data_policy_bq_ah_iam_policy_data" {
+  binding {
+#    role = "roles/datacatalog.categoryFineGrainedReader"
+    role = "roles/bigquerydatapolicy.maskedReader"
+    members = var.publ_vpc_sc_ah_subscriber_identities
+  }
+}
+
+resource "google_bigquery_datapolicy_data_policy_iam_policy" "data_policy_bq_ah_iam_policy" {
+  project = data.google_project.publ_bq_and_ah.project_id
+  location = var.location
+  data_policy_id = google_bigquery_datapolicy_data_policy.data_policy_bq_ah.data_policy_id
+  policy_data = data.google_iam_policy.data_policy_bq_ah_iam_policy_data.policy_data
+}
+
 resource "null_resource" "bq_encryption_service_account_bqah" {
   provisioner "local-exec" {
     command = "bq show --encryption_service_account --project_id=${data.google_project.publ_bq_and_ah.project_id}"
@@ -33,28 +92,33 @@ resource "google_bigquery_table" "bqah_shared_table" {
   table_id            = "ahdemo_${var.name_suffix}_bqah_shared_table"
   deletion_protection = false
   project             = data.google_project.publ_bq_and_ah.project_id
-  schema              = file("./bigquery/schema.json")
+  schema              = var.publ_enable_policy_tags ? templatefile("./bigquery/schema.json.tpl", {policy_tag_name = google_data_catalog_policy_tag.child_policy_errorcode_bq_ah.name}) : file("./bigquery/schema.json")
 }
 
-resource "google_bigquery_job" "bqah_shared_table_load" {
-  job_id  = "ahdemo_${var.name_suffix}_bqah_shared_table_job_load"
-  project = data.google_project.publ_bq_and_ah.project_id
-
-  load {
-    source_uris = [
-      "gs://${var.publ_tf_state_bucket}/${google_storage_bucket_object.shared_table_data_jsonl.name}",
-    ]
-
-    destination_table {
-      project_id = data.google_project.publ_bq_and_ah.project_id
-      dataset_id = google_bigquery_dataset.bqah_shared_dataset.dataset_id
-      table_id   = google_bigquery_table.bqah_shared_table.table_id
-    }
-
-    autodetect    = true
-    source_format = "NEWLINE_DELIMITED_JSON"
+resource "null_resource" "bqah_shared_view_dcr" {
+  depends_on = [ google_bigquery_table.bqah_shared_table ]
+  triggers = {
+   always_run = "${timestamp()}"
+  }
+  provisioner "local-exec" {
+    command = "bq query --project_id ${google_bigquery_dataset.bqah_shared_dataset.project} --nouse_legacy_sql 'CREATE OR REPLACE VIEW `${google_bigquery_dataset.bqah_shared_dataset.project}.${google_bigquery_dataset.bqah_shared_dataset.dataset_id}.ahdemo_${var.name_suffix}_bqah_shared_view_dcr` OPTIONS (privacy_policy= \"{\\\"aggregation_threshold_policy\\\": {\\\"threshold\\\" : 1, \\\"privacy_unit_columns\\\": \\\"endpoint\\\"}}\") AS ( select * from `${google_bigquery_dataset.bqah_shared_dataset.project}`.${google_bigquery_dataset.bqah_shared_dataset.dataset_id}.${google_bigquery_table.bqah_shared_table.table_id} )';"
   }
 }
+
+# TODO: currently there is no way to provide the OPTIONS statement for creating the view => FR
+# resource "google_bigquery_table" "bqah_shared_view_dcr" {
+#  depends_on = [ google_bigquery_table.bqah_shared_table ]
+#
+#  dataset_id          = google_bigquery_dataset.bqah_shared_dataset.dataset_id
+#  table_id            = "ahdemo_${var.name_suffix}_bqah_shared_view_dcr"
+#  deletion_protection = false
+#  project             = data.google_project.publ_bq_and_ah.project_id
+#  schema              = file("./bigquery/schema_src.json")
+#  view {
+#    query = "select * from `${google_bigquery_dataset.bqah_shared_dataset.project}`.${google_bigquery_dataset.bqah_shared_dataset.dataset_id}.${google_bigquery_table.bqah_shared_table.table_id};"
+#    use_legacy_sql = false
+#  } 
+#}
 
 resource "google_bigquery_table" "bqah_shared_view" {
   depends_on = [ google_bigquery_table.src_table ]

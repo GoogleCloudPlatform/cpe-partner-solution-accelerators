@@ -14,7 +14,7 @@
 
 module "project-services-publ-seed" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 16.0.0"
+  version = "~> 18.0.0"
 
   project_id                  = data.google_project.publ_seed_project.project_id
   activate_apis               = concat(var.projects_activate_apis_seed, ["compute.googleapis.com"])
@@ -23,16 +23,25 @@ module "project-services-publ-seed" {
 
 module "project-services-publ-bq-src-ds" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 16.0.0"
+  version = "~> 18.0.0"
 
   project_id                  = data.google_project.publ_bq_src_ds.project_id
   activate_apis               = var.projects_activate_apis
   disable_services_on_destroy = false
 }
 
+module "project-services-publ-bq-fed-ds" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 18.0.0"
+
+  project_id                  = data.google_project.publ_bq_fed_ds.project_id
+  activate_apis               = var.projects_activate_apis
+  disable_services_on_destroy = false
+}
+
 module "project-services-publ-bq-shared-ds" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 16.0.0"
+  version = "~> 18.0.0"
 
   project_id                  = data.google_project.publ_bq_shared_ds.project_id
   activate_apis               = var.projects_activate_apis
@@ -41,7 +50,7 @@ module "project-services-publ-bq-shared-ds" {
 
 module "project-services-publ-vpcsc-ah-exchg" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 16.0.0"
+  version = "~> 18.0.0"
 
   project_id                  = data.google_project.publ_ah_exchg.project_id
   activate_apis               = var.projects_activate_apis
@@ -50,7 +59,7 @@ module "project-services-publ-vpcsc-ah-exchg" {
 
 module "project-services-publ-nonvpcsc-ah-exchg" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 16.0.0"
+  version = "~> 18.0.0"
 
   project_id                  = data.google_project.publ_nonvpcsc_ah_exchg.project_id
   activate_apis               = var.projects_activate_apis
@@ -59,7 +68,7 @@ module "project-services-publ-nonvpcsc-ah-exchg" {
 
 module "project-services-publ-bq-and-ah" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 16.0.0"
+  version = "~> 18.0.0"
 
   project_id                  = data.google_project.publ_bq_and_ah.project_id
   activate_apis               = var.projects_activate_apis
@@ -68,6 +77,10 @@ module "project-services-publ-bq-and-ah" {
 
 data "google_project" "publ_seed_project" {
   project_id = var.publ_project_id_seed
+}
+
+data "google_project" "publ_bq_fed_ds" {
+  project_id = var.publ_project_id_bq_fed_ds
 }
 
 data "google_project" "publ_bq_src_ds" {

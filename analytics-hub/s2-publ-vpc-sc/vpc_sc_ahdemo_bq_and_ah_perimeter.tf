@@ -20,7 +20,7 @@ locals {
     {
       "from" = {
         "sources" = {
-          access_levels = [ module.access_level_allow_corp.name ] # Allow access from corporate network IP ranges
+          access_levels = [ google_access_context_manager_access_level.access_level_allow_corp.title ] # Allow access from corporate network IP ranges
         },
         "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
         "identity_type" = null
@@ -40,7 +40,17 @@ locals {
             "methods" = [
               "*",
             ]
-          }
+          },
+          "bigquerydatapolicy.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
+          "datacatalog.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
         }
       }
     },
@@ -50,7 +60,7 @@ locals {
     {
       "from" = {
         "sources" = {
-          access_levels = [ module.access_level_allow_all.name ] # Allow access from everywhere ( "*" works as well)
+          access_levels = [ google_access_context_manager_access_level.access_level_allow_all.title ] # Allow access from everywhere ( "*" works as well)
         },
         "identities" = var.publ_vpc_sc_allow_all_for_public_listing ? [] : var.publ_vpc_sc_ah_subscriber_identities
         "identity_type" = var.publ_vpc_sc_allow_all_for_public_listing ? "ANY_IDENTITY" : null
@@ -74,6 +84,38 @@ locals {
         }
       }
     },
+    # Allow off-perimeter subscribers (Cloud Console users) from anywhere
+    # Public: required for querying columns with policy tags in the public listing (allAuthenticatedUsers or allUsers => subscriber identity not known => ANY_IDENTITY)
+    # Private: required for querying columns with policy tags in the private listing (subscriber identity known => gathered upon contracting => in var.publ_vpc_sc_ah_subscriber_identities)
+    {
+      "from" = {
+        "sources" = {
+          access_levels = [ google_access_context_manager_access_level.access_level_allow_all.title ] # Allow access from corporate network IP ranges
+        },
+        "identities" = var.publ_vpc_sc_allow_all_for_public_listing ? [] : var.publ_vpc_sc_ah_subscriber_identities
+        "identity_type" = var.publ_vpc_sc_allow_all_for_public_listing ? "ANY_IDENTITY" : null
+      }
+      "to" = {
+        "resources" = [
+          "*",
+#          "projects/${data.google_project.publ_bq_shared_ds.number}",
+        ]
+        "operations" = {
+          "bigquery.googleapis.com" = {
+            "methods" = [
+            ]
+            "permissions" = [
+              "datacatalog.categories.fineGrainedGet"
+            ]
+          },
+          "bigquerydatapolicy.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          },
+        }
+      }
+    },
   ]
 
   egress_policies_bq_and_ah_perimeter = [
@@ -82,7 +124,6 @@ locals {
     # Private: Private: required for subscribing to the private listing (subscriber identity known => gathered from the subscriber) (To specific projects, gathered from the subscriber)
     {
       "from" = {
-        "sources" = {}
         "identities" = var.publ_vpc_sc_allow_all_for_public_listing ? [] : var.publ_vpc_sc_ah_subscriber_identities
         "identity_type" = var.publ_vpc_sc_allow_all_for_public_listing ? "ANY_IDENTITY" : null
       }
@@ -102,7 +143,6 @@ locals {
     # required for creating the view from bq_and_ah to src_ds
     {
       "from" = {
-        "sources" = {}
         "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
         "identity_type" = null
       }
@@ -121,14 +161,41 @@ locals {
         }
       }
     },
+    # Allow egress to #subscriber_project_number (Google Service -> Google Service)
+    # required for querying columns with privacy tags in bq_and_ah from the subscriber projects
+    {
+      "from" = {
+        "identities" = var.publ_vpc_sc_ah_subscriber_identities
+        "identity_type" = null
+      }
+      "to" = {
+        "resources" = local.vpc_sc_ah_subscriber_project_resources_with_numbers
+        "operations" = {
+          "bigquerydatapolicy.googleapis.com" = {
+            "permissions" = []
+            "methods" = [
+              "*",
+            ]
+          },
+          "bigquery.googleapis.com" = {
+            "methods" = [
+            ]
+            "permissions" = [
+              "datacatalog.categories.fineGrainedGet",
+              "bigquery.jobs.create",
+            ]
+          },
+        }
+      }
+    },
   ]
 }
 
 module "regular_service_perimeter_bq_and_ah" {
   source  = "terraform-google-modules/vpc-service-controls/google//modules/regular_service_perimeter"
-  version = "~> 6.0.0"
+  version = "6.2.1"
 
-  policy         = module.access_context_manager_policy.policy_id
+  policy         = google_access_context_manager_access_policy.access_policy.id
   perimeter_name = "ahdemo_${var.name_suffix}_publ_bq_and_ah"
   description    = "ahdemo_${var.name_suffix}_publ_bq_and_ah"
 

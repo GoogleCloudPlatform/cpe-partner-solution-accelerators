@@ -12,22 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Disable DRS everywhere - makes testing easier
-resource "google_org_policy_policy" "ah_projects_disable_drs" {
-  for_each = toset([
-    data.google_project.subscr_seed_project.name,
-    data.google_project.subscr_subscr_with_vpcsc.name,
-    data.google_project.subscr_subscr_without_vpcsc.name
-    ])
+data "google_project" "subscr_seed_project" {
+  project_id = var.subscr_project_id_seed
+}
 
-  name   = "projects/${each.value}/policies/constraints/iam.allowedPolicyMemberDomains"
-  parent = "projects/${each.value}"
+data "google_project" "subscr_subscr_with_vpcsc" {
+  project_id = var.subscr_project_id_subscr_with_vpcsc
+}
 
-  spec {
-    inherit_from_parent = false
+data "google_project" "subscr_subscr_without_vpcsc" {
+  project_id = var.subscr_project_id_subscr_without_vpcsc
+}
 
-    rules {
-      allow_all = "TRUE"
-    }
-  }
+data "google_project" "subscr_subscr_xpn" {
+  project_id = var.subscr_project_id_subscr_xpn
+}
+
+data "google_project" "subscr_subscr_vm" {
+  project_id = var.subscr_project_id_subscr_vm
 }
