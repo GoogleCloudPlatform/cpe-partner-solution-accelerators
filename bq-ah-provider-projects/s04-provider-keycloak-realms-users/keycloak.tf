@@ -144,16 +144,29 @@ resource "random_password" "test_user_pw" {
 resource "keycloak_group" "common_group" {
   realm_id = keycloak_realm.realm.id
   name     = "common-group"
+
+  attributes = {
+    "group-attribute" = "common"
+  }
 }
 
 resource "keycloak_group" "foo_group" {
   realm_id = keycloak_realm.realm.id
   name     = "foo-group"
+
+  attributes = {
+    "group-attribute" = "foo"
+  }
 }
 
 resource "keycloak_group" "bar_group" {
   realm_id = keycloak_realm.realm.id
   name     = "bar-group"
+
+  attributes = {
+    "group-attribute" = "bar"
+  }
+
 }
 
 resource "keycloak_group_memberships" "common_group_members" {
