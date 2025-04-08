@@ -51,7 +51,7 @@ module "publ-project-bqds" {
   random_project_id    = false
   folder_id            = google_folder.prov-data.id
   billing_account      = var.billing_account_id
-  activate_apis        = var.projects_activate_apis
+  activate_apis        = concat(var.projects_activate_apis, [ "bigquery.googleapis.com", "analyticshub.googleapis.com" ])
   default_service_account     = "deprivilege"
   disable_dependent_services  = false
   disable_services_on_destroy = false

@@ -29,10 +29,16 @@ provider "google-beta" {
   project     = var.prov_project_id_bqds
   region      = var.region
   zone        = var.zone
+  # Required for BQ AH API
+  user_project_override = true
+  billing_project = var.prov_project_id_bqds
 }
 
 provider "google" {
   project     = var.prov_project_id_bqds
   region      = var.region
   zone        = var.zone
+  # Required for BQ AH API
+  user_project_override = true
+  billing_project = var.prov_project_id_bqds
 }

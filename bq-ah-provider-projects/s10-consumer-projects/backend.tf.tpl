@@ -54,3 +54,12 @@ data "terraform_remote_state" "provider-wlif-wfif" {
     prefix = "terraform/provider-wlif-wfif/state"
   }
 }
+
+data "terraform_remote_state" "provider-bq-ds-data-sharing" {
+  backend = "gcs"
+
+  config = {
+    bucket = "{{PROV_STATE_BUCKET}}"
+    prefix = "terraform/provider-bq-ds-data-sharing/state"
+  }
+}

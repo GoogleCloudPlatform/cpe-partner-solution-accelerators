@@ -5,3 +5,4 @@ setup.env
 INTERNAL_NOTES.txt
 terraform.local.auto.tfvars
 temp/*
+common/terraform.pmprojects.auto.tfvars

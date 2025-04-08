@@ -12,18 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-output "bqds_exchange_data_exchange_id" {
-  description = "BigQuery Data Exchange ID"
-  value       = google_bigquery_analytics_hub_data_exchange.prov_exchange.data_exchange_id
-  sensitive = false
+provider_managed_projects = {
+  jane = {
+    customer_name = "jane"
+    customer_id = "CUS1496"
+    provision_managed_identity = true
+    provision_service_account = true
+    external_identities = [ "bqpmpjane@nonexistent-gmail.com" ]
+  }
+  john = {
+    customer_name = "john"
+    customer_id = "CUS7863"
+    provision_managed_identity = true
+    provision_service_account = true
+    external_identities = [ "bqpmpjohn@nonexistent-gmail.com" ]
+  }
 }
-output "bqds_exchange_id" {
-  description = "BigQuery Data Exchange ID"
-  value       = google_bigquery_analytics_hub_data_exchange.prov_exchange.id
-  sensitive = false
-}
-#output "bqds_listings" {
-#  description = "BigQuery per-customer listings"
-#  value       = google_bigquery_analytics_hub_listing.cx_listing.*.listing_id
-#  sensitive = false
-#}

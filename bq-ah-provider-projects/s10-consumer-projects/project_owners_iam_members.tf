@@ -13,8 +13,8 @@
 # limitations under the License.
 
 locals {
-   project_role_combination_list_owners = distinct(flatten([
-    for user_name, user_id in data.terraform_remote_state.keycloak.outputs.test_users : [
+  project_role_combination_list_owners = distinct(flatten([
+    for user_name, user in var.provider_managed_projects : [
       for role in toset( ["roles/editor", "roles/resourcemanager.projectIamAdmin"] ) : [
         for member in toset( var.prov_project_owners ) : {
           project = "bqprovpr-0819c0-cx-${user_name}"
@@ -27,15 +27,28 @@ locals {
 }
 
 locals {
-   project_role_combination_list_users = distinct(flatten([
-    for user_name, user_id in data.terraform_remote_state.keycloak.outputs.test_users : [
-      for role in toset( ["roles/bigquery.dataViewer"] ) : {
+  project_role_combination_list_wfif_users = distinct(flatten([
+    for user_name, user in var.provider_managed_projects : [
+      for role in toset( ["roles/bigquery.dataViewer", "roles/bigquery.jobUser"] ) : {
         project = "bqprovpr-0819c0-cx-${user_name}"
         role    = role
-        member  = "${local.wfif_iam_principal}${user_id}"
+        member  = "${local.wfif_iam_principal}${local.keycloak_users[user_name]}"
       }
     ]
   ]))
+
+  project_role_combination_list_external_users = distinct(flatten([
+    for user_name, user in var.provider_managed_projects : [
+      for external_identity in toset(user.external_identities) : [
+        for role in toset( ["roles/bigquery.dataViewer", "roles/bigquery.jobUser"] ) : {
+          project = "bqprovpr-0819c0-cx-${user_name}"
+          role    = role
+          member  = "user:${external_identity}"
+        }
+      ]
+    ]
+  ]))
+
 }
 
 resource "google_project_iam_member" "project_owner" {
@@ -47,7 +60,15 @@ resource "google_project_iam_member" "project_owner" {
 }
 
 resource "google_project_iam_member" "project_user" {
-  for_each         = { for entry in local.project_role_combination_list_users: "${entry.project}.${entry.role}.${entry.member}" => entry }
+  for_each         = { for entry in local.project_role_combination_list_wfif_users: "${entry.project}.${entry.role}.${entry.member}" => entry }
+
+  project          = each.value.project
+  role             = each.value.role
+  member           = each.value.member
+}
+
+resource "google_project_iam_member" "project_external_user" {
+  for_each         = { for entry in local.project_role_combination_list_external_users: "${entry.project}.${entry.role}.${entry.member}" => entry }
 
   project          = each.value.project
   role             = each.value.role
