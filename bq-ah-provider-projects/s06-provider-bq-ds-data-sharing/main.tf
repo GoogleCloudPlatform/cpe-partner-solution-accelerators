@@ -12,27 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_providers {
-    google-beta = {
-      source = "hashicorp/google-beta"
-      version = "~> 6.28.0"
-    }
-    google = {
-      source = "hashicorp/google"
-      version = "~> 6.28.0"
-    }
-  }
+data "google_project" "project" {
+  project_id = var.prov_project_id_bqds
 }
 
-provider "google-beta" {
-  project     = var.prov_project_id_idp
-  region      = var.region
-  zone        = var.zone
-}
-
-provider "google" {
-  project     = var.prov_project_id_idp
-  region      = var.region
-  zone        = var.zone
+locals {
+  random_suffix = data.terraform_remote_state.provider-org-idp-infra.outputs.random_suffix
 }

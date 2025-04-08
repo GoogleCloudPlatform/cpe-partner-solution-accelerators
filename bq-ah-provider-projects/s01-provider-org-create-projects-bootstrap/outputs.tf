@@ -16,6 +16,10 @@ output "project_number_idp" {
   description = "IDP project number"
   value       = module.publ-project-factory[var.prov_project_id_idp].project_number
 }
+output "project_number_bqds" {
+  description = "BQDS project number"
+  value       = module.publ-project-bqds.project_number
+}
 output "folder_id_root" {
   description = "Folder for all related projects"
   value       = google_folder.prov-root.id

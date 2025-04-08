@@ -14,7 +14,7 @@
 
 locals {
    project_role_combination_list = distinct(flatten([
-    for project in toset( ["${var.prov_project_id_seed}","${var.prov_project_id_idp}"] ) : [
+    for project in toset( ["${var.prov_project_id_seed}","${var.prov_project_id_idp}","${var.prov_project_id_bqds}"] ) : [
       for role in toset( ["roles/editor", "roles/resourcemanager.projectIamAdmin"] ) : [
         for member in toset( var.prov_project_owners ) : {
           project = project
@@ -27,6 +27,7 @@ locals {
 }
 
 resource "google_project_iam_member" "project_owner" {
+  depends_on       = [ module.publ-project-factory, module.publ-project-bqds ]
   for_each         = { for entry in local.project_role_combination_list: "${entry.project}.${entry.role}.${entry.member}" => entry }
 
   project          = each.value.project

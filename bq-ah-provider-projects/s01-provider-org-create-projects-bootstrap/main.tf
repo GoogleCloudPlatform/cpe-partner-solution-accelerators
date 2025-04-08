@@ -14,7 +14,7 @@
 
 module "project-services-prov-seed" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 16.0"
+  version = "~> 18.0"
 
   project_id                  = data.google_project.prov_seed_project.project_id
   activate_apis               = var.projects_activate_apis_seed
@@ -30,7 +30,7 @@ module "publ-project-factory" {
     "${var.prov_project_id_idp}",
     ] )
   source  = "terraform-google-modules/project-factory/google"
-  version = "~> 16.0"
+  version = "~> 18.0"
 
   name                 = each.value
   random_project_id    = false
@@ -40,4 +40,20 @@ module "publ-project-factory" {
   default_service_account     = "deprivilege"
   disable_dependent_services  = false
   disable_services_on_destroy = false
+  deletion_policy     = "DELETE"
+}
+
+module "publ-project-bqds" {
+  source  = "terraform-google-modules/project-factory/google"
+  version = "~> 18.0"
+
+  name                 = var.prov_project_id_bqds
+  random_project_id    = false
+  folder_id            = google_folder.prov-data.id
+  billing_account      = var.billing_account_id
+  activate_apis        = var.projects_activate_apis
+  default_service_account     = "deprivilege"
+  disable_dependent_services  = false
+  disable_services_on_destroy = false
+  deletion_policy     = "DELETE"
 }

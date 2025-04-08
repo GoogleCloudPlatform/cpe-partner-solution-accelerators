@@ -218,6 +218,10 @@ variable "prov_project_id_idp" {
   description = "Google Cloud Project ID"
   type        = string
 }
+variable "prov_project_id_bqds" {
+  description = "Google Cloud Project ID"
+  type        = string
+}
 variable "prov_tf_state_bucket" {
   description = "Terraform state bucket"
   type        = string
@@ -257,4 +261,9 @@ variable "prov_vpc_sc_ah_customer_identities" {
   description = "VPC SC / AH allowed subscriber identities - format: list of 'user:<email>' or 'serviceAccount:<email>' items"
   type        = list
   default     = []
+}
+variable "provider_managed_projects" {
+  description = "Map of provider managed projects"
+  type        = any
+  default     = {}
 }

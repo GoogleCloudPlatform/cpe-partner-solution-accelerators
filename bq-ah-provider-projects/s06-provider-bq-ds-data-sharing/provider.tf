@@ -26,13 +26,13 @@ terraform {
 }
 
 provider "google-beta" {
-  project     = var.prov_project_id_idp
+  project     = var.prov_project_id_bqds
   region      = var.region
   zone        = var.zone
 }
 
 provider "google" {
-  project     = var.prov_project_id_idp
+  project     = var.prov_project_id_bqds
   region      = var.region
   zone        = var.zone
 }
