@@ -6,3 +6,5 @@ INTERNAL_NOTES.txt
 terraform.local.auto.tfvars
 temp/*
 common/terraform.pmprojects.auto.tfvars
+# Download from kaggle, too big to store on GH: https://www.kaggle.com/datasets/sebastianwillmann/beverage-sales
+datasets/synthetic_beverage_sales_data.csv
