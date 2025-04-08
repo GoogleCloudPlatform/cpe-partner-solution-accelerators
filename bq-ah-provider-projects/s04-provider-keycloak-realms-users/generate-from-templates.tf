@@ -36,5 +36,5 @@ resource "local_file" "generated" {
     }
   )
   filename = "${path.module}/../generated/${each.key}"
-  file_permission = 0644
+  file_permission = 0600
 }

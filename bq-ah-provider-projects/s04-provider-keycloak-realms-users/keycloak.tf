@@ -197,12 +197,36 @@ resource "keycloak_group_memberships" "bar_group_members" {
   ]
 }
 
-resource "keycloak_user" "user_john" {
+resource "random_password" "cx_managed_pw" {
+  for_each   = var.provider_managed_projects
+
+  length           = 16
+  special          = false
+}
+
+resource "keycloak_user" "cx_managed" {
+  for_each   = var.provider_managed_projects
+
   realm_id   = keycloak_realm.realm.id
-  username   = "john"
+  username   = each.value.customer_name
   enabled    = true
 
-  email      = "john@domain.com"
+  email      = each.value.customer_email
+  first_name = each.value.customer_first_name
+  last_name  = each.value.customer_last_name
+
+  initial_password {
+    value     = random_password.cx_managed_pw[each.key].result
+    temporary = false
+  }
+}
+
+resource "keycloak_user" "user_john" {
+  realm_id   = keycloak_realm.realm.id
+  username   = "john-hc"
+  enabled    = true
+
+  email      = "john-hc@domain.com"
   first_name = "John"
   last_name  = "Doe"
 
@@ -214,10 +238,10 @@ resource "keycloak_user" "user_john" {
 
 resource "keycloak_user" "user_jane" {
   realm_id   = keycloak_realm.realm.id
-  username   = "jane"
+  username   = "jane-hc"
   enabled    = true
 
-  email      = "jane@domain.com"
+  email      = "jane-hc@domain.com"
   first_name = "Jane"
   last_name  = "Doe"
 

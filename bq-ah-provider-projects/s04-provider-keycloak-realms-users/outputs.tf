@@ -24,6 +24,10 @@ output "test_users" {
     "jane": keycloak_user.user_jane.id,
   }
 }
+output "managed_users" {
+  description = "Managed users"
+  value = { for k, v in keycloak_user.cx_managed : k => v.id }
+}
 output "wloadif_client_id" {
   description = "Workload Identity Federation Client ID"
   value       = keycloak_openid_client.google_wloadif_client.client_id
