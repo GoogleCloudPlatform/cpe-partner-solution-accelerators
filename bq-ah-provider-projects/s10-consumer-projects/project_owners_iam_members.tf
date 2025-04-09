@@ -53,6 +53,7 @@ locals {
 
 resource "google_project_iam_member" "project_owner" {
   for_each         = { for entry in local.project_role_combination_list_owners: "${entry.project}.${entry.role}.${entry.member}" => entry }
+  depends_on       = [ module.project-services-cx ]
 
   project          = each.value.project
   role             = each.value.role
@@ -61,6 +62,7 @@ resource "google_project_iam_member" "project_owner" {
 
 resource "google_project_iam_member" "project_user" {
   for_each         = { for entry in local.project_role_combination_list_wfif_users: "${entry.project}.${entry.role}.${entry.member}" => entry }
+  depends_on       = [ module.project-services-cx ]
 
   project          = each.value.project
   role             = each.value.role
@@ -69,6 +71,7 @@ resource "google_project_iam_member" "project_user" {
 
 resource "google_project_iam_member" "project_external_user" {
   for_each         = { for entry in local.project_role_combination_list_external_users: "${entry.project}.${entry.role}.${entry.member}" => entry }
+  depends_on       = [ module.project-services-cx ]
 
   project          = each.value.project
   role             = each.value.role

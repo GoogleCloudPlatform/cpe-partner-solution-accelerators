@@ -12,10 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-data "google_project" "prov_seed_project" {
-  project_id = var.prov_project_id_seed
-}
+# Override Domain restricted sharing - allow all in customer managed projects
+resource "google_org_policy_policy" "override_drs_cx_folder" {
+  parent = "${google_folder.prov-cx.name}"
+  name   = "${google_folder.prov-cx.name}/policies/iam.allowedPolicyMemberDomains"
 
-locals {
-  dns_domain_name_trimmed = trim(var.dns_domain_name, ".")
+  spec {
+    inherit_from_parent = false
+
+    rules {
+      allow_all  = "TRUE"
+    }
+  }
 }

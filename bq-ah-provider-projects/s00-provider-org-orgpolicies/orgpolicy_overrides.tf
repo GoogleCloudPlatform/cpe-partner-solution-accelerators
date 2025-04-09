@@ -29,10 +29,6 @@ resource "google_org_policy_policy" "override_drs" {
   }
 }
 
-locals {
-  dns_domain_name_trimmed = trim(var.dns_domain_name, ".")
-}
-
 # Override Allowed external Identity Providers for workloads in Cloud IAM
 resource "google_org_policy_policy" "override_wipool" {
   parent = "organizations/${var.prov_org_id}"
