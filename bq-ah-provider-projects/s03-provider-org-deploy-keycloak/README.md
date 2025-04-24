@@ -2,6 +2,8 @@
 
 ## Manual
 
+We are using IAM authentication for CloudSQL, the username format is `<service_account_name>@<project_id>.iam`.
+
 ```
 postgres=> GRANT ALL PRIVILEGES ON DATABASE keycloak TO "keycloak-jm5@isv-coe-predy-00.iam";
 GRANT
@@ -17,6 +19,7 @@ keycloak=> \q
 . ./generated/environment.sh
 . ./generated/environment_keycloak.sh
 
+DB_USERNAME="<service_account_name>@<project_id>.iam"
 kubectl run cloudsql-keycloak-init --env PGPASSWORD="$KEYCLOAK_ADMIN_PW" --image postgres --command psql -- --host $DB_IP --port 5432 -U postgres -d keycloak -c 'GRANT ALL PRIVILEGES ON SCHEMA public TO "$DB_USERNAME";'
 kubectl run cloudsql-keycloak-init --env PGPASSWORD="$KEYCLOAK_ADMIN_PW" --image postgres --command psql -- --host $DB_IP --port 5432 -U postgres -c 'GRANT ALL ON DATABASE keycloak TO "$DB_USERNAME";'
 ```
