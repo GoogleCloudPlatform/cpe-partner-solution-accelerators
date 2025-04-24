@@ -5,10 +5,10 @@
 We are using IAM authentication for CloudSQL, the username format is `<service_account_name>@<project_id>.iam`.
 
 ```
-postgres=> GRANT ALL PRIVILEGES ON DATABASE keycloak TO "keycloak-jm5@isv-coe-predy-00.iam";
+postgres=> GRANT ALL PRIVILEGES ON DATABASE keycloak TO "keycloak-jm5@bqprovpr-idp.iam";
 GRANT
 postgres=> \c keycloak
-keycloak=> GRANT ALL ON SCHEMA public TO "keycloak-jm5@isv-coe-predy-00.iam";
+keycloak=> GRANT ALL ON SCHEMA public TO "keycloak-jm5@bqprovpr-idp.iam";
 GRANT
 keycloak=> \q
 ```
