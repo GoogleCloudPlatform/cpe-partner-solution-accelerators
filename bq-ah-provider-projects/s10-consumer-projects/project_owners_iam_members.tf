@@ -47,6 +47,17 @@ locals {
     ]
   ]))
 
+  project_role_combination_list_wlif_aws_users = distinct(flatten([
+    for user_name, user in var.provider_managed_projects : [
+      for aws_federation in toset( user.aws_federations ) : [
+        for role in toset( ["roles/bigquery.dataViewer", "roles/bigquery.jobUser"] ) : {
+          project = "${var.prov_project_id_prefix}-cx-${user_name}"
+          role    = role
+          member  = "principalSet://iam.googleapis.com/projects/${google_project.cx_projects[user_name].number}/locations/global/workloadIdentityPools/cxpool-${user_name}/attribute.aws_role/${aws_federation.role}"
+        }
+      ]
+    ]
+  ]))
 }
 
 resource "google_project_iam_member" "project_owner" {
@@ -70,6 +81,15 @@ resource "google_project_iam_member" "project_user" {
 resource "google_project_iam_member" "project_external_user" {
   for_each         = { for entry in local.project_role_combination_list_external_users: "${entry.project}.${entry.role}.${entry.member}" => entry }
   depends_on       = [ module.project-services-cx ]
+
+  project          = each.value.project
+  role             = each.value.role
+  member           = each.value.member
+}
+
+resource "google_project_iam_member" "project_wlif_aws_user" {
+  for_each         = { for entry in local.project_role_combination_list_wlif_aws_users: "${entry.project}.${entry.role}.${entry.member}" => entry }
+  depends_on       = [ module.project-services-cx, google_iam_workload_identity_pool_provider.cx_aws_pool_provider ]
 
   project          = each.value.project
   role             = each.value.role
