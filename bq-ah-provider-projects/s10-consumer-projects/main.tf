@@ -48,4 +48,5 @@ locals {
   wfif_iam_principal = data.terraform_remote_state.provider-wlif-wfif.outputs.wfif_iam_principal
   keycloak_users = data.terraform_remote_state.keycloak.outputs.managed_users
   bqds_exchange_id = data.terraform_remote_state.provider-bq-ds-data-sharing.outputs.bqds_exchange_data_exchange_id
+  dns_name_trimmed = trimsuffix(var.dns_domain_name, ".")
 }

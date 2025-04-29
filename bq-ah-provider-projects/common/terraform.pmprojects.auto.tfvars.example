@@ -15,16 +15,32 @@
 provider_managed_projects = {
   jane = {
     customer_name = "jane"
+    customer_first_name = "Jane"
+    customer_last_name = "Doe"
     customer_id = "CUS1496"
+    customer_email = "jane@domain.com"
     provision_managed_identity = true
     provision_service_account = true
-    external_identities = [ "bqpmpjane@nonexistent-gmail.com" ]
+    external_identities = [ "bqpmpjane@gmail.com" ]
+    aws_federations = []
   }
   john = {
     customer_name = "john"
+    customer_first_name = "John"
+    customer_last_name = "Doe"
+    customer_email = "john@domain.com"
     customer_id = "CUS7863"
     provision_managed_identity = true
     provision_service_account = true
-    external_identities = [ "bqpmpjohn@nonexistent-gmail.com" ]
+    external_identities = [ "bqpmpjohn@gmail.com" ]
+    # principalSet://iam.googleapis.com/projects/32095214895/locations/global/workloadIdentityPools/john-aws-pool/attribute.aws_ec2_instance/i-078d8d26e3b365a77
+    # principalSet://iam.googleapis.com/projects/32095214895/locations/global/workloadIdentityPools/john-aws-pool/attribute.attribute.aws_role/GCPRole
+    aws_federations = [
+      {
+        account_id = "012012345345"
+        role = "GCPRole"
+        wlif_pool_provider_name_suffix = "aws"
+      }
+    ]
   }
 }
