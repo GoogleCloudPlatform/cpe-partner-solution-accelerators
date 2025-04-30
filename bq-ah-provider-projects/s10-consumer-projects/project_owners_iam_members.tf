@@ -26,12 +26,15 @@ locals {
   ]))
 
   project_role_combination_list_wfif_users = distinct(flatten([
-    for user_name, user in var.provider_managed_projects : [
-      for role in toset( ["roles/bigquery.dataViewer", "roles/bigquery.jobUser"] ) : {
-        project = "${var.prov_project_id_prefix}-cx-${user_name}"
-        role    = role
-        member  = "${local.wfif_iam_principal}${local.keycloak_users[user_name]}"
-      }
+    for customer_name, customer in var.provider_managed_projects : [
+      for user_key, user in { for entry in customer.provision_managed_identities: "${customer_name}-${entry.user_name}" => entry } : [
+        for role in toset( ["roles/bigquery.dataViewer", "roles/bigquery.jobUser"] ) : {
+          user_key = user_key
+          project = "${var.prov_project_id_prefix}-cx-${customer_name}"
+          role    = role
+          member  = "${local.wfif_iam_principal}${local.keycloak_users[user_key]}"
+        }
+      ]
     ]
   ]))
 
@@ -70,7 +73,7 @@ resource "google_project_iam_member" "project_owner" {
 }
 
 resource "google_project_iam_member" "project_user" {
-  for_each         = { for entry in local.project_role_combination_list_wfif_users: "${entry.project}.${entry.role}.${entry.member}" => entry }
+  for_each         = { for entry in local.project_role_combination_list_wfif_users: "${entry.project}.${entry.role}.${entry.user_key}" => entry }
   depends_on       = [ module.project-services-cx ]
 
   project          = each.value.project

@@ -26,8 +26,7 @@ resource "google_project" "cx_projects" {
   deletion_policy      = "DELETE"
 
   labels = {
-    customer_name = each.key,
-    customer_keycloak_id = local.keycloak_users[each.key],
+    customer_name = each.key
   }
 
 }

@@ -15,13 +15,26 @@
 provider_managed_projects = {
   jane = {
     customer_name = "jane"
-    customer_first_name = "Jane"
-    customer_last_name = "Doe"
     customer_id = "CUS1496"
-    customer_email = "jane@domain.com"
     provision_managed_identity = true
+    provision_managed_identities = [
+      {
+        user_name = "user1",
+        first_name = "Jane"
+        last_name = "Doe"
+        email = "user1@jane.nonexistent.domain.com"
+      },
+      {
+        user_name = "user2",
+        first_name = "Jane"
+        last_name = "Doe"
+        email = "user2@jane.nonexistent.domain.com"
+      },
+    ]
     provision_service_account = true
-    external_identities = [ "bqpmpjane@gmail.com" ]
+    external_identities = [
+      "bqpmpjane@gmail.com"
+      ]
     aws_federations = []
   }
   john = {
@@ -31,15 +44,21 @@ provider_managed_projects = {
     customer_email = "john@domain.com"
     customer_id = "CUS7863"
     provision_managed_identity = true
+    provision_managed_identities = [
+      {
+        user_name = "user1",
+        first_name = "John"
+        last_name = "Doe"
+        email = "user1@john.nonexistent.domain.com"
+      },
+    ]
     provision_service_account = true
     external_identities = [ "bqpmpjohn@gmail.com" ]
-    # principalSet://iam.googleapis.com/projects/32095214895/locations/global/workloadIdentityPools/john-aws-pool/attribute.aws_ec2_instance/i-078d8d26e3b365a77
-    # principalSet://iam.googleapis.com/projects/32095214895/locations/global/workloadIdentityPools/john-aws-pool/attribute.attribute.aws_role/GCPRole
     aws_federations = [
       {
-        account_id = "012012345345"
+        account_id = "657244068727"
         role = "GCPRole"
-        wlif_pool_provider_name_suffix = "aws"
+        wlif_pool_provider_name_suffix = "aws-3"
       }
     ]
   }
