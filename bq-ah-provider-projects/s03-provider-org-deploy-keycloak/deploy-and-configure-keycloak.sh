@@ -37,8 +37,8 @@ done
 
 echo "Getting keycloak admin access token ..."
 curl \
-  -d "username=$KEYCLOAK_ADMIN_USER" \
-  -d "password=$KEYCLOAK_ADMIN_PW" \
+  --data-urlencode "username=$KEYCLOAK_ADMIN_USER" \
+  --data-urlencode "password=$KEYCLOAK_ADMIN_PW" \
   -d "client_id=admin-cli" \
   -d "client_secret=admin-cli" \
   -d "grant_type=password" \
