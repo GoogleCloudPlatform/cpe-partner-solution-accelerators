@@ -45,6 +45,7 @@ publ_project_owners = [ "user:{{PUBL_ADMIN_USER}}" ]
 publ_drs_allowlisted_org_ids = [ {{PUBL_DRS_ALLOWLISTED_ORG_IDS_S}} ]
 
 publ_enable_policy_tags = {{PUBL_ENABLE_POLICY_TAGS}}
+publ_allowlisted_vpcsc_opt = {{PUBL_ALLOWLISTED_VPCSC_OPT}}
 
 publ_vpc_sc_policy_parent_org_id = {{PUBLISHER_ORG_ID}} # {{PUBLISHER_ORG_NAME}}
 publ_vpc_sc_global_access_policy_name = "ahdemo-publisher-policy"

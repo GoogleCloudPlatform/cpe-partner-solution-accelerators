@@ -13,7 +13,7 @@
 # limitations under the License.
 
 locals {
-  ingress_policies_bq_perimeter_src_ds = [
+  ingress_policies_bq_perimeter_src_ds = concat([
     # Allow off-perimeter internal users (Cloud Console users) in var.publ_vpc_sc_access_level_corp_allowed_identities from the corporate network IP ranges
     # required for the (internal) admins to manage BQ / AH
     {
@@ -79,36 +79,42 @@ locals {
           },
         }
       }
-    },
-#    # OPTIONAL - Allow off-perimeter subscribers (Cloud Console users) in var.publ_vpc_sc_ah_subscriber_identities from anywhere
-#    # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
-#    # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
-#    {
-#      "from" = {
-#        "sources" = {
-#          access_levels = [ google_access_context_manager_access_level.access_level_allow_all.name ] # Allow access from everywhere
-#        },
-#        "identities" = var.publ_vpc_sc_ah_subscriber_identities
-#      }
-#      "to" = {
-#        "resources" = [
-#          "*"
-##          "projects/${data.google_project.publ_ah_exchg.number}",
-#        ]
-#        "operations" = {
-#          "bigquery.googleapis.com" = {
-#            "permissions" = [
-#              "bigquery.tables.getData"
-#            ]
-#            "methods" = [
-#            ]
-#          }
-#        }
-#      }
-#    },
-  ]
+    }],
 
-  egress_policies_bq_perimeter_src_ds = [
+    # OPTIONAL - Allow off-perimeter subscribers (Cloud Console users) in var.publ_vpc_sc_ah_subscriber_identities from anywhere
+    # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
+    # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
+    var.publ_allowlisted_vpcsc_opt ? [] : [local.ingress_policy_bq_perimeter_src_ds_subscriber],
+  )
+  # OPTIONAL - Allow off-perimeter subscribers (Cloud Console users) in var.publ_vpc_sc_ah_subscriber_identities from anywhere
+  # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
+  # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
+  ingress_policy_bq_perimeter_src_ds_subscriber = {
+    "from" = {
+      "sources" = {
+        access_levels = [ google_access_context_manager_access_level.access_level_allow_all.title ] # Allow access from everywhere
+      },
+      "identities" = var.publ_vpc_sc_ah_subscriber_identities
+      "identity_type" = null
+    }
+    "to" = {
+      "resources" = [
+        "*"
+#          "projects/${data.google_project.publ_ah_exchg.number}",
+      ]
+      "operations" = {
+        "bigquery.googleapis.com" = {
+          "permissions" = [
+            "bigquery.tables.getData"
+          ]
+          "methods" = [
+          ]
+        }
+      }
+    }
+  }
+
+  egress_policies_bq_perimeter_src_ds = concat([
     # Allow egress to bq_shared_ds and bq_and_ah (Google Service -> Google Service)
     # required for creating the view from shared_ds/bq_and_ah to src_ds
     {
@@ -173,29 +179,34 @@ locals {
           },
         }
       }
-    },
-#    # OPTIONAL - Allow egress to #subscriber_project_number (Google Service -> Google Service)
-#    # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
-#    # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
-#    {
-#      "from" = {
-#        "identities" = var.publ_vpc_sc_ah_subscriber_identities
-#      }
-#      "to" = {
-#        "resources" = local.vpc_sc_ah_subscriber_project_resources_with_numbers
-#        "operations" = {
-#          "bigquery.googleapis.com" = {
-#            "permissions" = [
-#              "bigquery.tables.getData",
-#              "bigquery.jobs.create"
-#            ]
-#            "methods" = [
-#            ]
-#          }
-#        }
-#      }
-#    },
-  ]
+    }],
+    # OPTIONAL - Allow egress to #subscriber_project_number (Google Service -> Google Service)
+    # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
+    # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
+    var.publ_allowlisted_vpcsc_opt ? [] : [local.egress_policies_bq_perimeter_src_ds_subscribers],
+  )
+
+  # OPTIONAL - Allow egress to #subscriber_project_number (Google Service -> Google Service)
+  # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
+  # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
+  egress_policies_bq_perimeter_src_ds_subscribers = {
+      "from" = {
+      "identities" = var.publ_vpc_sc_ah_subscriber_identities
+    }
+    "to" = {
+      "resources" = local.vpc_sc_ah_subscriber_project_resources_with_numbers
+      "operations" = {
+        "bigquery.googleapis.com" = {
+          "permissions" = [
+            "bigquery.tables.getData",
+            "bigquery.jobs.create"
+          ]
+          "methods" = [
+          ]
+        }
+      }
+    }
+  }
 }
 
 module "regular_service_perimeter_bq_src_ds" {
