@@ -61,7 +61,7 @@ locals {
     {
       "from" = {
         "sources" = {
-          access_levels = []
+          access_levels = [ google_access_context_manager_access_level.access_level_allow_all.title ] # Allow access from everywhere ( "*" works as well)
           resources = [ 
             "projects/${var.subscr_project_number_seed}",
             "projects/${var.subscr_project_number_subscr_with_vpcsc}",
