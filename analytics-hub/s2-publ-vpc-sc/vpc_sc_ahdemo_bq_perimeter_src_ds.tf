@@ -94,7 +94,7 @@ locals {
       "sources" = {
         access_levels = [ google_access_context_manager_access_level.access_level_allow_all.title ] # Allow access from everywhere
       },
-      "identities" = var.publ_vpc_sc_ah_subscriber_identities
+      "identities" = concat(var.publ_vpc_sc_ah_subscriber_identities, var.subscr_subscriber_projects_bq_readers_iam_members)
       "identity_type" = null
     }
     "to" = {
@@ -191,7 +191,7 @@ locals {
   # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
   egress_policies_bq_perimeter_src_ds_subscribers = {
       "from" = {
-      "identities" = var.publ_vpc_sc_ah_subscriber_identities
+      "identities" = concat(var.publ_vpc_sc_ah_subscriber_identities, var.subscr_subscriber_projects_bq_readers_iam_members)
     }
     "to" = {
       "resources" = local.vpc_sc_ah_subscriber_project_resources_with_numbers
