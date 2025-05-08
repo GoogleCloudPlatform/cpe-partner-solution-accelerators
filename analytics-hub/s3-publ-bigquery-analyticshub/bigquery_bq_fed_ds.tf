@@ -82,6 +82,8 @@ resource "google_kms_crypto_key" "fed_ds_crypto_key" {
 }
 
 resource "google_project_iam_member" "bq_fed_ds_kms_service_account_access" {
+  depends_on = [ null_resource.bq_encryption_service_account_bq_fed_ds ]
+
   project = data.google_project.publ_bq_fed_ds.project_id
   role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   member  = "serviceAccount:bq-${data.google_project.publ_bq_fed_ds.number}@bigquery-encryption.iam.gserviceaccount.com"
@@ -89,7 +91,7 @@ resource "google_project_iam_member" "bq_fed_ds_kms_service_account_access" {
 
 resource "null_resource" "bq_encryption_service_account_bq_fed_ds" {
   provisioner "local-exec" {
-    command = "bq show --encryption_service_account --project_id=${data.google_project.publ_bq_fed_ds.project_id}"
+    command = "bq show --encryption_service_account --project_id=${data.google_project.publ_bq_fed_ds.project_id} && sleep 10"
   }
 }
 

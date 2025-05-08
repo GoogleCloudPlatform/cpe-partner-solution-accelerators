@@ -229,7 +229,11 @@ variable "publ_enable_policy_tags" {
   type        = bool
   default     = false
 }
-
+variable "publ_allowlisted_vpcsc_opt" {
+  description = "The orgs / projects are allowlisted for VPC SC optimization for AUTHZ entities. No additional subscriber rules needed in src_ds perimeters."
+  type        = bool
+  default     = false
+}
 variable "publ_vpc_sc_policy_parent_org_id" {
   description = "VPC SC policy parent organization id"
   type        = string
