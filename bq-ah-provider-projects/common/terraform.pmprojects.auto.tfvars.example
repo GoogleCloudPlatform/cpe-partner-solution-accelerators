@@ -56,7 +56,7 @@ provider_managed_projects = {
     external_identities = [ "bqpmpjohn@gmail.com" ]
     aws_federations = [
       {
-        account_id = "657244068727"
+        account_id = "657......727"
         role = "GCPRole"
         wlif_pool_provider_name_suffix = "aws-3"
       }
