@@ -71,9 +71,17 @@ resource "google_bigquery_datapolicy_data_policy_iam_policy" "data_policy_bq_ah_
   policy_data = data.google_iam_policy.data_policy_bq_ah_iam_policy_data.policy_data
 }
 
+resource "google_project_iam_member" "bqah_kms_service_account_access" {
+  depends_on = [ null_resource.bq_encryption_service_account_bqah ]
+
+  project = data.google_project.publ_bq_and_ah.project_id
+  role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  member  = "serviceAccount:bq-${data.google_project.publ_bq_and_ah.number}@bigquery-encryption.iam.gserviceaccount.com"
+}
+
 resource "null_resource" "bq_encryption_service_account_bqah" {
   provisioner "local-exec" {
-    command = "bq show --encryption_service_account --project_id=${data.google_project.publ_bq_and_ah.project_id}"
+    command = "bq show --encryption_service_account --project_id=${data.google_project.publ_bq_and_ah.project_id} && sleep 10"
   }
 }
 

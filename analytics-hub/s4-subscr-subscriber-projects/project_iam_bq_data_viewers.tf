@@ -15,14 +15,7 @@
 resource "google_project_iam_member" "project_viewer_subscr_with_vpcsc" {
   for_each = toset(var.subscr_subscriber_projects_bq_readers_iam_members)
 
-  project = data.google_project.subscr_subscr_without_vpcsc.project_id
-  role    = "roles/viewer"
-  member  = each.value
-}
-resource "google_project_iam_member" "project_viewer_subscr_without_vpcsc" {
-  for_each = toset(var.subscr_subscriber_projects_bq_readers_iam_members)
-
-  project = data.google_project.subscr_subscr_without_vpcsc.project_id
+  project = data.google_project.subscr_subscr_with_vpcsc.project_id
   role    = "roles/viewer"
   member  = each.value
 }
@@ -33,10 +26,32 @@ resource "google_project_iam_member" "bqreader_project_subscr_with_vpcsc" {
   role    = "roles/bigquery.user"
   member  = each.value
 }
-resource "google_project_iam_member" "bqreader_project_subscr_without_vpcsc" {
+resource "google_project_iam_member" "bqdataviewer_project_subscr_with_vpcsc" {
   for_each = toset(var.subscr_subscriber_projects_bq_readers_iam_members)
 
   project = data.google_project.subscr_subscr_with_vpcsc.project_id
+  role    = "roles/bigquery.dataViewer"
+  member  = each.value
+}
+
+resource "google_project_iam_member" "project_viewer_subscr_without_vpcsc" {
+  for_each = toset(var.subscr_subscriber_projects_bq_readers_iam_members)
+
+  project = data.google_project.subscr_subscr_without_vpcsc.project_id
+  role    = "roles/viewer"
+  member  = each.value
+}
+resource "google_project_iam_member" "bqreader_project_subscr_without_vpcsc" {
+  for_each = toset(var.subscr_subscriber_projects_bq_readers_iam_members)
+
+  project = data.google_project.subscr_subscr_without_vpcsc.project_id
   role    = "roles/bigquery.user"
+  member  = each.value
+}
+resource "google_project_iam_member" "bqdataviewer_project_subscr_without_vpcsc" {
+  for_each = toset(var.subscr_subscriber_projects_bq_readers_iam_members)
+
+  project = data.google_project.subscr_subscr_without_vpcsc.project_id
+  role    = "roles/bigquery.dataViewer"
   member  = each.value
 }

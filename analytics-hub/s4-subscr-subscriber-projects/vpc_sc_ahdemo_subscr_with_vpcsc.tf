@@ -84,28 +84,30 @@ locals {
     },
   ]
 
-  egress_policies_subscriber_perimeter = [
-#    # OPTIONAL - Allow egress to bq_src_ds (Google Service -> Google Service)
-#    # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
-#    # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
-#    {
-#      "from" = {
-#        "identities" = var.subscr_vpc_sc_access_level_corp_allowed_identities
-#        "sources" = {}
-#      }
-#      "to" = {
-#        "resources" = [
-#          "projects/${var.publ_project_number_bq_src_ds}",
-#        ]
-#        "operations" = {
-#          "bigquery.googleapis.com" = {
-#            "methods" = [
-#              "*",
-#            ]
-#          }
-#        }
-#      }
-#    },
+  # OPTIONAL - Allow egress to bq_src_ds (Google Service -> Google Service)
+  # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
+  # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
+  egress_policy_subscriber_src_ds = {
+      "from" = {
+        "identities" = var.subscr_vpc_sc_access_level_corp_allowed_identities
+      }
+      "to" = {
+        "resources" = [
+          "projects/${var.publ_project_number_bq_src_ds}",
+        ]
+        "operations" = {
+          "bigquery.googleapis.com" = {
+            "methods" = [
+              "*",
+            ]
+          }
+        }
+      }
+    }
+
+  egress_policies_subscriber_perimeter = concat(
+    var.publ_allowlisted_vpcsc_opt ? [] : [local.egress_policy_subscriber_src_ds],
+    [
     # Allow egress to ah_exchg,bq_and_ah (Google Service -> Google Service)
     # required for subscribing to the listing
     {
@@ -196,7 +198,7 @@ locals {
         }
       }
     },
-  ]
+  ])
 }
 
 module "regular_service_perimeter_subscr_with_vpcsc" {

@@ -126,3 +126,13 @@ do
   echo "- $STAGE_DIR/{.terraform/,.terraform.lock.hcl}"
   rm -rf "$STAGE_DIR/"{.terraform/,.terraform.lock.hcl}
 done
+
+echo "Removing generated local files ..."
+rm ./generated/subscribe_priv_ah_dedicated.sh
+rm ./generated/subscribe_priv_bqah.sh
+rm ./generated/subscribe_priv_nonvpcsc_ah_dedicated.sh
+rm ./generated/subscribe_publ_ah_dedicated.sh
+rm ./generated/subscribe_publ_bqah.sh
+rm ./generated/subscribe_publ_nonvpcsc_ah_dedicated.sh
+rm ./generated/terraform.publ_project_numbers.auto.tfvars
+rm ./generated/terraform.subscr_project_numbers.auto.tfvars
