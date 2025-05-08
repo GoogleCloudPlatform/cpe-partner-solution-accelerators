@@ -5,6 +5,7 @@ This repository contains solution accelerators.
 ## Solution Accelerators 
 
 [Analytics Hub / BigQuery / VPC-Service Controls end-to-end solution accelerator](./analytics-hub/README.md)
+[Analytics Hub / BigQuery / Provider Managed BigQuery Projects [PMBQP] end-to-end solution accelerator](./bq-ah-provider-projects/README.md)
 
 ## Versioning
 

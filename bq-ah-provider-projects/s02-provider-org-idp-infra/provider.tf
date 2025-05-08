@@ -16,15 +16,15 @@ terraform {
   required_providers {
     google-beta = {
       source = "hashicorp/google-beta"
-      version = "~> 6.28.0"
+      version = "~> 6.34.0"
     }
     google = {
       source = "hashicorp/google"
-      version = "~> 6.28.0"
+      version = "~> 6.34.0"
     }
     docker = {
       source  = "kreuzwerker/docker"
-      version = "3.0.2"
+      version = "3.5.0"
     }
   }
 }
