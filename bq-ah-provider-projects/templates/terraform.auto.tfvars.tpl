@@ -48,21 +48,3 @@ prov_project_id_bqds = "{{PROV_PROJECT_ID_PREFIX}}-bqds"
 prov_tf_state_bucket = "{{PROV_STATE_BUCKET}}"
 prov_admin_user = "{{PROV_ADMIN_USER}}"
 prov_project_owners = [ "user:{{PROV_ADMIN_USER}}" ]
-
-# UNUSED FOR NOW / LEGACY
-prov_vpc_sc_dry_run = false
-prov_vpc_sc_restricted_services = [ "cloudkms.googleapis.com" ]
-prov_vpc_sc_policy_parent_org_id = {{PROV_ORG_ID}} # {{PROV_ORG_NAME}}
-prov_vpc_sc_global_access_policy_name = "xocmek-provider-policy"
-prov_vpc_sc_access_level_corp_ip_subnetworks = [
-    "2a02:168:5231:0::/64", # home
-    "212.51.151.0/24", # home
-    "104.132.228.0/24", # office
-    "2a00:79e0:48:700::/64", # office
-    "2a00:79e0:9d:200::/64", # office
-    ]
-prov_vpc_sc_ah_customer_project_resources_with_numbers = []
-prov_vpc_sc_access_level_corp_allowed_identities = [ 
-    "user:{{GCLOUD_USER}}",
-    "user:{{PROV_ADMIN_USER}}",
-    ]

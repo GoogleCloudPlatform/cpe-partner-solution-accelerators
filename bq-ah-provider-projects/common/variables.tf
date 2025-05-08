@@ -200,16 +200,6 @@ variable "prov_org_id" {
   description = "Google Cloud Organization ID"
   type        = string
 }
-variable "prov_vpc_sc_dry_run" {
-  description = "VPC SC dry-run mode"
-  type        = bool
-  default     = false
-}
-variable "prov_vpc_sc_restricted_services" {
-  description = "VPC SC restricted services"
-  type        = list
-  default     = []
-}
 variable "prov_project_id_prefix" {
   description = "Google Cloud Project ID"
   type        = string
@@ -237,34 +227,6 @@ variable "prov_admin_user" {
 variable "prov_project_owners" {
   description = "Additional IAM members to add to the provider projects"
   type        = list
-}
-variable "prov_vpc_sc_policy_parent_org_id" {
-  description = "VPC SC policy parent organization id"
-  type        = string
-}
-variable "prov_vpc_sc_global_access_policy_name" {
-  description = "VPC SC global access policy name - provider org"
-  type        = string
-}
-variable "prov_vpc_sc_access_level_corp_ip_subnetworks" {
-  description = "VPC SC access level allowed external IPs"
-  type        = list
-  default     = []
-}
-variable "prov_vpc_sc_ah_customer_project_resources_with_numbers" {
-  description = "VPC SC / AH allowed subscriber project numbers - format list of 'projects/project_number' items"
-  type        = list
-  default     = []
-}
-variable "prov_vpc_sc_access_level_corp_allowed_identities" {
-  description = "VPC SC access level allowed identities"
-  type        = list
-  default     = []
-}
-variable "prov_vpc_sc_ah_customer_identities" {
-  description = "VPC SC / AH allowed subscriber identities - format: list of 'user:<email>' or 'serviceAccount:<email>' items"
-  type        = list
-  default     = []
 }
 variable "provider_managed_projects" {
   description = "Map of provider managed projects"
