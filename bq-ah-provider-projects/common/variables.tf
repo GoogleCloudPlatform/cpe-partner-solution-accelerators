@@ -79,6 +79,7 @@ variable "projects_activate_apis" {
     "gkehub.googleapis.com",
     "container.googleapis.com",
     "certificatemanager.googleapis.com",
+    "secretmanager.googleapis.com",
   ]
 }
 variable "projects_activate_apis_seed" {

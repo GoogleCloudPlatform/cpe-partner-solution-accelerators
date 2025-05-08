@@ -43,6 +43,7 @@ resource "local_file" "generated" {
       gateway_address_name = google_compute_global_address.gateway.name,
       gke_cluster_name = google_container_cluster.lab["cl-shared-apps"].name
       gke_cluster_location = google_container_cluster.lab["cl-shared-apps"].location
+      keycloak_admin_password_secret_name = google_secret_manager_secret_version.keycloak_admin_password_version.name
     }
   )
   filename = "${path.module}/../generated/${each.key}"

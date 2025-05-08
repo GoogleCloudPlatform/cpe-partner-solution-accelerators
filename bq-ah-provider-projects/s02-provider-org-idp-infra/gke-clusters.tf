@@ -86,6 +86,10 @@ resource "google_container_cluster" "lab" {
   gateway_api_config {
     channel = "CHANNEL_STANDARD"
   }
+
+  secret_manager_config {
+    enabled = true
+  }
 }
 
 resource "google_gke_hub_membership" "membership" {

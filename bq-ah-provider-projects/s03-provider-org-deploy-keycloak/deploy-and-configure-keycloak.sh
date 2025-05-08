@@ -26,7 +26,7 @@ kubectl --context $GKE_CONTEXT apply -f ../generated/keycloak.yml
 
 while true
 do
-  HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://$KEYCLOAK_DNS_NAME/health)
+  HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://$KEYCLOAK_DNS_NAME/admin/master/console/)
   echo "Waiting for keycloak to be live - got status $HTTP_STATUS, want 200"
   sleep 10
   if [ "x$HTTP_STATUS" == "x200" ]

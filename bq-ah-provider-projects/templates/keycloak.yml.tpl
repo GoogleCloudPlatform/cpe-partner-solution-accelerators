@@ -86,7 +86,7 @@ spec:
     config:
       type: "HTTPS"
       httpsHealthCheck:
-        port: 8443
+        port: 9000
         requestPath: /health/live
   targetRef:
     group: ""
@@ -100,6 +100,18 @@ metadata:
     iam.gke.io/gcp-service-account: ${keycloak_google_sa}
   name: keycloak
   namespace: keycloak
+---
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: keycloak-admin-password
+  namespace: keycloak
+spec:
+  provider: gke
+  parameters:
+    secrets: |
+      - resourceName: ${keycloak_admin_password_secret_name}
+        path: "keycloak-admin.pw"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -119,20 +131,17 @@ spec:
         app: keycloak
     spec:
       serviceAccountName: keycloak
+      volumes:
+      - name: keycloak-admin-password
+        csi:
+          driver: secrets-store-gke.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: keycloak-admin-password
       containers:
         - name: keycloak
           image: ${keycloak_image_name}
-          args:
-            - "start"
-            - "--proxy-headers"
-            - "xforwarded"
-#            - "--log-level"
-#            - "DEBUG"
           env:
-            - name: KEYCLOAK_ADMIN
-              value: "admin"
-            - name: KEYCLOAK_ADMIN_PASSWORD
-              value: "${keycloak_admin_pw}"
             - name: KC_CACHE
               value: "local"
             - name: KC_DB_URL
@@ -148,16 +157,21 @@ spec:
           ports:
             - name: https
               containerPort: 8443
+            - name: https-mgmt
+              containerPort: 9000
           readinessProbe:
             httpGet:
               path: /health/ready
-              port: 8443
+              port: 9000
               scheme: HTTPS
           livenessProbe:
             httpGet:
               path: /health/live
-              port: 8443
+              port: 9000
               scheme: HTTPS
+          volumeMounts:
+            - mountPath: "/var/secrets"
+              name: keycloak-admin-password
         - name: cloud-sql-proxy
           image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2-alpine
           args:
