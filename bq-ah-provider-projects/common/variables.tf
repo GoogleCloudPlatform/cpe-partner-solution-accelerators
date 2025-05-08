@@ -151,7 +151,11 @@ variable "zone" {
   type        = string
 }
 variable "allowlisted_external_ip_ranges" {
-  description = "Allowlisted external range for GKE, SSH, etc"
+  description = "Allowlisted external IPv4 + IPv6 range for GKE, SSH, etc"
+  type        = list(string)
+}
+variable "allowlisted_external_ip_ranges_v6only" {
+  description = "Allowlisted external IPv6 range for GKE, SSH, etc"
   type        = list(string)
 }
 variable "allowlisted_external_ip_ranges_v4only" {

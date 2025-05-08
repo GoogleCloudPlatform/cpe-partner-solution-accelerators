@@ -34,6 +34,12 @@ resource "google_container_cluster" "lab" {
     }
   }
 
+  control_plane_endpoints_config {
+    dns_endpoint_config {
+      allow_external_traffic = true
+    }
+  }
+
   ip_allocation_policy {
     cluster_secondary_range_name = "${each.key}-pods"
     services_secondary_range_name = "${each.key}-services"

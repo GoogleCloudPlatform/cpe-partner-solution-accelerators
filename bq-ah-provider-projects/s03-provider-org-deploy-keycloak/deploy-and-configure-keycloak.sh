@@ -21,7 +21,7 @@ fi
 
 . ../generated/environment.sh
 
-gcloud container clusters get-credentials --location $GKE_CLUSTER_LOCATION $GKE_CLUSTER_NAME --project $PROJECT_ID
+gcloud container clusters get-credentials --location $GKE_CLUSTER_LOCATION $GKE_CLUSTER_NAME --project $PROJECT_ID --dns-endpoint
 kubectl --context $GKE_CONTEXT apply -f ../generated/keycloak.yml
 
 while true
@@ -133,4 +133,3 @@ provider "keycloak" {
     url           = "https://$KEYCLOAK_DNS_NAME"
 }
 EOF
-cp ../generated/provider.keycloak.generated.tf ../step-3-keycloak-realm-client-users/provider.keycloak.generated.tf

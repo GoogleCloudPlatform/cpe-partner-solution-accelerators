@@ -23,18 +23,16 @@ wlwfif_pool_name = "keycloak-oidc-pool-{{SUFFIX}}"
 wlwfif_provider_name = "keycloak-oidc-provider-{{SUFFIX}}"
 
 allowlisted_external_ip_ranges = [
-    "212.51.151.0/24", # home
-    "104.132.0.0/16", # office
-    "104.135.0.0/16", # office
-    "2a02:168:5231:0::/64", # home
-    "2a00:79e0:48:700::/64", # office
-    "2a00:79e0:9d:200::/64", # office
+    {{ALLOWLISTED_IPV4_S}},
+    {{ALLOWLISTED_IPV6_S}}
+]
+
+allowlisted_external_ip_ranges_v6only = [
+    {{ALLOWLISTED_IPV6_S}}
 ]
 
 allowlisted_external_ip_ranges_v4only = [
-    "212.51.151.0/24", # home
-    "104.132.0.0/16", # office
-    "104.135.0.0/16", # office
+    {{ALLOWLISTED_IPV4_S}}
 ]
 
 gcloud_user = "{{GCLOUD_USER}}"

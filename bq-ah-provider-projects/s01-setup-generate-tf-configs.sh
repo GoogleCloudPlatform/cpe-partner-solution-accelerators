@@ -24,6 +24,8 @@ fi
 generate_config () {
   P_SRC=$1
   P_DST=$2
+  ALLOWLISTED_IPV4_S=$(echo -n '"'; echo -n ${ALLOWLISTED_IPV4_A[@]} | sed s/' '/'","'/g; echo -n '"';)
+  ALLOWLISTED_IPV6_S=$(echo -n '"'; echo -n ${ALLOWLISTED_IPV6_A[@]} | sed s/' '/'","'/g; echo -n '"';)
 
   echo "$P_SRC > $P_DST"
 
@@ -39,6 +41,8 @@ generate_config () {
   s/{{BILLING_ACCOUNT_ID}}/$BILLING_ACCOUNT_ID/;
   s/{{CX_BILLING_ACCOUNT_ID}}/$CX_BILLING_ACCOUNT_ID/;
   s/{{PROV_PROJECT_ID_PREFIX}}/$PROV_PROJECT_ID_PREFIX/;
+  s!{{ALLOWLISTED_IPV4_S}}!$ALLOWLISTED_IPV4_S!;
+  s!{{ALLOWLISTED_IPV6_S}}!$ALLOWLISTED_IPV6_S!;
   " > "$P_DST"
 }
 
