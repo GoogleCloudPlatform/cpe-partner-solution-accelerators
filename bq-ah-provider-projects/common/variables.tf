@@ -94,6 +94,7 @@ variable "projects_activate_apis_seed" {
     "dns.googleapis.com",
     "servicenetworking.googleapis.com",
     "cloudkms.googleapis.com",
+    "billingbudgets.googleapis.com",
   ]
 }
 variable "projects_activate_apis_cx" {
