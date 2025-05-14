@@ -18,3 +18,12 @@ terraform {
     prefix = "terraform/provider-org-idp-infra/state"
   }
 }
+
+data "terraform_remote_state" "provider-org-create-projects-bootstrap" {
+  backend = "gcs"
+
+  config = {
+    bucket = "{{PROV_STATE_BUCKET}}"
+    prefix = "terraform/provider-org-create-projects-bootstrap/state"
+  }
+}

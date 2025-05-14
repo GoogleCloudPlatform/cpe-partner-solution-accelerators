@@ -79,6 +79,7 @@ variable "projects_activate_apis" {
     "gkehub.googleapis.com",
     "container.googleapis.com",
     "certificatemanager.googleapis.com",
+    "secretmanager.googleapis.com",
   ]
 }
 variable "projects_activate_apis_seed" {
@@ -152,7 +153,11 @@ variable "zone" {
   type        = string
 }
 variable "allowlisted_external_ip_ranges" {
-  description = "Allowlisted external range for GKE, SSH, etc"
+  description = "Allowlisted external IPv4 + IPv6 range for GKE, SSH, etc"
+  type        = list(string)
+}
+variable "allowlisted_external_ip_ranges_v6only" {
+  description = "Allowlisted external IPv6 range for GKE, SSH, etc"
   type        = list(string)
 }
 variable "allowlisted_external_ip_ranges_v4only" {
@@ -209,6 +214,10 @@ variable "prov_project_id_idp" {
   description = "Google Cloud Project ID"
   type        = string
 }
+variable "prov_project_id_logging" {
+  description = "Google Cloud Project ID"
+  type        = string
+}
 variable "prov_project_id_bqds" {
   description = "Google Cloud Project ID"
   type        = string
@@ -230,16 +239,6 @@ variable "provider_managed_projects" {
   description = "Map of provider managed projects"
   type        = any
   default     = {}
-}
-variable "central_logging_project_name" {
-  description = "Project name for centralized logging"
-  type        = string
-  default     = "central-logging"
-}
-variable "central_logging_project_id" {
-  description = "Project ID for centralized logging"
-  type        = string
-  default     = "bqprovpr-bqah-central-logging"
 }
 variable "bq_dataset_writer_role" {
   description = "IAM role to allow log sink to write to the BigQuery dataset"

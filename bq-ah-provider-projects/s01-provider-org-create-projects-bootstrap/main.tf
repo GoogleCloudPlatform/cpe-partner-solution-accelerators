@@ -58,19 +58,17 @@ module "publ-project-bqds" {
   deletion_policy             = "DELETE"
 }
 
-# Central provider logging project
-resource "google_project" "central_logging" {
-  name            = var.central_logging_project_name
-  project_id      = var.central_logging_project_id
-  folder_id       = google_folder.prov-root.id
-  billing_account = var.billing_account_id
-}
+module "publ-project-loggin" {
+  source  = "terraform-google-modules/project-factory/google"
+  version = "~> 18.0"
 
-# Enable required apis in central logging project
-module "project-services-logging" {
-  source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "~> 18.0"
-  project_id                  = google_project.central_logging.project_id
+  name                        = var.prov_project_id_logging
+  random_project_id           = false
+  folder_id                   = google_folder.prov-core.id
+  billing_account             = var.billing_account_id
   activate_apis               = ["bigquery.googleapis.com", "logging.googleapis.com"]
+  default_service_account     = "deprivilege"
+  disable_dependent_services  = false
   disable_services_on_destroy = false
+  deletion_policy             = "DELETE"
 }

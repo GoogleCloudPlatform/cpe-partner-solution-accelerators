@@ -42,6 +42,10 @@ data "google_project" "project" {
   project_id = var.prov_project_id_idp
 }
 
+data "google_project" "logging_project" {
+  project_id = var.prov_project_id_logging
+}
+
 provider "google-beta" {
   project     = var.prov_project_id_idp
   region      = var.region
