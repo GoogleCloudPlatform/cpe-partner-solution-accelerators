@@ -26,34 +26,51 @@ data "google_project" "prov_seed_project" {
 }
 
 module "publ-project-factory" {
-  for_each = toset( [
+  for_each = toset([
     "${var.prov_project_id_idp}",
-    ] )
+  ])
   source  = "terraform-google-modules/project-factory/google"
   version = "~> 18.0"
 
-  name                 = each.value
-  random_project_id    = false
-  folder_id            = google_folder.prov-core.id
-  billing_account      = var.billing_account_id
-  activate_apis        = var.projects_activate_apis
+  name                        = each.value
+  random_project_id           = false
+  folder_id                   = google_folder.prov-core.id
+  billing_account             = var.billing_account_id
+  activate_apis               = var.projects_activate_apis
   default_service_account     = "deprivilege"
   disable_dependent_services  = false
   disable_services_on_destroy = false
-  deletion_policy     = "DELETE"
+  deletion_policy             = "DELETE"
 }
 
 module "publ-project-bqds" {
   source  = "terraform-google-modules/project-factory/google"
   version = "~> 18.0"
 
-  name                 = var.prov_project_id_bqds
-  random_project_id    = false
-  folder_id            = google_folder.prov-data.id
-  billing_account      = var.billing_account_id
-  activate_apis        = concat(var.projects_activate_apis, [ "bigquery.googleapis.com", "analyticshub.googleapis.com" ])
+  name                        = var.prov_project_id_bqds
+  random_project_id           = false
+  folder_id                   = google_folder.prov-data.id
+  billing_account             = var.billing_account_id
+  activate_apis               = concat(var.projects_activate_apis, ["bigquery.googleapis.com", "analyticshub.googleapis.com"])
   default_service_account     = "deprivilege"
   disable_dependent_services  = false
   disable_services_on_destroy = false
-  deletion_policy     = "DELETE"
+  deletion_policy             = "DELETE"
+}
+
+# Central provider logging project
+resource "google_project" "central_logging" {
+  name            = var.central_logging_project_name
+  project_id      = var.central_logging_project_id
+  folder_id       = google_folder.prov-root.id
+  billing_account = var.billing_account_id
+}
+
+# Enable required apis in central logging project
+module "project-services-logging" {
+  source                      = "terraform-google-modules/project-factory/google//modules/project_services"
+  version                     = "~> 18.0"
+  project_id                  = google_project.central_logging.project_id
+  activate_apis               = ["bigquery.googleapis.com", "logging.googleapis.com"]
+  disable_services_on_destroy = false
 }
