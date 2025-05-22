@@ -16,6 +16,8 @@ This setup allows customers to access and analyze shared data using BigQuery, ev
 
 ## 2. Solution Architecture
 
+![Solution Architecture](./docs/architecture.png)
+
 The solution involves several key components within the provider's Google Cloud organization:
 
 * **Seed Project:** A foundational project to host the Terraform state bucket and potentially management service accounts.
@@ -32,36 +34,22 @@ The solution involves several key components within the provider's Google Cloud 
 ```
 [YOUR_GCP_ORGANIZATION_ID]
 │
-├── Folders:
-│ │
-│ ├── bqprovpr-[SUFFIX]-root
-│ │ │
-│ │ ├── bqprovpr-[SUFFIX]-core
-│ │ │ └── Projects:
-│ │ │ └── (Project for core shared services, if any, defined by accelerator)
-│ │ │
-│ │ └── bqprovpr-[SUFFIX]-idp
-│ │ └── Projects:
-│ │ └── bqprovpr-[SUFFIX]-idp (Hosts GKE for Keycloak, Cloud SQL, Load Balancer)
-│ │
-│ ├── bqprovpr-[SUFFIX]-data
-│ │ └── Projects:
-│ │ └── bqprovpr-[SUFFIX]-bqds (Hosts provider's source BQ datasets, AH Exchange/Listings)
-│ │
-│ └── bqprovpr-[SUFFIX]-cx
-│ │
-│ ├── bqprovpr-[SUFFIX]-cx-[CUSTOMER_KEY_1]
-│ │ └── Projects:
-│ │ └── bqprovpr-[SUFFIX]-cx-[CUSTOMER_KEY_1]
-│ │
-│ └── bqprovpr-[SUFFIX]-cx-[CUSTOMER_KEY_2]
-│ └── Projects:
-│ └── bqprovpr-[SUFFIX]-cx-[CUSTOMER_KEY_2]
-│
-└── Projects (directly under Org or another Folder, depending on initial setup):
-│
-└── bqprovpr-[SUFFIX]-seed
-
+├── Project: bqprovpr-[SUFFIX]-seed
+└── Folder: bqprovpr-[SUFFIX]-root
+  │
+  ├── Folder: bqprovpr-[SUFFIX]-core
+  │ │
+  │ ├── Project: bqprovpr-[SUFFIX]-idp (Hosts the Identity Provider Keycloak)
+  │ └── Project: bqprovpr-[SUFFIX]-logging (Host the BigQuery dataset for central audit logging)
+  │
+  ├── Folder: bqprovpr-[SUFFIX]-data
+  │ └── Project: bqprovpr-[SUFFIX]-bqds (Hosts provider's source BQ datasets, AH Exchange/Listings)
+  │
+  └── Folder: bqprovpr-[SUFFIX]-cx (Hosts all customer projects)
+    ├── bqprovpr-[SUFFIX]-cx-[CUSTOMER_KEY_1]
+    ├── bqprovpr-[SUFFIX]-cx-[CUSTOMER_KEY_2]
+    ├── ...
+    └── bqprovpr-[SUFFIX]-cx-[CUSTOMER_KEY_N]
 ```
 
 ## 3. Prerequisites
@@ -85,7 +73,21 @@ Before you begin, ensure you have the following:
     * `jq` (command-line JSON processor) installed.
     * Docker Desktop (or Docker engine) installed and running.
 
-## 4. Setup Instructions
+## 4. Solution stages overview
+
+| Stage | High level overview | Manages infrastructure |
+|---|---|---|
+| Stage 0 (init) | Shell script: Creates and bootstraps the seed project that stores the Terraform state | Seed project<br/>State bucket<br/>API enablement on the seed project |
+| Stage 0 (org setup) | Terraform: Configures the Cloud Organization | Configure Org Policies<br/>Domain Restricted sharing<br/>Allowed Workload Identity Pools |
+| Stage 1 (bootstrap) | Terraform: Creates and configures the folders and projects | Provision folder structure<br/>Provision provider projects<br/>Configure IAM |
+| Stage 2 (provider infra) | Terraform: Provisions the infrastructure required for the provider side | Provision VPC network and configure firewall<br/>Provision GKE cluster<br/>Provision CloudDNS zone<br/>Configure Private Google Access<br/>Provision LoadBalancer<br/>Provision CloudSQL database for Keycloak<br/>Provision Secret Manager secrets<br/>Configure log routing for centralized audit logging from client project’s folder<br/>Build and publish Keycloak (IdP) image |
+| Stage 3 (identity provider) | Shell script: Deploys Keycloak and creates an administrative root account using a password saved to Cloud Secret Manager. | Deploy Keycloak to the Kubernetes cluster<br/>Wait for Keycloak to be healthy<br/>Configure root admin account and store access credentials locally for the terraform keycloak provisioner |
+| Stage 4 (managed identities) | Terraform (Keycloak provisioner): Provisions the managed identities within Keycloak | Create the managed identities in Keycloak and store the generated passwords locally (for testing) |
+| Stage 5 (identity federation) | Configures identity federation | Configure Workforce Identity Federation on the Organization level<br/>Configure Workload Identity Federation for AWS EC2 on the Project level. |
+| Stage 6 (provider data sharing) | Provisions data sharing resources on the provider side. | Create customer-specific shared dataset within the provider’s data sharing project<br/>Create customer-specific authorized view within the dataset<br/>Create customer-specific BigQuery Listing within the provider’s data sharing project |
+| Stage 7 (provider managed customer projects) | Provisions tenant project for each customer and configures them to be used by the provisioned identities | Create the provider managed projects in the customer projects folder<br/>Enable BigQuery APIs only<br/>Create the linked dataset by subscribing to the customer-specific listing<br/>Grant read-only permissions on BigQuery to the federated identities<br/>Workforce Identity Pool (External human users from Keycloak)<br/>Workload Identity Pool (EC2 instances from AWS) |
+
+## 5. Setup Instructions
 
 Follow these steps sequentially.
 
@@ -192,7 +194,7 @@ For each stage directory listed below:
 * **Stage `s10-consumer-projects`:**
     * *Purpose:* Creates individual GCP projects for each customer, links billing, enables APIs, sets IAM, and subscribes to Analytics Hub listings.
 
-## 5. Testing the Solution
+## 6. Testing the Solution
 
 1.  **Retrieve Keycloak User Credentials:**
     * Username: The `customer_email` used in `terraform.pmprojects.auto.tfvars`.
@@ -218,7 +220,7 @@ For each stage directory listed below:
         ```
     * If data is returned, the end-to-end flow is working.
 
-## 6. Cleanup
+## 7. Cleanup
 
 To remove the resources created by this POC:
 
