@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/bigquery v1.68.0
 	cloud.google.com/go/iam v1.5.2
 	google.golang.org/api v0.232.0
-	google.golang.org/grpc v1.72.0
+	google.golang.org/grpc v1.72.1
 )
 
 require (
