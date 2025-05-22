@@ -12,18 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  backend "gcs" {
-    bucket = "{{PROV_STATE_BUCKET}}"
-    prefix = "terraform/provider-org-idp-infra/state"
+resource "google_billing_budget" "customer_project_budget" {
+  for_each = google_project.cx_projects
+  depends_on = [google_project.cx_projects]
+
+  billing_account = var.cx_billing_account_id
+  display_name    = "Billing Budget for PMBQP ${each.value.name}"
+
+  budget_filter {
+    projects = ["projects/${each.value.number}"]
   }
-}
 
-data "terraform_remote_state" "provider-org-create-projects-bootstrap" {
-  backend = "gcs"
+  amount {
+    specified_amount {
+      currency_code = "USD"
+      units         = "100"
+    }
+  }
 
-  config = {
-    bucket = "{{PROV_STATE_BUCKET}}"
-    prefix = "terraform/provider-org-create-projects-bootstrap/state"
+  threshold_rules {
+    threshold_percent = 0.5
+  }
+  threshold_rules {
+    threshold_percent = 0.9
+  }
+  threshold_rules {
+    threshold_percent = 1.0
   }
 }

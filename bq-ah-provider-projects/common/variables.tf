@@ -26,11 +26,11 @@ variable "gke_subnet_cidr" {
 }
 variable "gke_clusters" {
   description = "GKE clusters to create"
-  type = map(any)
+  type        = map(any)
   default = {
     cl-shared-apps = {
-      cp_range = "172.16.0.0/28"
-      pod_range = "10.11.0.0/16"
+      cp_range      = "172.16.0.0/28"
+      pod_range     = "10.11.0.0/16"
       service_range = "10.12.0.0/16"
     }
   }
@@ -57,16 +57,16 @@ variable "nat_bgp_asn" {
 }
 variable "pga_domains" {
   description = "Private Google Access domain overrides"
-  type        = map
-  default     =  {
-    "googleapis"  = "googleapis.com."
-    "gcr" = "gcr.io."
+  type        = map(any)
+  default = {
+    "googleapis" = "googleapis.com."
+    "gcr"        = "gcr.io."
   }
 }
 variable "projects_activate_apis" {
   description = "Google Cloud Project ID"
-  type        = list
-  default     = [
+  type        = list(any)
+  default = [
     "compute.googleapis.com",
     "iam.googleapis.com",
     "cloudresourcemanager.googleapis.com",
@@ -84,8 +84,8 @@ variable "projects_activate_apis" {
 }
 variable "projects_activate_apis_seed" {
   description = "Google Cloud Project ID"
-  type        = list
-  default     = [
+  type        = list(any)
+  default = [
     "iam.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "accesscontextmanager.googleapis.com",
@@ -94,22 +94,24 @@ variable "projects_activate_apis_seed" {
     "dns.googleapis.com",
     "servicenetworking.googleapis.com",
     "cloudkms.googleapis.com",
+    "billingbudgets.googleapis.com",
   ]
 }
 variable "projects_activate_apis_cx" {
   description = "Google Cloud Project ID"
-  type        = list
-  default     = [
+  type        = list(any)
+  default = [
     "iam.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "bigquery.googleapis.com",
     "analyticshub.googleapis.com",
+    "logging.googleapis.com"
   ]
 }
 variable "org_admins_wide_iam_roles" {
   description = "IAM roles to grant on the Cloud Organization for admins"
-  type        = list
-  default     = [
+  type        = list(any)
+  default = [
     "roles/owner",
     "roles/resourcemanager.projectIamAdmin",
     "roles/browser",
@@ -213,6 +215,10 @@ variable "prov_project_id_idp" {
   description = "Google Cloud Project ID"
   type        = string
 }
+variable "prov_project_id_logging" {
+  description = "Google Cloud Project ID"
+  type        = string
+}
 variable "prov_project_id_bqds" {
   description = "Google Cloud Project ID"
   type        = string
@@ -227,10 +233,36 @@ variable "prov_admin_user" {
 }
 variable "prov_project_owners" {
   description = "Additional IAM members to add to the provider projects"
-  type        = list
+  type        = list(any)
 }
+
 variable "provider_managed_projects" {
   description = "Map of provider managed projects"
   type        = any
   default     = {}
+}
+variable "bq_dataset_writer_role" {
+  description = "IAM role to allow log sink to write to the BigQuery dataset"
+  type        = string
+  default     = "roles/bigquery.dataEditor"
+}
+variable "bq_job_user_role" {
+  description = "IAM role to allow logging service account to run BigQuery jobs"
+  type        = string
+  default     = "roles/bigquery.jobUser"
+}
+variable "logging_folder_sink" {
+  description = "Name of the log sink created at the consumer projects folder level"
+  type        = string
+  default     = "route-to-central-logging"
+}
+variable "logging_bigquery_dataset" {
+  description = "BigQuery dataset in central logging project"
+  type        = string
+  default     = "central_logs"
+}
+variable "log_filter" {
+  description = "Optional Log filter"
+  type        = string
+  default     = ""
 }

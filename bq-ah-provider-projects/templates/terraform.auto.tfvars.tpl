@@ -44,6 +44,7 @@ prov_org_id = {{PROV_ORG_ID}} # {{PROV_ORG_NAME}}
 prov_project_id_prefix = "{{PROV_PROJECT_ID_PREFIX}}"
 prov_project_id_seed = "{{PROV_PROJECT_ID_SEED}}"
 prov_project_id_idp = "{{PROV_PROJECT_ID_PREFIX}}-idp"
+prov_project_id_logging = "{{PROV_PROJECT_ID_PREFIX}}-logging"
 prov_project_id_bqds = "{{PROV_PROJECT_ID_PREFIX}}-bqds"
 prov_tf_state_bucket = "{{PROV_STATE_BUCKET}}"
 prov_admin_user = "{{PROV_ADMIN_USER}}"
