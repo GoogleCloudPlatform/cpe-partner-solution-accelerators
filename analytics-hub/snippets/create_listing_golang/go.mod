@@ -3,7 +3,7 @@ module example/create_listing
 go 1.24.0
 
 require (
-	cloud.google.com/go/bigquery v1.68.0
+	cloud.google.com/go/bigquery v1.69.0
 	cloud.google.com/go/iam v1.5.2
 	google.golang.org/api v0.234.0
 	google.golang.org/grpc v1.72.1
