@@ -14,7 +14,7 @@
 
 resource "google_data_catalog_taxonomy" "policy_tags_src_ds" {
   region = var.location
-  display_name =  "policy_tags_src_ds"
+  display_name =  "policy_tags_src_ds_${var.name_suffix}"
   description = "A collection of policy tags"
   activated_policy_types = ["FINE_GRAINED_ACCESS_CONTROL"]
   project = data.google_project.publ_bq_src_ds.project_id
@@ -22,13 +22,13 @@ resource "google_data_catalog_taxonomy" "policy_tags_src_ds" {
 
 resource "google_data_catalog_policy_tag" "parent_policy_src_ds" {
   taxonomy = google_data_catalog_taxonomy.policy_tags_src_ds.id
-  display_name = "restricted_src_ds"
+  display_name = "restricted_src_ds_${var.name_suffix}"
   description = "A policy tag category used for restricted security access"
 }
 
 resource "google_data_catalog_policy_tag" "child_policy_errorcode_src_ds" {
   taxonomy = google_data_catalog_taxonomy.policy_tags_src_ds.id
-  display_name = "errorcode_src_ds"
+  display_name = "errorcode_src_ds_${var.name_suffix}"
   description = "Error code"
   parent_policy_tag = google_data_catalog_policy_tag.parent_policy_src_ds.id
 }
@@ -48,7 +48,7 @@ resource "google_data_catalog_policy_tag_iam_policy" "child_policy_errorcode_src
 resource "google_bigquery_datapolicy_data_policy" "data_policy_src_ds" {
   project = data.google_project.publ_bq_src_ds.project_id
   location         = var.location
-  data_policy_id   = "policy_errorcode_src_ds"
+  data_policy_id   = "policy_errorcode_src_ds_${var.name_suffix}"
   policy_tag       = google_data_catalog_policy_tag.child_policy_errorcode_src_ds.name
   data_policy_type = "DATA_MASKING_POLICY"  
   data_masking_policy {

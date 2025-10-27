@@ -14,7 +14,7 @@
 
 resource "google_data_catalog_taxonomy" "policy_tags_bq_ah" {
   region = var.location
-  display_name =  "policy_tags_bq_ah"
+  display_name =  "policy_tags_bq_ah_${var.name_suffix}"
   description = "A collection of policy tags"
   activated_policy_types = ["FINE_GRAINED_ACCESS_CONTROL"]
   project = data.google_project.publ_bq_and_ah.project_id
@@ -22,13 +22,13 @@ resource "google_data_catalog_taxonomy" "policy_tags_bq_ah" {
 
 resource "google_data_catalog_policy_tag" "parent_policy_bq_ah" {
   taxonomy = google_data_catalog_taxonomy.policy_tags_bq_ah.id
-  display_name = "restricted_bq_ah"
+  display_name = "restricted_bq_ah_${var.name_suffix}"
   description = "A policy tag category used for restricted security access"
 }
 
 resource "google_data_catalog_policy_tag" "child_policy_errorcode_bq_ah" {
   taxonomy = google_data_catalog_taxonomy.policy_tags_bq_ah.id
-  display_name = "errorcode_bq_ah"
+  display_name = "errorcode_bq_ah_${var.name_suffix}"
   description = "Error code"
   parent_policy_tag = google_data_catalog_policy_tag.parent_policy_bq_ah.id
 }
@@ -48,7 +48,7 @@ resource "google_data_catalog_policy_tag_iam_policy" "child_policy_errorcode_bq_
 resource "google_bigquery_datapolicy_data_policy" "data_policy_bq_ah" {
   project = data.google_project.publ_bq_and_ah.project_id
   location         = var.location
-  data_policy_id   = "policy_errorcode_bq_ah"
+  data_policy_id   = "policy_errorcode_bq_ah_${var.name_suffix}"
   policy_tag       = google_data_catalog_policy_tag.child_policy_errorcode_bq_ah.name
   data_policy_type = "DATA_MASKING_POLICY"  
   data_masking_policy {
