@@ -35,7 +35,7 @@ module "project-services-cx" {
   for_each = var.provider_managed_projects
 
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 18.0"
+  version = "~> 18.1"
 
   project_id                  = "bqprovpr-0819c0-cx-${each.key}"
   activate_apis               = var.projects_activate_apis_cx
