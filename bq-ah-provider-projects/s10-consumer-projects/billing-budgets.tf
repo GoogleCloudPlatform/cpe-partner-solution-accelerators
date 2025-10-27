@@ -12,31 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_providers {
-    google-beta = {
-      source = "hashicorp/google-beta"
-      version = "6.36.1"
-    }
-    google = {
-      source = "hashicorp/google"
-      version = "6.36.1"
+resource "google_billing_budget" "customer_project_budget" {
+  for_each = google_project.cx_projects
+  depends_on = [google_project.cx_projects]
+
+  billing_account = var.cx_billing_account_id
+  display_name    = "Billing Budget for PMBQP ${each.value.name}"
+
+  budget_filter {
+    projects = ["projects/${each.value.number}"]
+  }
+
+  amount {
+    specified_amount {
+      currency_code = "USD"
+      units         = "100"
     }
   }
-}
 
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
-provider "google-beta" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
-}
-
-provider "google" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
+  threshold_rules {
+    threshold_percent = 0.5
+  }
+  threshold_rules {
+    threshold_percent = 0.9
+  }
+  threshold_rules {
+    threshold_percent = 1.0
+  }
 }

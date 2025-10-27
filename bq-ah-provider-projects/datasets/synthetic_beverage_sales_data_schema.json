@@ -1,0 +1,46 @@
+[
+    {
+        "name": "Order_ID",
+        "type": "STRING"
+    },
+    {
+        "name": "Customer_ID",
+        "type": "STRING"
+    },
+    {
+        "name": "Customer_Type",
+        "type": "STRING"
+    },
+    {
+        "name": "Product",
+        "type": "STRING"
+    },
+    {
+        "name": "Category",
+        "type": "STRING"
+    },
+    {
+        "name": "Unit_Price",
+        "type": "FLOAT"
+    },
+    {
+        "name": "Quantity",
+        "type": "INTEGER"
+    },
+    {
+        "name": "Discount",
+        "type": "FLOAT"
+    },
+    {
+        "name": "Total_Price",
+        "type": "FLOAT"
+    },
+    {
+        "name": "Region",
+        "type": "STRING"
+    },
+    {
+        "name": "Order_Date",
+        "type": "DATE"
+    }
+]

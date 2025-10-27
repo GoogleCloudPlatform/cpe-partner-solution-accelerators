@@ -12,31 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_providers {
-    google-beta = {
-      source = "hashicorp/google-beta"
-      version = "6.36.1"
-    }
-    google = {
-      source = "hashicorp/google"
-      version = "6.36.1"
-    }
-  }
+data "google_project" "prov_seed_project" {
+  project_id = var.prov_project_id_seed
 }
 
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
-provider "google-beta" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
-}
-
-provider "google" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
+locals {
+  dns_domain_name_trimmed = trim(var.dns_domain_name, ".")
 }

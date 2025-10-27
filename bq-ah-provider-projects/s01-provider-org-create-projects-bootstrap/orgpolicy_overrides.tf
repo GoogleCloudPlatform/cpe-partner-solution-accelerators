@@ -12,31 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_providers {
-    google-beta = {
-      source = "hashicorp/google-beta"
-      version = "6.36.1"
-    }
-    google = {
-      source = "hashicorp/google"
-      version = "6.36.1"
+# Override Domain restricted sharing - allow all in customer managed projects
+resource "google_org_policy_policy" "override_drs_cx_folder" {
+  parent = "${google_folder.prov-cx.name}"
+  name   = "${google_folder.prov-cx.name}/policies/iam.allowedPolicyMemberDomains"
+
+  spec {
+    inherit_from_parent = false
+
+    rules {
+      allow_all  = "TRUE"
     }
   }
-}
-
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
-provider "google-beta" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
-}
-
-provider "google" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
 }

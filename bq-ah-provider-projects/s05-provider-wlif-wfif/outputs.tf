@@ -12,31 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_providers {
-    google-beta = {
-      source = "hashicorp/google-beta"
-      version = "6.36.1"
-    }
-    google = {
-      source = "hashicorp/google"
-      version = "6.36.1"
-    }
-  }
+output "wloadif_iam_principal" {
+  description = "Workload Identity Federation Client ID"
+  value       = "principal://iam.googleapis.com/projects/${local.project_number_idp}/locations/global/workloadIdentityPools/${var.wlwfif_pool_name}/subject/"
+  sensitive = false
 }
-
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
-provider "google-beta" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
-}
-
-provider "google" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
+output "wfif_iam_principal" {
+  description = "Workforce Identity Federation Client ID"
+  value       = "principal://iam.googleapis.com/locations/global/workforcePools/${var.wlwfif_pool_name}/subject/"
+  sensitive = false
 }

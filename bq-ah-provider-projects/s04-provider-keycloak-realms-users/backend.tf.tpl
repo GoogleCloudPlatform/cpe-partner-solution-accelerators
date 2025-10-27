@@ -13,30 +13,17 @@
 # limitations under the License.
 
 terraform {
-  required_providers {
-    google-beta = {
-      source = "hashicorp/google-beta"
-      version = "6.36.1"
-    }
-    google = {
-      source = "hashicorp/google"
-      version = "6.36.1"
-    }
+  backend "gcs" {
+    bucket = "{{PROV_STATE_BUCKET}}"
+    prefix = "terraform/provider-keycloak-realms/state"
   }
 }
 
-data "google_project" "project" {
-  project_id = var.project_id
-}
+data "terraform_remote_state" "provider-org-create-projects-bootstrap" {
+  backend = "gcs"
 
-provider "google-beta" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
-}
-
-provider "google" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
+  config = {
+    bucket = "{{PROV_STATE_BUCKET}}"
+    prefix = "terraform/provider-org-create-projects-bootstrap/state"
+  }
 }

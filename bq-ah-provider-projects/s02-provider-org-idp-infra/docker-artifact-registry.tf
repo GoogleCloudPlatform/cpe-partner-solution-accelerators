@@ -12,31 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_providers {
-    google-beta = {
-      source = "hashicorp/google-beta"
-      version = "6.36.1"
-    }
-    google = {
-      source = "hashicorp/google"
-      version = "6.36.1"
-    }
-  }
+resource "google_artifact_registry_repository" "my-repo" {
+  location      = var.region
+  repository_id = "gke-keycloak"
+  description   = "Keycloak repo"
+  format        = "DOCKER"
 }
 
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
-provider "google-beta" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
-}
-
-provider "google" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
+resource "google_artifact_registry_repository_iam_member" "member" {
+  location = var.region
+  repository = google_artifact_registry_repository.my-repo.name
+  role = "roles/artifactregistry.reader"
+  member = "serviceAccount:${google_service_account.gke_node_sa.email}"
 }

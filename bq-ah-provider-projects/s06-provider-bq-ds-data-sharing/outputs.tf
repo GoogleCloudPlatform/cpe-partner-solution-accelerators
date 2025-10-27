@@ -12,31 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_providers {
-    google-beta = {
-      source = "hashicorp/google-beta"
-      version = "6.36.1"
-    }
-    google = {
-      source = "hashicorp/google"
-      version = "6.36.1"
-    }
-  }
+output "bqds_exchange_data_exchange_id" {
+  description = "BigQuery Data Exchange ID"
+  value       = google_bigquery_analytics_hub_data_exchange.prov_exchange.data_exchange_id
+  sensitive = false
 }
-
-data "google_project" "project" {
-  project_id = var.project_id
+output "bqds_exchange_id" {
+  description = "BigQuery Data Exchange ID"
+  value       = google_bigquery_analytics_hub_data_exchange.prov_exchange.id
+  sensitive = false
 }
-
-provider "google-beta" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
-}
-
-provider "google" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
-}
+#output "bqds_listings" {
+#  description = "BigQuery per-customer listings"
+#  value       = google_bigquery_analytics_hub_listing.cx_listing.*.listing_id
+#  sensitive = false
+#}

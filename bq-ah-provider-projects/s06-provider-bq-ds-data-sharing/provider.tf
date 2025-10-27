@@ -16,27 +16,29 @@ terraform {
   required_providers {
     google-beta = {
       source = "hashicorp/google-beta"
-      version = "6.36.1"
+      version = "~> 6.36.0"
     }
     google = {
       source = "hashicorp/google"
-      version = "6.36.1"
+      version = "~> 6.36.0"
     }
   }
 }
 
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
 provider "google-beta" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
+  project     = var.prov_project_id_bqds
+  region      = var.region
+  zone        = var.zone
+  # Required for BQ AH API
+  user_project_override = true
+  billing_project = var.prov_project_id_bqds
 }
 
 provider "google" {
-  project     = var.project_id
-  region      = var.sites["fra"].region
-  zone        = var.sites["fra"].zone
+  project     = var.prov_project_id_bqds
+  region      = var.region
+  zone        = var.zone
+  # Required for BQ AH API
+  user_project_override = true
+  billing_project = var.prov_project_id_bqds
 }
