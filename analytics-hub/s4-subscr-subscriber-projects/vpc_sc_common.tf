@@ -14,7 +14,7 @@
 
 module "access_context_manager_policy" {
   source  = "terraform-google-modules/vpc-service-controls/google"
-  version = "6.2.1"
+  version = "7.2.0"
 
   parent_id   = var.subscr_vpc_sc_policy_parent_org_id
   policy_name = var.subscr_vpc_sc_global_access_policy_name
@@ -22,7 +22,7 @@ module "access_context_manager_policy" {
 
 module "access_level_allow_all" {
   source  = "terraform-google-modules/vpc-service-controls/google//modules/access_level"
-  version = "6.2.1"
+  version = "7.2.0"
 
   policy         = module.access_context_manager_policy.policy_id
   name           = "ahdemo_subscr_allow_all"
@@ -32,7 +32,7 @@ module "access_level_allow_all" {
 
 module "access_level_allow_corp" {
   source  = "terraform-google-modules/vpc-service-controls/google//modules/access_level"
-  version = "6.2.1"
+  version = "7.2.0"
 
   policy         = module.access_context_manager_policy.policy_id
   name           = "ahdemo_subscr_allow_corp"
