@@ -18,7 +18,7 @@ data "google_project" "subscr_seed_project" {
 
 module "subscr-project-services-seed" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 18.1.0"
+  version = "~> 18.2.0"
 
   project_id                  = data.google_project.subscr_seed_project.project_id
   activate_apis               = var.projects_activate_apis_seed
@@ -34,7 +34,7 @@ module "subscr-project-factory" {
     "${var.subscr_project_id_subscr_vm}",
     ] )
   source  = "terraform-google-modules/project-factory/google"
-  version = "~> 18.1.0"
+  version = "~> 18.2.0"
 
   name                 = each.value
   random_project_id    = false
