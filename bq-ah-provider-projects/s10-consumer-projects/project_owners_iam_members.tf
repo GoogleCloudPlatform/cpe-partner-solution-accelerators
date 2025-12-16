@@ -38,6 +38,19 @@ locals {
     ]
   ]))
 
+  project_role_combination_list_wloadif_users = distinct(flatten([
+    for customer_name, customer in var.provider_managed_projects : [
+      for user_key, user in { for entry in customer.provision_managed_identities: "${customer_name}-${entry.user_name}" => entry } : [
+        for role in toset( ["roles/bigquery.dataViewer", "roles/bigquery.jobUser"] ) : {
+          user_key = user_key
+          project = "${var.prov_project_id_prefix}-cx-${customer_name}"
+          role    = role
+          member  = "${local.wloadif_iam_principal}${local.keycloak_users[user_key]}"
+        }
+      ]
+    ]
+  ]))
+
   project_role_combination_list_external_users = distinct(flatten([
     for user_name, user in var.provider_managed_projects : [
       for external_identity in toset(user.external_identities) : [
@@ -74,6 +87,15 @@ resource "google_project_iam_member" "project_owner" {
 
 resource "google_project_iam_member" "project_user" {
   for_each         = { for entry in local.project_role_combination_list_wfif_users: "${entry.project}.${entry.role}.${entry.user_key}" => entry }
+  depends_on       = [ module.project-services-cx ]
+
+  project          = each.value.project
+  role             = each.value.role
+  member           = each.value.member
+}
+
+resource "google_project_iam_member" "project_wloadif_user" {
+  for_each         = { for entry in local.project_role_combination_list_wloadif_users: "${entry.project}.${entry.role}.${entry.user_key}" => entry }
   depends_on       = [ module.project-services-cx ]
 
   project          = each.value.project
