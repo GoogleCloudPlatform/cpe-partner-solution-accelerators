@@ -265,39 +265,17 @@ resource "google_access_context_manager_service_perimeter_egress_policy" "publ_o
       external_resources = []
       resources          = [
           "projects/${data.google_project.publ_bq_shared_ds.number}",
-        ]
-        "operations" = {
-          "bigquery.googleapis.com" = {
-            "permissions" = [
-            ]
-            "methods" = [
-              "*",
-            ]
+      ]
+      roles              = []
+
+      operations {
+          service_name = "bigquery.googleapis.com"
+
+          method_selectors {
+              method     = "*"
+              permission = null
           }
-        }
       }
-    },
-  ]
+  }
 }
 
-module "regular_service_perimeter_ah" {
-  source  = "terraform-google-modules/vpc-service-controls/google//modules/regular_service_perimeter"
-  version = "7.2.0"
-
-  policy         = google_access_context_manager_access_policy.access_policy.id
-  perimeter_name = "ahdemo_${var.name_suffix}_publ_only_ah"
-  description    = "ahdemo_${var.name_suffix}_publ_only_ah"
-
-  restricted_services = var.vpc_sc_dry_run ? [] : var.vpc_sc_restricted_services
-  restricted_services_dry_run = var.vpc_sc_dry_run ? var.vpc_sc_restricted_services : []
-
-  access_levels = []
-
-  resources = var.vpc_sc_dry_run ? [] : [ data.google_project.publ_ah_exchg.number ]
-  resources_dry_run = var.vpc_sc_dry_run ? [ data.google_project.publ_ah_exchg.number ] : []
-
-  ingress_policies = var.vpc_sc_dry_run ? [] : local.ingress_policies_ah_perimeter
-  ingress_policies_dry_run = var.vpc_sc_dry_run ? local.ingress_policies_ah_perimeter : []
-  egress_policies = var.vpc_sc_dry_run ? [] : local.egress_policies_ah_perimeter
-  egress_policies_dry_run = var.vpc_sc_dry_run ? local.egress_policies_ah_perimeter : []
-}
