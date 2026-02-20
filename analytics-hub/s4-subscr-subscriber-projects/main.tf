@@ -14,7 +14,7 @@
 
 module "project-services-subscr-seed" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 18.1.0"
+  version = "~> 18.2.0"
 
   project_id                  = data.google_project.subscr_seed_project.project_id
   activate_apis               = var.projects_activate_apis_seed
@@ -23,7 +23,7 @@ module "project-services-subscr-seed" {
 
 module "project-services-subscr-with-vpcsc" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 18.1.0"
+  version = "~> 18.2.0"
 
   project_id                  = data.google_project.subscr_subscr_with_vpcsc.project_id
   activate_apis               = var.projects_activate_apis
@@ -32,7 +32,7 @@ module "project-services-subscr-with-vpcsc" {
 
 module "project-services-subscr-subscr-without-vpcsc" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 18.1.0"
+  version = "~> 18.2.0"
 
   project_id                  = data.google_project.subscr_subscr_without_vpcsc.project_id
   activate_apis               = var.projects_activate_apis
@@ -41,7 +41,7 @@ module "project-services-subscr-subscr-without-vpcsc" {
 
 module "project-services-subscr-subscr-xpn" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 18.1.0"
+  version = "~> 18.2.0"
 
   project_id                  = data.google_project.subscr_subscr_xpn.project_id
   activate_apis               = var.projects_activate_apis
@@ -50,7 +50,7 @@ module "project-services-subscr-subscr-xpn" {
 
 module "project-services-subscr-subscr-vm" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 18.1.0"
+  version = "~> 18.2.0"
 
   project_id                  = data.google_project.subscr_subscr_vm.project_id
   activate_apis               = var.projects_activate_apis
