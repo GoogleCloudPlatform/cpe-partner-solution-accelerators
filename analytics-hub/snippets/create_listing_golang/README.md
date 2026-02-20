@@ -16,18 +16,19 @@
 ## Sample run
 
 ```
-$ ./create_listing_golang \
-  -project_id ahd-publ-0429c0-vpcsc-ah \
-  -location us \
+$ ./create_listing \
+  -dcr_exchange_id ahdemo_golang_exchg_dcr \
+  -dcr_listing_id ahdemo_golang_listing_dcr \
+  -dcr_privacy_column endpoint \
+  -dcr_shared_table ahdemo_0220c0_shared_table \
+  -dcr_view view_ahdemo_0220c0_shared_table_go_dcr \
   -exchange_id ahdemo_golang_exchg \
   -listing_id ahdemo_golang_listing \
-  -shared_ds ahdemo_0429c0_shared_ds \
-  -restrict_egress false \
+  -location us-central1 \
+  -project_id ahd-publ-0220c0-vpcsc-ah \
+  -restrict_egress \
+  -shared_ds_project_id ahd-publ-0220c0-bq-shared-ds \
+  -shared_ds ahdemo_0220c0_shared_ds \
   -subscriber_iam_member user:user@domain.com \
-  -subscription_viewer_iam_member user:user@domain.com \
-  -dcr_shared_table ahdemo_0429c0_shared_table \
-  -dcr_privacy_column endpoint \
-  -dcr_exchange_id ahdemo_golang_exchg_dcr
-  -dcr_listing_id ahdemo_golang_listing_dcr
-  -dcr_view view_ahdemo_0429c0_shared_table_go_dcr
+  -subscription_viewer_iam_member user:user@domain.com
 ```

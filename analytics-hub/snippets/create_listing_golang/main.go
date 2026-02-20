@@ -263,7 +263,7 @@ func create_or_get_dcr_listing(ctx context.Context, client *analyticshub.Client,
 }
 
 // create_or_get_listing creates an example listing within the specified exchange using the provided source dataset.
-func create_or_get_listing(ctx context.Context, client *analyticshub.Client, projectID, location, exchangeID, listingID string, restrictEgress bool, sharedDataset string) (*analyticshubpb.Listing, error) {
+func create_or_get_listing(ctx context.Context, client *analyticshub.Client, projectID, sharedDSprojectID, location, exchangeID, listingID string, restrictEgress bool, sharedDataset string) (*analyticshubpb.Listing, error) {
 	getReq := &analyticshubpb.GetListingRequest{
 		Name: fmt.Sprintf("projects/%s/locations/%s/dataExchanges/%s/listings/%s", projectID, location, exchangeID, listingID),
 	}
@@ -280,6 +280,7 @@ func create_or_get_listing(ctx context.Context, client *analyticshub.Client, pro
 			restrictedExportConfig.RestrictDirectTableAccess = false
 			restrictedExportConfig.RestrictQueryResult = false
 		}
+		println(fmt.Sprintf("Creating listing: projects/%s/locations/%s/dataExchanges/%s", projectID, location, exchangeID))
 		req := &analyticshubpb.CreateListingRequest{
 			Parent:    fmt.Sprintf("projects/%s/locations/%s/dataExchanges/%s", projectID, location, exchangeID),
 			ListingId: listingID,
@@ -291,7 +292,7 @@ func create_or_get_listing(ctx context.Context, client *analyticshub.Client, pro
 				},
 				Source: &analyticshubpb.Listing_BigqueryDataset{
 					BigqueryDataset: &analyticshubpb.Listing_BigQueryDatasetSource{
-						Dataset: fmt.Sprintf("projects/%s/datasets/%s", projectID, sharedDataset),
+						Dataset: fmt.Sprintf("projects/%s/datasets/%s", sharedDSprojectID, sharedDataset),
 					},
 				},
 				RestrictedExportConfig: restrictedExportConfig,
@@ -315,6 +316,7 @@ type Flags struct {
 	listing_id                     string
 	restrict_egress                bool
 	shared_ds                      string
+	shared_ds_project_id           string
 	subscriber_iam_member          string
 	subscription_viewer_iam_member string
 	dcr_exchange_id                string
@@ -333,11 +335,12 @@ func parse_args() Flags {
 	exchange_id := flag.String("exchange_id", "", "Exchange ID (required)")
 	listing_id := flag.String("listing_id", "", "Listing ID (required)")
 	restrict_egress := flag.Bool("restrict_egress", false, "Egress controls enabled")
+	shared_ds_project_id := flag.String("shared_ds_project_id", "", "Shared dataset project ID (required)")
 	shared_ds := flag.String("shared_ds", "", "Shared dataset ID (required)")
 	subscriber_iam_member := flag.String("subscriber_iam_member", "", "IAM member who can subscribe - requires either user: or serviceAccount: prefix")
 	subscription_viewer_iam_member := flag.String("subscription_viewer_iam_member", "", "IAM member who can see subscription and request access - requires either user: or serviceAccount: prefix")
-	dcr_exchange_id := flag.String("dcr_exchange_id", "", "Privacy column for Data Clean Room")
-	dcr_listing_id := flag.String("dcr_listing_id", "", "Privacy column for Data Clean Room")
+	dcr_exchange_id := flag.String("dcr_exchange_id", "", "Exchange ID for Data Clean Room")
+	dcr_listing_id := flag.String("dcr_listing_id", "", "Listing ID  for Data Clean Room")
 	dcr_view := flag.String("dcr_view", "", "View with analysis rules to create for Data Clean Room")
 	dcr_shared_table := flag.String("dcr_shared_table", "", "Table to share in Data Clean Room")
 	dcr_privacy_column := flag.String("dcr_privacy_column", "", "Privacy column for Data Clean Room")
@@ -351,6 +354,7 @@ func parse_args() Flags {
 	flags.exchange_id = *exchange_id
 	flags.listing_id = *listing_id
 	flags.restrict_egress = *restrict_egress
+	flags.shared_ds_project_id = *shared_ds_project_id
 	flags.shared_ds = *shared_ds
 	flags.subscriber_iam_member = *subscriber_iam_member
 	flags.subscription_viewer_iam_member = *subscription_viewer_iam_member
@@ -362,7 +366,7 @@ func parse_args() Flags {
 	fmt.Print(flags)
 
 	// Check if required flags are provided
-	if *project_id == "" || *location == "" || *exchange_id == "" || *listing_id == "" || *shared_ds == "" || *subscriber_iam_member == "" || *subscription_viewer_iam_member == "" || *dcr_shared_table == "" || *dcr_privacy_column == "" {
+	if *project_id == "" || *location == "" || *exchange_id == "" || *listing_id == "" || *shared_ds_project_id == "" || *shared_ds == "" || *subscriber_iam_member == "" || *subscription_viewer_iam_member == "" || *dcr_shared_table == "" || *dcr_privacy_column == "" {
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -467,7 +471,7 @@ func main() {
 	exchg, err := create_or_get_exchange(ctx, client, flags.project_id, flags.location, flags.exchange_id, false)
 	if err == nil {
 		println(fmt.Sprintf("Exchange: [%s] %s", exchg.Name, exchg.DisplayName))
-		listing, err := create_or_get_listing(ctx, client, flags.project_id, flags.location, flags.exchange_id, flags.listing_id, flags.restrict_egress, flags.shared_ds)
+		listing, err := create_or_get_listing(ctx, client, flags.project_id, flags.shared_ds_project_id, flags.location, flags.exchange_id, flags.listing_id, flags.restrict_egress, flags.shared_ds)
 		if err == nil {
 			println(fmt.Sprintf("Listing: [%s] %s", listing.Name, listing.DisplayName))
 			println("GetIamPolicy before setIamPolicy")

@@ -1,14 +1,14 @@
 #!/bin/bash
 
-ah_project_id = "${ah_project_id}"
-ah_project_number = "${ah_project_number}"
-scr_vpcsc_project_number = "${scr_vpcsc_project_number}"
-scr_nonvpcsc_project_number = "${scr_nonvpcsc_project_number}"
-generated_path = "${generated_path}"
-exchange_id = "${exchange_id}"
-listing_id = "${listing_id}"
-location = "${location}"
-subscriber_sa_email = "${subscriber_sa_email}"
+ah_project_id="${ah_project_id}"
+ah_project_number="${ah_project_number}"
+scr_vpcsc_project_number="${scr_vpcsc_project_number}"
+scr_nonvpcsc_project_number="${scr_nonvpcsc_project_number}"
+generated_path="${generated_path}"
+exchange_id="${exchange_id}"
+listing_id="${listing_id}"
+location="${location}"
+subscriber_sa_email="${subscriber_sa_email}"
 
 TOKEN=$(gcloud auth print-access-token --impersonate-service-account ${subscriber_sa_email})
 

@@ -12,221 +12,294 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-locals {
-  ingress_policies_bq_perimeter_src_ds = concat([
-    # Allow off-perimeter internal users (Cloud Console users) in var.publ_vpc_sc_access_level_corp_allowed_identities from the corporate network IP ranges
-    # required for the (internal) admins to manage BQ / AH
-    {
-      "from" = {
-        "sources" = {
-          access_levels = [ google_access_context_manager_access_level.access_level_allow_corp.title ] # Allow access from corporate network IP ranges
-        },
-        "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
-        "identity_type" = null
-      }
-      "to" = {
-        "resources" = [
-          "*",
-#          "projects/${data.google_project.publ_bq_src_ds.number}",
-        ]
-        "operations" = {
-          "bigquery.googleapis.com" = {
-            "methods" = [
-              "*",
-            ]
-          },
-          "bigquerydatapolicy.googleapis.com" = {
-            "methods" = [
-              "*",
-            ]
-          },
-          "datacatalog.googleapis.com" = {
-            "methods" = [
-              "*",
-            ]
-          },
-        }
-      }
-    },
-    # Allow off-perimeter subscribers (Cloud Console users) from anywhere
-    # Public: required for querying columns with policy tags in the public listing (allAuthenticatedUsers or allUsers => subscriber identity not known => ANY_IDENTITY)
-    # Private: required for querying columns with policy tags in the private listing (subscriber identity known => gathered upon contracting => in var.publ_vpc_sc_ah_subscriber_identities)
-    {
-      "from" = {
-        "sources" = {
-          access_levels = [ google_access_context_manager_access_level.access_level_allow_all.title ] # Allow access from corporate network IP ranges
-        },
-        "identities" = var.publ_vpc_sc_allow_all_for_public_listing ? [] : var.publ_vpc_sc_ah_subscriber_identities
-        "identity_type" = var.publ_vpc_sc_allow_all_for_public_listing ? "ANY_IDENTITY" : null
-      }
-      "to" = {
-        "resources" = [
-          "*",
-#          "projects/${data.google_project.publ_bq_shared_ds.number}",
-        ]
-        "operations" = {
-          "bigquery.googleapis.com" = {
-            "methods" = [
-            ]
-            "permissions" = [
-              "datacatalog.categories.fineGrainedGet"
-            ]
-          },
-          "bigquerydatapolicy.googleapis.com" = {
-            "methods" = [
-              "*",
-            ]
-          },
-        }
-      }
-    }],
+resource "google_access_context_manager_service_perimeter" "publ_bq_src_ds" {
+  title                     = "ahdemo_${var.name_suffix}_publ_bq_src_ds"
+  description               = "ahdemo_${var.name_suffix}_publ_bq_src_ds"
+  name                      = "accessPolicies/${google_access_context_manager_access_policy.access_policy.id}/servicePerimeters/ahdemo_${var.name_suffix}_publ_bq_src_ds"
+  parent                    = "accessPolicies/${google_access_context_manager_access_policy.access_policy.id}"
+  perimeter_type            = "PERIMETER_TYPE_REGULAR"
+  use_explicit_dry_run_spec = false
 
-    # OPTIONAL - Allow off-perimeter subscribers (Cloud Console users) in var.publ_vpc_sc_ah_subscriber_identities from anywhere
-    # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
-    # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
-    var.publ_allowlisted_vpcsc_opt ? [] : [local.ingress_policy_bq_perimeter_src_ds_subscriber],
-  )
-  # OPTIONAL - Allow off-perimeter subscribers (Cloud Console users) in var.publ_vpc_sc_ah_subscriber_identities from anywhere
-  # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
-  # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
-  ingress_policy_bq_perimeter_src_ds_subscriber = {
-    "from" = {
-      "sources" = {
-        access_levels = [ google_access_context_manager_access_level.access_level_allow_all.title ] # Allow access from everywhere
-      },
-      "identities" = concat(var.publ_vpc_sc_ah_subscriber_identities, var.subscr_subscriber_projects_bq_readers_iam_members)
-      "identity_type" = null
-    }
-    "to" = {
-      "resources" = [
-        "*"
-#          "projects/${data.google_project.publ_ah_exchg.number}",
-      ]
-      "operations" = {
-        "bigquery.googleapis.com" = {
-          "permissions" = [
-            "bigquery.tables.getData"
-          ]
-          "methods" = [
-          ]
-        }
-      }
-    }
+  status {
+      access_levels       = []
+      resources           = var.vpc_sc_dry_run ? [] : [ "projects/${data.google_project.publ_bq_src_ds.number}" ]
+      restricted_services = var.vpc_sc_dry_run ? [] : var.vpc_sc_restricted_services
   }
 
-  egress_policies_bq_perimeter_src_ds = concat([
-    # Allow egress to bq_shared_ds and bq_and_ah (Google Service -> Google Service)
-    # required for creating the view from shared_ds/bq_and_ah to src_ds
-    {
-      "from" = {
-        "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
-      }
-      "to" = {
-        "resources" = [
-          "projects/${data.google_project.publ_bq_shared_ds.number}",
-          "projects/${data.google_project.publ_bq_and_ah.number}",
-        ]
-        "operations" = {
-          "bigquery.googleapis.com" = {
-            "methods" = [
-              "*",
-            ]
-          }
-        }
-      }
-    },
-    # Allow egress to bq_fed_ds (Google Service -> Google Service)
-    # required for creating the view from src_ds to fed_ds
-    {
-      "from" = {
-        "identities" = var.publ_vpc_sc_access_level_corp_allowed_identities
-      }
-      "to" = {
-        "resources" = [
-          "projects/${data.google_project.publ_bq_fed_ds.number}",
-        ]
-        "operations" = {
-          "bigquery.googleapis.com" = {
-            "methods" = [
-              "*",
-            ]
-          }
-        }
-      }
-    },
-    # Allow egress to #subscriber_project_number (Google Service -> Google Service)
-    # required for querying columns with privacy tags in src_ds from the subscriber projects
-    {
-      "from" = {
-        "identities" = var.publ_vpc_sc_ah_subscriber_identities
-      }
-      "to" = {
-        "resources" = local.vpc_sc_ah_subscriber_project_resources_with_numbers
-        "operations" = {
-          "bigquerydatapolicy.googleapis.com" = {
-            "permissions" = []
-            "methods" = [
-              "*",
-            ]
-          },
-          "bigquery.googleapis.com" = {
-            "methods" = [
-            ]
-            "permissions" = [
-              "datacatalog.categories.fineGrainedGet",
-              "bigquery.jobs.create",
-            ]
-          },
-        }
-      }
-    }],
-    # OPTIONAL - Allow egress to #subscriber_project_number (Google Service -> Google Service)
-    # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
-    # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
-    var.publ_allowlisted_vpcsc_opt ? [] : [local.egress_policies_bq_perimeter_src_ds_subscribers],
-  )
-
-  # OPTIONAL - Allow egress to #subscriber_project_number (Google Service -> Google Service)
-  # OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
-  # OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
-  egress_policies_bq_perimeter_src_ds_subscribers = {
-      "from" = {
-      "identities" = concat(var.publ_vpc_sc_ah_subscriber_identities, var.subscr_subscriber_projects_bq_readers_iam_members)
-    }
-    "to" = {
-      "resources" = local.vpc_sc_ah_subscriber_project_resources_with_numbers
-      "operations" = {
-        "bigquery.googleapis.com" = {
-          "permissions" = [
-            "bigquery.tables.getData",
-            "bigquery.jobs.create"
-          ]
-          "methods" = [
-          ]
-        }
-      }
-    }
+  lifecycle {
+    ignore_changes = [
+      status[0].egress_policies,
+      status[0].ingress_policies
+      ] # Allows egress and ingress policies to be managed by google_access_context_manager_service_perimeter_egress_policy resources
   }
 }
 
-module "regular_service_perimeter_bq_src_ds" {
-  source  = "terraform-google-modules/vpc-service-controls/google//modules/regular_service_perimeter"
-  version = "7.2.0"
+# Allow off-perimeter internal users (Cloud Console users) in var.publ_vpc_sc_access_level_corp_allowed_identities from the corporate network IP ranges
+# required for the (internal) admins to manage BQ / AH
+resource "google_access_context_manager_service_perimeter_ingress_policy" "publ_bq_src_ds_ingress_policy_0" {
+  perimeter = "${google_access_context_manager_service_perimeter.publ_bq_src_ds.name}"
 
-  policy         = google_access_context_manager_access_policy.access_policy.id
-  perimeter_name = "ahdemo_${var.name_suffix}_publ_bq_src_ds"
-  description    = "ahdemo_${var.name_suffix}_publ_bq_src_ds"
+  title = "Ingress Policy 0"
 
-  restricted_services = var.vpc_sc_dry_run ? [] : var.vpc_sc_restricted_services
-  restricted_services_dry_run = var.vpc_sc_dry_run ? var.vpc_sc_restricted_services : []
+  ingress_from {
+      identities    = var.publ_vpc_sc_access_level_corp_allowed_identities
+      identity_type = null
 
-  access_levels = []
+      sources {
+          access_level = google_access_context_manager_access_level.access_level_allow_corp.id
+          resource     = null
+      }
+  }
 
-  resources = var.vpc_sc_dry_run ? [] : [ data.google_project.publ_bq_src_ds.number ]
-  resources_dry_run = var.vpc_sc_dry_run ? [ data.google_project.publ_bq_src_ds.number ] : []
+  ingress_to {
+      resources = [
+          "*", # "projects/${data.google_project.publ_bq_src_ds.number}"
+      ]
+      roles     = []
 
-  ingress_policies = var.vpc_sc_dry_run ? [] : local.ingress_policies_bq_perimeter_src_ds
-  ingress_policies_dry_run = var.vpc_sc_dry_run ? local.ingress_policies_bq_perimeter_src_ds : []
-  egress_policies = var.vpc_sc_dry_run ? [] : local.egress_policies_bq_perimeter_src_ds
-  egress_policies_dry_run = var.vpc_sc_dry_run ? local.egress_policies_bq_perimeter_src_ds : []
+      operations {
+          service_name = "bigquery.googleapis.com"
+
+          method_selectors {
+              method     = "*"
+              permission = null
+          }
+      }
+      operations {
+          service_name = "bigquerydatapolicy.googleapis.com"
+
+          method_selectors {
+              method     = "*"
+              permission = null
+          }
+      }
+      operations {
+          service_name = "datacatalog.googleapis.com"
+
+          method_selectors {
+              method     = "*"
+              permission = null
+          }
+      }
+  }
+}
+
+# Allow off-perimeter subscribers (Cloud Console users) from anywhere
+# Public: required for querying columns with policy tags in the public listing (allAuthenticatedUsers or allUsers => subscriber identity not known => ANY_IDENTITY)
+# Private: required for querying columns with policy tags in the private listing (subscriber identity known => gathered upon contracting => in var.publ_vpc_sc_ah_subscriber_identities)
+resource "google_access_context_manager_service_perimeter_ingress_policy" "publ_bq_src_ds_ingress_policy_1" {
+  perimeter = "${google_access_context_manager_service_perimeter.publ_bq_src_ds.name}"
+
+  title = "Ingress Policy 1"
+
+  ingress_from {
+      identities    = var.publ_vpc_sc_allow_all_for_public_listing ? [] : var.publ_vpc_sc_ah_subscriber_identities
+      identity_type = var.publ_vpc_sc_allow_all_for_public_listing ? "ANY_IDENTITY" : null
+
+      sources {
+          access_level = google_access_context_manager_access_level.access_level_allow_all.id
+          resource     = null
+      }
+  }
+
+  ingress_to {
+      resources = [
+          "*", # "projects/${data.google_project.publ_bq_shared_ds.number}"
+      ]
+      roles     = []
+
+      operations {
+          service_name = "bigquery.googleapis.com"
+
+          method_selectors {
+              method     = null
+              permission = "datacatalog.categories.fineGrainedGet"
+          }
+      }
+      operations {
+          service_name = "bigquerydatapolicy.googleapis.com"
+
+          method_selectors {
+              method     = "*"
+              permission = null
+          }
+      }
+  }
+}
+
+# OPTIONAL - Allow off-perimeter subscribers (Cloud Console users) in var.publ_vpc_sc_ah_subscriber_identities from anywhere
+# OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
+# OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
+resource "google_access_context_manager_service_perimeter_ingress_policy" "publ_bq_src_ds_ingress_policy_2" {
+  count = var.publ_allowlisted_vpcsc_opt ? 0 : 1
+
+  perimeter = "${google_access_context_manager_service_perimeter.publ_bq_src_ds.name}"
+
+  title = "Ingress Policy 2"
+
+  ingress_from {
+      identities    = concat(var.publ_vpc_sc_ah_subscriber_identities, var.subscr_subscriber_projects_bq_readers_iam_members)
+      identity_type = null
+
+      sources {
+          access_level = google_access_context_manager_access_level.access_level_allow_all.id
+          resource     = null
+      }
+  }
+
+  ingress_to {
+      resources = [
+          "*", # "projects/${data.google_project.publ_ah_exchg.number}"
+      ]
+      roles     = []
+
+      operations {
+          service_name = "bigquery.googleapis.com"
+
+          method_selectors {
+              method     = null
+              permission = "bigquery.tables.getData"
+          }
+      }
+  }
+}
+
+# Allow egress to bq_shared_ds and bq_and_ah (Google Service -> Google Service)
+# required for creating the view from shared_ds/bq_and_ah to src_ds
+resource "google_access_context_manager_service_perimeter_egress_policy" "publ_bq_src_ds_egress_policy_0" {
+  perimeter = "${google_access_context_manager_service_perimeter.publ_bq_src_ds.name}"
+
+  title = "Egress Policy 0"
+
+  egress_from {
+      identities         = var.publ_vpc_sc_access_level_corp_allowed_identities
+      identity_type      = null
+      source_restriction = "SOURCE_RESTRICTION_DISABLED"
+  }
+
+  egress_to {
+      external_resources = []
+      resources          = [
+          "projects/${data.google_project.publ_bq_shared_ds.number}",
+          "projects/${data.google_project.publ_bq_and_ah.number}",
+        ]
+      roles              = []
+
+      operations {
+          service_name = "bigquery.googleapis.com"
+
+          method_selectors {
+              method     = "*"
+              permission = null
+          }
+      }
+  }
+}
+
+# Allow egress to bq_fed_ds (Google Service -> Google Service)
+# required for creating the view from src_ds to fed_ds
+resource "google_access_context_manager_service_perimeter_egress_policy" "publ_bq_src_ds_egress_policy_1" {
+  perimeter = "${google_access_context_manager_service_perimeter.publ_bq_src_ds.name}"
+
+  title = "Egress Policy 1"
+
+  egress_from {
+      identities         = var.publ_vpc_sc_access_level_corp_allowed_identities
+      identity_type      = null
+      source_restriction = "SOURCE_RESTRICTION_DISABLED"
+  }
+
+  egress_to {
+      external_resources = []
+      resources          = [
+          "projects/${data.google_project.publ_bq_fed_ds.number}",
+        ]
+      roles              = []
+
+      operations {
+          service_name = "bigquery.googleapis.com"
+
+          method_selectors {
+              method     = "*"
+              permission = null
+          }
+      }
+  }
+}
+
+# Allow egress to #subscriber_project_number (Google Service -> Google Service)
+# required for querying columns with privacy tags in src_ds from the subscriber projects
+resource "google_access_context_manager_service_perimeter_egress_policy" "publ_bq_src_ds_egress_policy_2" {
+  perimeter = "${google_access_context_manager_service_perimeter.publ_bq_src_ds.name}"
+
+  title = "Egress Policy 2"
+
+  egress_from {
+      identities         = var.publ_vpc_sc_ah_subscriber_identities
+      identity_type      = null
+      source_restriction = "SOURCE_RESTRICTION_DISABLED"
+  }
+
+  egress_to {
+      external_resources = []
+      resources          = local.vpc_sc_ah_subscriber_project_resources_with_numbers
+      roles              = []
+
+      operations {
+          service_name = "bigquerydatapolicy.googleapis.com"
+
+          method_selectors {
+              method     = "*"
+              permission = null
+          }
+      }
+      operations {
+          service_name = "bigquery.googleapis.com"
+
+          method_selectors {
+              method     = null
+              permission = "datacatalog.categories.fineGrainedGet"
+          }
+          method_selectors {
+              method     = null
+              permission = "bigquery.jobs.create"
+          }
+      }
+  }
+}
+
+# OPTIONAL - Allow egress to #subscriber_project_number (Google Service -> Google Service)
+# OPTIONAL - required for querying src_ds from the (normal; non-authorized) view in shared_ds
+# OPTIONAL - this is NOT needed for AUTHORIZED views after allowlisting for VPC-SC optimizations (contact Sales)
+resource "google_access_context_manager_service_perimeter_egress_policy" "publ_bq_src_ds_egress_policy_3" {
+  count = var.publ_allowlisted_vpcsc_opt ? 0 : 1
+
+  perimeter = "${google_access_context_manager_service_perimeter.publ_bq_src_ds.name}"
+
+  title = "Egress Policy 3"
+
+  egress_from {
+      identities         = concat(var.publ_vpc_sc_ah_subscriber_identities, var.subscr_subscriber_projects_bq_readers_iam_members)
+      identity_type      = null
+      source_restriction = "SOURCE_RESTRICTION_DISABLED"
+  }
+
+  egress_to {
+      external_resources = []
+      resources          = local.vpc_sc_ah_subscriber_project_resources_with_numbers
+      roles              = []
+
+      operations {
+          service_name = "bigquery.googleapis.com"
+
+          method_selectors {
+              method     = null
+              permission = "bigquery.tables.getData"
+          }
+          method_selectors {
+              method     = null
+              permission = "bigquery.jobs.create"
+          }
+      }
+  }
 }
