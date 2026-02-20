@@ -87,6 +87,7 @@ resource "keycloak_openid_client_default_scopes" "google_wloadif_client_default_
 
   default_scopes = [
     "acr",
+    "basic",
     "email",
     "profile",
     "roles",
@@ -128,6 +129,7 @@ resource "keycloak_openid_client_default_scopes" "google_wfif_client_default_sco
 
   default_scopes = [
     "acr",
+    "basic",
     "email",
     "profile",
     "roles",
