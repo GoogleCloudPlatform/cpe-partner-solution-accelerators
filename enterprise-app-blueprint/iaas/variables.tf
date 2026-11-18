@@ -85,8 +85,9 @@ variable "pga_domains" {
   description = "Private Google Access domain overrides"
   type        = map
   default     =  {
-    "googleapis"  = "googleapis.com."
-    "gcr" = "gcr.io."
+    "googleapis" = "googleapis.com."
+    "gcr"        = "gcr.io."
+    "run"        = "run.app."
   }
 }
 variable "vm_sa_roles" {
@@ -96,7 +97,6 @@ variable "vm_sa_roles" {
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",
     "roles/artifactregistry.reader",
-    "roles/storage.objectViewer",
     "roles/compute.networkViewer",
   ]
 }
@@ -107,9 +107,8 @@ variable "regfunc_sa_roles" {
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",
     "roles/artifactregistry.reader",
-    "roles/storage.objectViewer",
     "roles/compute.networkViewer",
-    "roles/viewer",
+    "roles/compute.viewer",
   ]
 }
 

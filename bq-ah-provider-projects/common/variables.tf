@@ -199,6 +199,15 @@ variable "wlwfif_provider_name" {
   type        = string
   default     = "test-keycloak-oidc-provider"
 }
+variable "wloadif_redirect_uris" {
+  description = "Optional HTTPS OAuth2/OIDC callback URIs for google-wloadif-client when Authorization Code + PKCE flow is required. Leave empty for confidential service-account (client_credentials) federation only."
+  type        = list(string)
+  default     = []
+  validation {
+    condition     = alltrue([for uri in var.wloadif_redirect_uris : startswith(uri, "https://")])
+    error_message = "All wloadif_redirect_uris must use https:// (plaintext http:// redirect URIs are not permitted)."
+  }
+}
 variable "prov_org_id" {
   description = "Google Cloud Organization ID"
   type        = string

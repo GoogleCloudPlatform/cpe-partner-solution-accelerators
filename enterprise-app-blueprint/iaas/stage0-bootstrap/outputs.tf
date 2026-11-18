@@ -48,3 +48,11 @@ output "dns_zone_nameserver" {
   description = "DNS zone nameserver"
   value       = google_dns_managed_zone.dns.name_servers
 }
+output "privateca_pool_name" {
+  description = "Private CA pool name"
+  value       = google_privateca_ca_pool.default.name
+}
+output "privateca_location" {
+  description = "Private CA pool location"
+  value       = google_privateca_ca_pool.default.location
+}

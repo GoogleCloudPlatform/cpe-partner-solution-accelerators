@@ -102,6 +102,5 @@ if ($RegisterComputerUser) {
     dsacls $DnsContainer /G "${RegisterComputerUser}:SD" /I:S
 }
 
-Write-Host "register-computer password: $Password"
 Write-Host "Projects OU: $ProjectsOrgUnitPath"
 Write-Host "Project OU:  $ProjectOrgUnitPath"
