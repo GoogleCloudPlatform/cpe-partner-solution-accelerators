@@ -72,7 +72,7 @@ resource "google_compute_instance" "vm" {
   }
 
   metadata = {
-    sysprep-specialize-script-ps1 = "iex((New-Object System.Net.WebClient).DownloadString('${data.terraform_remote_state.stage1-admin-vms-adc.outputs.regfunc_url}'))"
+    sysprep-specialize-script-ps1 = "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $u = '${data.terraform_remote_state.stage1-admin-vms-adc.outputs.regfunc_url}'; $wc = New-Object System.Net.WebClient; $wc.Headers.Add('Metadata-Flavor', 'Google'); $t = $wc.DownloadString('http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=' + $u + '&format=full'); $wc.Headers.Remove('Metadata-Flavor'); $wc.Headers.Add('Authorization', 'Bearer ' + $t); iex($wc.DownloadString($u))"
   }
 }
 

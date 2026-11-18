@@ -35,8 +35,8 @@ resource "google_data_catalog_policy_tag" "child_policy_errorcode_fed_ds" {
 
 data "google_iam_policy" "child_policy_errorcode_fed_ds_iam_policy_data" {
   binding {
-    role = "roles/datacatalog.categoryFineGrainedReader"
-    members = []
+    role    = "roles/datacatalog.categoryFineGrainedReader"
+    members = var.publ_policy_tag_fine_grained_readers
   }
 }
 

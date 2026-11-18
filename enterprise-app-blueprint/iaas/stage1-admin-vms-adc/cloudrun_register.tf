@@ -15,10 +15,9 @@ data "google_iam_policy" "regfunc_auth_policy" {
   binding {
     role = "roles/run.invoker"
     members = [
-       "allUsers",
-#      "serviceAccount:${data.google_service_account.vm_sa.email}",
-#      "serviceAccount:${data.google_service_account.vm_sa_adsrv.email}",
-#      "serviceAccount:${data.google_service_account.jumphost_sa.email}",
+      "serviceAccount:${data.google_service_account.vm_sa.email}",
+      "serviceAccount:${data.google_service_account.vm_sa_adsrv.email}",
+      "serviceAccount:${data.google_service_account.jumphost_sa.email}",
     ]
   }
 }
@@ -44,7 +43,7 @@ resource "google_vpc_access_connector" "vpc_connector" {
 resource "google_cloud_run_v2_service" "regfunc" {
   name     = "regfunc"
   location = var.sites["fra"].region
-  ingress = "INGRESS_TRAFFIC_ALL"
+  ingress  = "INGRESS_TRAFFIC_INTERNAL_ONLY"
 
   scaling {
     min_instance_count = 1
@@ -119,7 +118,6 @@ resource "google_cloud_run_v2_service" "regfunc" {
         template[0].labels,
         template[0].revision,
         template[0].annotations,
-        template[0].containers[0].image,
         template[0].containers[0].image,
       ]
   }
