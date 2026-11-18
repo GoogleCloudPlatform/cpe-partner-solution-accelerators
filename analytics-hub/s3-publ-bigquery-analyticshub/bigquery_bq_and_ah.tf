@@ -35,22 +35,22 @@ resource "google_data_catalog_policy_tag" "child_policy_errorcode_bq_ah" {
 
 data "google_iam_policy" "child_policy_errorcode_bq_ah_iam_policy_data" {
   binding {
-    role = "roles/datacatalog.categoryFineGrainedReader"
-    members = var.publ_vpc_sc_ah_subscriber_identities
+    role    = "roles/datacatalog.categoryFineGrainedReader"
+    members = var.publ_policy_tag_fine_grained_readers
   }
 }
 
 resource "google_data_catalog_policy_tag_iam_policy" "child_policy_errorcode_bq_ah_iam_policy" {
-  policy_tag = google_data_catalog_policy_tag.child_policy_errorcode_bq_ah.name
+  policy_tag  = google_data_catalog_policy_tag.child_policy_errorcode_bq_ah.name
   policy_data = data.google_iam_policy.child_policy_errorcode_bq_ah_iam_policy_data.policy_data
 }
 
 resource "google_bigquery_datapolicy_data_policy" "data_policy_bq_ah" {
-  project = data.google_project.publ_bq_and_ah.project_id
+  project          = data.google_project.publ_bq_and_ah.project_id
   location         = var.location
   data_policy_id   = "policy_errorcode_bq_ah_${var.name_suffix}"
   policy_tag       = google_data_catalog_policy_tag.child_policy_errorcode_bq_ah.name
-  data_policy_type = "DATA_MASKING_POLICY"  
+  data_policy_type = "DATA_MASKING_POLICY"
   data_masking_policy {
     predefined_expression = "ALWAYS_NULL"
   }
@@ -58,8 +58,7 @@ resource "google_bigquery_datapolicy_data_policy" "data_policy_bq_ah" {
 
 data "google_iam_policy" "data_policy_bq_ah_iam_policy_data" {
   binding {
-#    role = "roles/datacatalog.categoryFineGrainedReader"
-    role = "roles/bigquerydatapolicy.maskedReader"
+    role    = "roles/bigquerydatapolicy.maskedReader"
     members = var.publ_vpc_sc_ah_subscriber_identities
   }
 }

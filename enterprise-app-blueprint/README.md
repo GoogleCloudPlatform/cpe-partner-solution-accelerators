@@ -68,6 +68,7 @@ This stage configures the following aspects:
   - Private Service Access (for CloudSQL and NetApp)
   - Private Google Access
   - Cloud DNS private zones
+  - Managed Private CA pool and root CA (end-entity machine certificates can be requested out-of-band by admin operators or `jumphost-editor` using `scripts/request-privateca-cert.sh` so private keys never enter Terraform state)
   - Service Accounts
   - Secrets
 
@@ -91,9 +92,13 @@ Manual steps after Terraform run:
 - Remember the output `regfunc_url` from Terraform
 - Check Serial Port 1 of `adsrv` and verify that the AD Forest has been created
 - Log in to the `adsrv` VM and create the register-computer account required for automatic joining of new VMs (see `scripts/dc-init-AD-for-autojoin.ps1`)
-- Log in to the `adminws` VM and test automatic joining by downloading the join script from `regfunc_url` and executing it from an Administrative PowerShell session
+- Log in to the `adminws` VM and test automatic joining by fetching a GCE identity token and downloading the join script from the internal `regfunc_url` in an Administrative PowerShell session:
 
-   ```
+   ```powershell
+   PS C:\Users\predy> [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+   PS C:\Users\predy> $RegUrl = "<regfunc_url>"
+   PS C:\Users\predy> $Token = Invoke-RestMethod -Headers @{"Metadata-Flavor"="Google"} -Uri "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=$RegUrl&format=full"
+   PS C:\Users\predy> Invoke-RestMethod -Headers @{"Authorization"="Bearer $Token"} -Uri $RegUrl -OutFile .\join.ps1
    PS C:\Users\predy> .\join.ps1
    AD Join diagnostics: Not enabled
    AD site-awareness: Using site 'Default-First-Site-Name' for join

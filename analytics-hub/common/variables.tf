@@ -229,6 +229,11 @@ variable "publ_enable_policy_tags" {
   type        = bool
   default     = false
 }
+variable "publ_policy_tag_fine_grained_readers" {
+  description = "Internal publisher IAM members granted unmasked access (roles/datacatalog.categoryFineGrainedReader) on policy tags. Do not include external subscriber identities, as Fine-Grained Reader takes precedence over Data Masking policies."
+  type        = list(string)
+  default     = []
+}
 variable "publ_allowlisted_vpcsc_opt" {
   description = "The orgs / projects are allowlisted for VPC SC optimization for AUTHZ entities. No additional subscriber rules needed in src_ds perimeters."
   type        = bool

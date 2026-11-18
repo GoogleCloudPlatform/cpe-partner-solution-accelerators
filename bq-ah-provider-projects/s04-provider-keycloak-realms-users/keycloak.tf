@@ -37,7 +37,7 @@ resource "keycloak_realm" "realm" {
     }
     brute_force_detection {
       permanent_lockout                 = false
-      max_login_failures                = 30
+      max_login_failures                = 5
       wait_increment_seconds            = 60
       quick_login_check_milli_seconds   = 1000
       minimum_quick_login_wait_seconds  = 60
@@ -48,23 +48,22 @@ resource "keycloak_realm" "realm" {
 }
 
 resource "keycloak_openid_client" "google_wloadif_client" {
-  realm_id            = keycloak_realm.realm.id
-  client_id           = "google-wloadif-client"
-  full_scope_allowed  = false # needed to remove account from aud claim, as aud claim being an array does not work with google identity federation
+  realm_id           = keycloak_realm.realm.id
+  client_id          = "google-wloadif-client"
+  full_scope_allowed = false # needed to remove account from aud claim, as aud claim being an array does not work with google identity federation
 
-  name                = "google-wloadif-client"
-  enabled             = true
+  name    = "google-wloadif-client"
+  enabled = true
 
-  access_type         = "CONFIDENTIAL"
-  valid_redirect_uris = [
-    "http://localhost:8080/openid-callback",
-  ]
+  access_type                = "CONFIDENTIAL"
+  valid_redirect_uris        = length(var.wloadif_redirect_uris) > 0 ? var.wloadif_redirect_uris : null
+  pkce_code_challenge_method = length(var.wloadif_redirect_uris) > 0 ? "S256" : null
 
-  login_theme = "keycloak"
-  implicit_flow_enabled = true
-  standard_flow_enabled = true
-  direct_access_grants_enabled = true
-  service_accounts_enabled = true
+  login_theme                  = "keycloak"
+  implicit_flow_enabled        = false
+  standard_flow_enabled        = length(var.wloadif_redirect_uris) > 0
+  direct_access_grants_enabled = false
+  service_accounts_enabled     = true
 }
 
 resource "keycloak_openid_client_scope" "google_wloadif_client_scope" {
@@ -97,24 +96,23 @@ resource "keycloak_openid_client_default_scopes" "google_wloadif_client_default_
 }
 
 resource "keycloak_openid_client" "google_wfif_client" {
-  realm_id            = keycloak_realm.realm.id
-  client_id           = "google-wfif-client"
-  full_scope_allowed  = false # needed to remove account from aud claim, as aud claim being an array does not work with google identity federation
+  realm_id           = keycloak_realm.realm.id
+  client_id          = "google-wfif-client"
+  full_scope_allowed = false # needed to remove account from aud claim, as aud claim being an array does not work with google identity federation
 
-  name                = "google-wfif-client"
-  enabled             = true
+  name    = "google-wfif-client"
+  enabled = true
 
-  access_type         = "CONFIDENTIAL"
+  access_type = "CONFIDENTIAL"
   valid_redirect_uris = [
-    "http://localhost:8080/openid-callback",
     "https://auth.cloud.google/signin-callback/locations/global/workforcePools/${var.wlwfif_pool_name}/providers/${var.wlwfif_provider_name}"
   ]
 
-  login_theme = "keycloak"
-  implicit_flow_enabled = true
-  standard_flow_enabled = true
-  direct_access_grants_enabled = true
-  service_accounts_enabled = true
+  login_theme                  = "keycloak"
+  implicit_flow_enabled        = false
+  standard_flow_enabled        = true
+  direct_access_grants_enabled = false
+  service_accounts_enabled     = false
 }
 
 resource "keycloak_openid_client_scope" "google_wfif_client_scope" {
