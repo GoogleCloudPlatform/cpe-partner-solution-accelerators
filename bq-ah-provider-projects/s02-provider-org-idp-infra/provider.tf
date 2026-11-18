@@ -20,11 +20,11 @@ terraform {
     }
     google = {
       source = "hashicorp/google"
-      version = "~> 7.20.0"
+      version = "~> 8.12.0"
     }
     docker = {
       source  = "kreuzwerker/docker"
-      version = "3.6.2"
+      version = "4.7.0"
     }
   }
 }
