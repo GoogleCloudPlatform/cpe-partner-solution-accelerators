@@ -3,9 +3,9 @@ module example/create_listing
 go 1.26.0
 
 require (
-	cloud.google.com/go/bigquery v1.86.3
+	cloud.google.com/go/bigquery v1.86.4
 	cloud.google.com/go/iam v1.15.1
-	google.golang.org/api v0.316.0
+	google.golang.org/api v0.317.0
 	google.golang.org/grpc v1.85.0
 )
 
@@ -46,7 +46,7 @@ require (
 	golang.org/x/text v0.44.0 // indirect
 	golang.org/x/time v0.16.0 // indirect
 	google.golang.org/genproto v0.0.0-20261116203732-fd2c7689a808 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20261116203732-fd2c7689a808 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20261116203732-fd2c7689a808 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20261118221215-c8830f628b3f // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20261118221215-c8830f628b3f // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 )
